@@ -47,9 +47,13 @@ def leer_datos_csv(nombre_archivo):
 
 def leer_datos_gpx(nombre_archivo):
     """
-    Función que lee un archivo gpx con los datos de una carrera y muestra una gráfica en 2d con las coordenadas x,y
-    INPUT: nombre_archivo: nombre del archivo gpx
-    RETURN: None
+    Función que lee un archivo gpx con los datos de una carrera y crea un array
+    con los datos transformados a coordenadas x,y y con la elevación en metros 
+    y crea una gráfica en 2d con las coordenadas x,y
+
+    INPUT:    nombre_archivo: nombre del archivo gpx
+    RETURN:   Coordenadas en formato numpy array 
+              figura de la gráfica
     """
     # leer archivo gpx de la carpeta datos
     import gpxpy
@@ -57,11 +61,12 @@ def leer_datos_gpx(nombre_archivo):
     import numpy as np
 
     # Abrir el archivo GPX
-    with open(nombre_archivo, "r") as gpx_file:
+    with open(nombre_archivo, "r", encoding='utf-8') as gpx_file:
         gpx = gpxpy.parse(gpx_file)  # Parsear el contenido del GPX
 
     coordenadas = []
-    # Recorrer tracks y puntos
+    # Recorrer tracks, segmetos y puntos para obtener todas las coordenadas
+    # longitud y latitud en grados y altitud en metros sobre el nivel del mar
     for track in gpx.tracks:
         for segment in track.segments:
             for point in segment.points:
@@ -72,8 +77,9 @@ def leer_datos_gpx(nombre_archivo):
     # print(coordenadas)   debugging
 
     # Transformar los datos de latitud y longitud a coordenadas x,y
-    # Definir el sistema de coordenadas de latitud y longitud
-    transformer = Transformer.from_crs("epsg:4326", "epsg:3395")
+    # Se pasa de EPSG:4326 (latitud y longitud) a EPSG:32630 (coordenadas x,y) en Cantabria
+    # always_xy=True para que las coordenadas sean x,y y no y,x
+    transformer = Transformer.from_crs("EPSG:4326", "EPSG:32630", always_xy=True)
 
     # Transformar las coordenadas
     x, y = transformer.transform([i[0] for i in coordenadas], [i[1] for i in coordenadas])
@@ -82,11 +88,18 @@ def leer_datos_gpx(nombre_archivo):
     coordenadas = np.array([x, y, [i[2] for i in coordenadas]])
     #print(coordenadas)   debugging
 
-    # Crear y mostrar una gráfica en 2d con las coordenadas x,y
+    # Crear una gráfica en 2d con las coordenadas x,y
     import matplotlib.pyplot as plt
+    figura = plt.plot(x, y)
 
-    plt.plot(x, y)
-    plt.show()
+    return coordenadas, figura
 
 #leer_datos_csv('datos/Carrera_de_mañana.gpx.csv')
-#leer_datos_gpx('datos/Media_maratón_de_Santander(1).gpx')
+#leer_datos_gpx('datos/Carrera_de_mañana(3).gpx')
+
+# bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
+import os
+for nombre_archivo in os.listdir('datos'):
+    if nombre_archivo.endswith('.gpx'):
+        leer_datos_gpx(f'datos/{nombre_archivo}')
+        # print (f'Archivo {nombre_archivo} leído') debugging
