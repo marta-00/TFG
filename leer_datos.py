@@ -1,6 +1,7 @@
 """
 Script con las funciones para leer los datos de un archivo CSV y GPX (longitud, latitud y elevación)
 y mostrar una gráfica en 2D con las coordenadas x,y
+
 """
 def leer_datos_csv(nombre_archivo):
     """
@@ -71,13 +72,13 @@ def leer_datos_gpx(nombre_archivo):
         for segment in track.segments:
             for point in segment.points:
                 # añadir los datos a coordenadas
-                coordenadas.append([point.latitude, point.longitude, point.elevation])
+                coordenadas.append([point.longitude, point.latitude, point.elevation])
                 # print(f"Lat: {point.latitude}, Lon: {point.longitude}, Alt: {point.elevation}") debugging
 
     # print(coordenadas)   debugging
 
     # Transformar los datos de latitud y longitud a coordenadas x,y
-    # Se pasa de EPSG:4326 (latitud y longitud) a EPSG:32630 (coordenadas x,y) en Cantabria
+    # Se pasa de WGS84=EPSG:4326 (latitud y longitud) a EPSG:32630 (coordenadas x,y) en Cantabria
     # always_xy=True para que las coordenadas sean x,y y no y,x
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:32630", always_xy=True)
 
@@ -91,15 +92,6 @@ def leer_datos_gpx(nombre_archivo):
     # Crear una gráfica en 2d con las coordenadas x,y
     import matplotlib.pyplot as plt
     figura = plt.plot(x, y)
+    #plt.show() #debugging
 
     return coordenadas, figura
-
-#leer_datos_csv('datos/Carrera_de_mañana.gpx.csv')
-#leer_datos_gpx('datos/Carrera_de_mañana(3).gpx')
-
-# bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
-import os
-for nombre_archivo in os.listdir('datos'):
-    if nombre_archivo.endswith('.gpx'):
-        leer_datos_gpx(f'datos/{nombre_archivo}')
-        # print (f'Archivo {nombre_archivo} leído') debugging
