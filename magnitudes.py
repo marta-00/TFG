@@ -22,4 +22,15 @@ def distancia (coordenadas):
     distancia_total = sum(distancias_tramo)
     return distancias_tramo, distancia_total
 
-def velocidad(distancias, tiempo):
+def altitud(coordenadas):
+    """
+    Función que calcula la altitud (desnivel positivo acumulado). Esto es se suman las
+    altitudes subidas pero no se restan las bajadas.
+    INPUT: coordenadas: array con las coordenadas x,y y la elevación
+    RETURN: altitud: array con el desnivel positivo acumulado en metros
+    """
+    altitud = 0
+    for i in range(1, len(coordenadas[2])):
+        if coordenadas[2][i] > coordenadas[2][i-1]:
+            altitud += coordenadas[2][i] - coordenadas[2][i-1]
+    return altitud

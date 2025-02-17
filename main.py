@@ -19,5 +19,4 @@ for nombre_archivo in os.listdir('datos'):
     if nombre_archivo.endswith('.gpx'):
         coord,fig =leer_datos_gpx(f'datos/{nombre_archivo}')
         # print (f'Archivo {nombre_archivo} leído') debugging
-        dist_tramo, dist_total = distancia(coord)
-        print(dist_total)
+        print(altitud(coord))
