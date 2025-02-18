@@ -6,10 +6,10 @@ import matplotlib.pyplot as plot
 """
 #leer_datos_csv('datos/Carrera_de_mañana.gpx.csv')
 coord, fig = leer_datos_gpx('datos/Carrera_de_mañana(1).gpx')
-plot.show()
+coord1, fig1 = leer_datos_gpx('datos/Carrera_de_mañana(5).gpx')
 dist_tramo, dist_total = distancia(coord)
-print(f'Distancia total de la carrera: {dist_total} m')
-print(f'Altitud de la carrera: {altitud(coord)} m')
+
+print(dist_tramo)
 
 """
 import pandas as pd

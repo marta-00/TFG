@@ -15,11 +15,17 @@ def distancia (coordenadas):
     """
     import numpy as np
     # Distancia entre dos puntos = sqrt((x2-x1)^2 + (y2-y1)^2)
-    distancias_tramo = []
+    # crear array con zeros para almacenar las distancias de cada tramo
+    distancias_tramo = [] 
     for i in range(1, len(coordenadas[0])):
         distancias_tramo.append(np.sqrt((coordenadas[0][i] - coordenadas[0][i - 1]) ** 2 +
                                   (coordenadas[1][i] - coordenadas[1][i - 1]) ** 2))
         
+    if len(distancias_tramo)<6811:
+        #agregar ceros hasta llegar a 6811
+        for i in range(6811-len(distancias_tramo)):
+            distancias_tramo.append(0)
+
     # Sumar todas las distancias recorridas en cada tramo de la carrera
     distancia_total = sum(distancias_tramo)
     return distancias_tramo, distancia_total
@@ -47,8 +53,7 @@ import os
 for nombre_archivo in os.listdir('datos'):
     if nombre_archivo.endswith('.gpx'):
         coord,fig =leer_datos_gpx(f'datos/{nombre_archivo}')
+        # print(len(coord[1]))
         dist_tramo,dist_total = distancia(coord)
         alt = altitud(coord)
-        magnitudes.write(f"{nombre_archivo},{0},{dist_total},{alt},{0}\n")
-
-magnitudes.close()
+        magnitudes.write(f"{nombre_archivo},{dist_tramo},{dist_total},{alt},{0}\n")
