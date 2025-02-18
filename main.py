@@ -1,22 +1,21 @@
 
-
-
 from leer_datos import leer_datos_gpx
 from magnitudes import *
 import matplotlib.pyplot as plot
 
-
+"""
 #leer_datos_csv('datos/Carrera_de_mañana.gpx.csv')
-#coord, fig = leer_datos_gpx('datos/Carrera_de_mañana(1).gpx')
-#plot.show()
-#dist_tramo, dist_total = distancia(coord)
-#print(dist_total)
+coord, fig = leer_datos_gpx('datos/Carrera_de_mañana(1).gpx')
+plot.show()
+dist_tramo, dist_total = distancia(coord)
+print(f'Distancia total de la carrera: {dist_total} m')
+print(f'Altitud de la carrera: {altitud(coord)} m')
+
+"""
+import pandas as pd
+# Calcular la distancia media con los datos de magnitudes.csv
 
 
-# bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
-import os
-for nombre_archivo in os.listdir('datos'):
-    if nombre_archivo.endswith('.gpx'):
-        coord,fig =leer_datos_gpx(f'datos/{nombre_archivo}')
-        # print (f'Archivo {nombre_archivo} leído') debugging
-        print(altitud(coord))
+# Leer el archivo CSV con la codificación 'latin1'
+datos = pd.read_csv('magnitudes.csv', delimiter=',', encoding='latin1')
+

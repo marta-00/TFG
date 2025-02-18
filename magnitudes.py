@@ -1,8 +1,10 @@
 """
 Script para calcular todas las magnitudes:
     - Distancia de cada tramo y distancia total de la carrera
+    - Altitud (desnivel positivo acumulado)
+    - Velocidad media
 """
-
+from leer_datos import leer_datos_gpx
 def distancia (coordenadas):
     """
     Función que calcula la distancia total de una carrera a partir de las coordenadas x,y.
@@ -34,3 +36,19 @@ def altitud(coordenadas):
         if coordenadas[2][i] > coordenadas[2][i-1]:
             altitud += coordenadas[2][i] - coordenadas[2][i-1]
     return altitud
+
+
+# crear archivo csv para almacenar datos
+magnitudes = open('magnitudes.csv', 'w')
+magnitudes.write(f"Nombre,Distancia_tramo(m),Distancia_total(m),Altitud(m),Velocidad(m/s)\n")
+
+# bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
+import os
+for nombre_archivo in os.listdir('datos'):
+    if nombre_archivo.endswith('.gpx'):
+        coord,fig =leer_datos_gpx(f'datos/{nombre_archivo}')
+        dist_tramo,dist_total = distancia(coord)
+        alt = altitud(coord)
+        magnitudes.write(f"{nombre_archivo},{dist_tramo},{dist_total},{alt},{0}\n")
+
+magnitudes.close()
