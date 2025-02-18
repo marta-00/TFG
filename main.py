@@ -18,4 +18,6 @@ import pandas as pd
 
 # Leer el archivo CSV con la codificación 'latin1'
 datos = pd.read_csv('magnitudes.csv', delimiter=',', encoding='latin1')
-
+# calcular la distancia total media
+distancia_media = datos['Distancia_total(m)'].mean()
+print(f'Distancia media de la carrera: {distancia_media} m')

@@ -49,6 +49,6 @@ for nombre_archivo in os.listdir('datos'):
         coord,fig =leer_datos_gpx(f'datos/{nombre_archivo}')
         dist_tramo,dist_total = distancia(coord)
         alt = altitud(coord)
-        magnitudes.write(f"{nombre_archivo},{dist_tramo},{dist_total},{alt},{0}\n")
+        magnitudes.write(f"{nombre_archivo},{0},{dist_total},{alt},{0}\n")
 
 magnitudes.close()
