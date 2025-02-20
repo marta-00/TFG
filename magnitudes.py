@@ -20,11 +20,6 @@ def distancia (coordenadas):
     for i in range(1, len(coordenadas[0])):
         distancias_tramo.append(np.sqrt((coordenadas[0][i] - coordenadas[0][i - 1]) ** 2 +
                                   (coordenadas[1][i] - coordenadas[1][i - 1]) ** 2))
-        
-    if len(distancias_tramo)<6811:
-        #agregar ceros hasta llegar a 6811
-        for i in range(6811-len(distancias_tramo)):
-            distancias_tramo.append(0)
 
     # Sumar todas las distancias recorridas en cada tramo de la carrera
     distancia_total = sum(distancias_tramo)
@@ -43,17 +38,18 @@ def altitud(coordenadas):
             altitud += coordenadas[2][i] - coordenadas[2][i-1]
     return altitud
 
+def grafico(coordenadas):
+    """
+    Función que crea una gráfica en 2d con las coordenadas x,y y lo muestra en pantalla
+    INPUT: coordenadas: array con las coordenadas x,y
+    """
+    # cambiar el eje de coordenadas para que en el eje y el punto mas bajo de la 
+    # carrera sea el 0 y lo mismo en el eje x
+    x = coordenadas[0] - min(coordenadas[0])
+    y = coordenadas[1] - min(coordenadas[1])
+    
+    # Crear y mostrar una gráfica en 2d con las coordenadas x,y
+    import matplotlib.pyplot as plt
 
-# crear archivo csv para almacenar datos
-magnitudes = open('magnitudes.csv', 'w')
-magnitudes.write(f"Nombre,Distancia_tramo(m),Distancia_total(m),Altitud(m),Velocidad(m/s)\n")
-
-# bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
-import os
-for nombre_archivo in os.listdir('datos'):
-    if nombre_archivo.endswith('.gpx'):
-        coord,fig =leer_datos_gpx(f'datos/{nombre_archivo}')
-        # print(len(coord[1]))
-        dist_tramo,dist_total = distancia(coord)
-        alt = altitud(coord)
-        magnitudes.write(f"{nombre_archivo},{dist_tramo},{dist_total},{alt},{0}\n")
+    plt.plot(x, y)
+    plt.show()

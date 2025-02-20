@@ -5,7 +5,7 @@ y mostrar una gráfica en 2D con las coordenadas x,y
 """
 def leer_datos_csv(nombre_archivo):
     """
-    Función que lee un archivo csv con los datos de una carrera y muestra una gráfica en 2d con las coordenadas x,y
+    Función que lee un archivo csv con los datos de una carrera 
     INPUT: nombre_archivo: nombre del archivo csv
     RETURN: None
     """
@@ -40,21 +40,14 @@ def leer_datos_csv(nombre_archivo):
     coordenadas = np.array([x, y, elevacion])
     # print(coordenadas)   debugging
 
-    # Crear y mostrar una gráfica en 2d con las coordenadas x,y
-    import matplotlib.pyplot as plt
-
-    plt.plot(x, y)
-    plt.show()
 
 def leer_datos_gpx(nombre_archivo):
     """
     Función que lee un archivo gpx con los datos de una carrera y crea un array
     con los datos transformados a coordenadas x,y y con la elevación en metros 
-    y crea una gráfica en 2d con las coordenadas x,y
 
     INPUT:    nombre_archivo: nombre del archivo gpx
     RETURN:   Coordenadas en formato numpy array 
-              figura de la gráfica
     """
     # leer archivo gpx de la carpeta datos
     import gpxpy
@@ -89,9 +82,4 @@ def leer_datos_gpx(nombre_archivo):
     coordenadas = np.array([x, y, [i[2] for i in coordenadas]])
     #print(coordenadas)   debugging
 
-    # Crear una gráfica en 2d con las coordenadas x,y
-    import matplotlib.pyplot as plt
-    figura = plt.plot(x, y)
-    #plt.show() #debugging
-
-    return coordenadas, figura
+    return coordenadas
