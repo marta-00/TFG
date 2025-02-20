@@ -23,9 +23,9 @@ def zig_zag (coord):
     dist_tramo_impares, dist_total_impares = distancia(coord_impares)
     dist_tramo, dist_total = distancia(coord)
 
-    print(f"Distancia total: {dist_total}")
-    print(f"Distancia total pares: {dist_total_pares}")
-    print(f"Distancia total impares: {dist_total_impares}")
+    #print(f"Distancia total: {dist_total}")
+    #print(f"Distancia total pares: {dist_total_pares}")
+    #print(f"Distancia total impares: {dist_total_impares}")
 
     # Definir el número de bins de cada histograma
     num_bins = (len(coord[0]))
@@ -55,29 +55,51 @@ def zig_zag (coord):
     axes[2].set_xlim(0, max(dist_tramo_impares))
 
     # Mostrar gráfico
-    plot.show()
-
+    return fig
 
 #leer_datos_csv('datos/Carrera_de_mañana.gpx.csv')
-coord = leer_datos_gpx('datos/Carrera_de_mañana(5).gpx')
-zig_zag(coord)
+coord = leer_datos_gpx('datos/Carrera_de_mañana(4).gpx')
+print (coord[2])
+#zig_zag(coord)
+
 
 
 def main():
     # crear archivo csv para almacenar datos
+    import os
     magnitudes = open('magnitudes.csv', 'w')
     magnitudes.write(f"Nombre,Distancia_total(m),Altitud(m),Velocidad(m/s)\n")
 
+    #crear carpeta para guardar histogramas de cada carrera
+    carpeta_histogramas = 'histogramas'
+    os.makedirs(carpeta_histogramas, exist_ok=True)
+
     # bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
-    import os
+    
     for nombre_archivo in os.listdir('datos'):
         if nombre_archivo.endswith('.gpx'):
+            # leer archivo gpx
             coord =leer_datos_gpx(f'datos/{nombre_archivo}')
-            # print(len(coord[1]))
+            # print(len(coord[1])) #debugging
+
+            # calcular magnitudes
             dist_tramo,dist_total = distancia(coord)
             alt = altitud(coord)
+
+            # añadir magnitudes al archivo csv
             magnitudes.write(f"{nombre_archivo},{dist_total},{alt},{0}\n")
 
-            # tratamiento datos distancias_tramo
-            # coger datos alternos del array dist_tramo y hacer un histograma con los datos
-            # 
+            # función zig_zag
+            fig = zig_zag(coord)
+            fig.savefig(f"{carpeta_histogramas}/{nombre_archivo}.png")
+            plot.close(fig)
+
+    magnitudes.close()
+
+
+
+
+
+#if __name__ == "__main__":
+#    main()
+

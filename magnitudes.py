@@ -3,8 +3,9 @@ Script para calcular todas las magnitudes:
     - Distancia de cada tramo y distancia total de la carrera
     - Altitud (desnivel positivo acumulado)
     - Velocidad media
+    - grafico en 2D con las coordenadas x,y
 """
-from leer_datos import leer_datos_gpx
+
 def distancia (coordenadas):
     """
     Función que calcula la distancia total de una carrera a partir de las coordenadas x,y.
