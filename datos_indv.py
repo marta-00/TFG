@@ -4,63 +4,31 @@ from magnitudes import *
 import matplotlib.pyplot as plot
 import numpy as np
 
-def zig_zag (coord):
-    """
-    Función de dado un array con tres subarrays de coordenadas (x, y, z) lo separa en
-    dos arrays, uno con las coordenadas pares y otro con las impares. 
-    Con estos datos calcula la distancia de cada tramo y la total con estos nuevos 
-    arrays y muestra una figura con tres histogramas.
-
-    INPUT: coordenadas: array con tres subarrays de coordenadas (x, y, z)
-    RETURN: None
-    """
-    # Extraer pares e impares dentro de cada subarray
-    coord_pares = [subarray[::2] for subarray in coord]   # Posiciones 0, 2, 4...
-    coord_impares = [subarray[1::2] for subarray in coord] # Posiciones 1, 3...
-
-    # calcular distancias con los nuevos arrays
-    dist_tramo_pares, dist_total_pares = distancia(coord_pares)
-    dist_tramo_impares, dist_total_impares = distancia(coord_impares)
-    dist_tramo, dist_total = distancia(coord)
-
-    #print(f"Distancia total: {dist_total}")
-    #print(f"Distancia total pares: {dist_total_pares}")
-    #print(f"Distancia total impares: {dist_total_impares}")
-
-    # Definir el número de bins de cada histograma
-    num_bins = (len(coord[0]))
-    num_bins_par = (len(coord_pares[0]))
-    num_bins_impar = (len(coord_impares[0]))
-
-    # Crear la figura con 3 subgráficos en una sola columna
-    fig, axes = plot.subplots(3, 1, figsize=(8, 12))  # 3 filas, 1 columna
-
-    # Primer histograma
-    axes[0].hist(dist_tramo, bins=num_bins, color='blue', edgecolor='black', alpha=0.7)
-    axes[0].set_title("Histograma - distancias")
-
-    # Segundo histograma
-    axes[1].hist(dist_tramo_pares, bins=num_bins_par, color='green', edgecolor='black', alpha=0.7)
-    axes[1].set_title("Histograma - distancias pares")
-
-    # Tercer histograma
-    axes[2].hist(dist_tramo_impares, bins=num_bins_impar, color='red', edgecolor='black', alpha=0.7)
-    axes[2].set_title("Histograma - distancias impares")
-
-    # Ajustar espaciado entre gráficos
-    plot.tight_layout()
-    # Maximo de ejes x es el valor maximo 
-    axes[0].set_xlim(0, max(dist_tramo))
-    axes[1].set_xlim(0, max(dist_tramo_pares))
-    axes[2].set_xlim(0, max(dist_tramo_impares))
-
-    # Mostrar gráfico
-    return fig
-
 #leer_datos_csv('datos/Carrera_de_mañana.gpx.csv')
-coord = leer_datos_gpx('datos/Carrera_de_mañana(4).gpx')
-print (coord[2])
-#zig_zag(coord)
+coord = leer_datos_gpx('datos/Carrera_de_mañana(3).gpx')
+
+# separar datos
+coord_pares, coord_impares = separar_datos(coord, 2)
+
+# obtener distancias_tramo
+dist_tramo, dist_total = distancia(coord)
+dist_tramo_par, dist_total_par = distancia(coord_pares)
+dist_tramo_impar, dist_total_impar = distancia(coord_impares)
+
+# crear histograma con las distancias de los tramos
+# crear_histogramas(dist_tramo, dist_tramo_par, dist_tramo_impar, "total", "pares", "impares")
+
+
+# dist_tramo = list(set(dist_tramo)-set(detectar_atipicos_zscore(dist_tramo)))
+# dist_tramo_par = list(set(dist_tramo_par)-set(detectar_atipicos_zscore(dist_tramo_par)))
+# dist_tramo_impar = list(set(dist_tramo_impar)-set(detectar_atipicos_zscore(dist_tramo_impar)))
+
+
+dist_tramo = list(set(dist_tramo)-set(detectar_atipicos_zscore(dist_tramo)))
+dist_tramo_par = list(set(dist_tramo_par)-set(detectar_atipicos_zscore(dist_tramo_par)))
+dist_tramo_impar = list(set(dist_tramo_impar)-set(detectar_atipicos_zscore(dist_tramo_impar)))
+
+crear_histogramas(dist_tramo, dist_tramo_par, dist_tramo_impar, "total", "pares", "impares")
 
 
 
@@ -95,10 +63,6 @@ def main():
             plot.close(fig)
 
     magnitudes.close()
-
-
-
-
 
 #if __name__ == "__main__":
 #    main()
