@@ -57,13 +57,10 @@ def grafico(coordenadas):
     plt.plot(x, y)
     plt.show()
 
-import matplotlib.pyplot as plt
-
 def separar_datos(coordenadas, n_separacion):
     coord_pares = [subarray[::n_separacion] for subarray in coordenadas]   # Posiciones 0, 2, 4...
     coord_impares = [subarray[1::n_separacion] for subarray in coordenadas] # Posiciones 1, 3...
     return coord_pares, coord_impares
-
 
 def crear_histogramas(array1, array2=None, array3=None, nombre1='Array 1', nombre2='Array 2', nombre3='Array 3'):
     import matplotlib.pyplot as plt
@@ -97,7 +94,7 @@ def crear_histogramas(array1, array2=None, array3=None, nombre1='Array 1', nombr
     
     # Ajustar el layout
     plt.tight_layout()
-    plt.show()
+    # plt.show()
 
 def detectar_atipicos_zscore(datos, umbral=3):
     import numpy as np
@@ -109,56 +106,39 @@ def detectar_atipicos_zscore(datos, umbral=3):
     
     return atipicos
 
-
-def zig_zag (coord):
+def velocidad(distancia_tramo):
     """
-    Función de dado un array con tres subarrays de coordenadas (x, y, z) lo separa en
-    dos arrays, uno con las coordenadas pares y otro con las impares. 
-    Con estos datos calcula la distancia de cada tramo y la total con estos nuevos 
-    arrays y muestra una figura con tres histogramas.
-
-    INPUT: coordenadas: array con tres subarrays de coordenadas (x, y, z)
-    RETURN: None
+    Función que calcula la velocidad instantánea en cada posición. Al no conocer el intervalo de tiempo en el que se han
+    tomado los datos o el tiempo total se asume en función del número de datos del archivo: 
+        - 7000 - 6000 : toma de medidas cada 1s 
+        - 3000 : toma de medidas cada 2s
+        - 2000 : toma de medidas cada 3s
+        - 1500 : toma de medidas cada 4s
+        - 1000 : toma de medidas cada 5s
+    INPUT: distancia_tramo: array con las distancias de cada tramo
+    RETURN: velocidad: array con las velocidades instantáneas
     """
-    # Extraer pares e impares dentro de cada subarray
-    coord_pares = [subarray[::2] for subarray in coord]   # Posiciones 0, 2, 4...
-    coord_impares = [subarray[1::2] for subarray in coord] # Posiciones 1, 3...
+    # calcular la longitud del array
+    longitud = len(distancia_tramo)
 
-    # calcular distancias con los nuevos arrays
-    dist_tramo_pares, dist_total_pares = distancia(coord_pares)
-    dist_tramo_impares, dist_total_impares = distancia(coord_impares)
-    dist_tramo, dist_total = distancia(coord)
+    if longitud > 5000:
+        intervalo = 1   
+        velocidad = [distancia_tramo[i] / intervalo for i in range(longitud)]
+    elif longitud >= 3000:
+        intervalo = 2
+        velocidad = [distancia_tramo[i] / intervalo for i in range(longitud)]
+    elif longitud >= 2000:
+        intervalo = 3
+        velocidad = [distancia_tramo[i] / intervalo for i in range(longitud)]
+    elif longitud >= 1500:
+        intervalo = 4
+        velocidad = [distancia_tramo[i] / intervalo for i in range(longitud)]
+    elif longitud >= 900:
+        intervalo = 5
+        velocidad = [distancia_tramo[i] / intervalo for i in range(longitud)]
+    else:
+        intervalo = 6
+        velocidad = [distancia_tramo[i] / intervalo for i in range(longitud)]
+    
+    return velocidad
 
-    #print(f"Distancia total: {dist_total}")
-    #print(f"Distancia total pares: {dist_total_pares}")
-    #print(f"Distancia total impares: {dist_total_impares}")
-
-    # Definir el número de bins de cada histograma
-    num_bins = (len(coord[0]))
-    num_bins_par = (len(coord_pares[0]))
-    num_bins_impar = (len(coord_impares[0]))
-
-    # Crear la figura con 3 subgráficos en una sola columna
-    fig, axes = plot.subplots(3, 1, figsize=(8, 12))  # 3 filas, 1 columna
-
-    # Primer histograma
-    axes[0].hist(dist_tramo, bins=num_bins, color='blue', edgecolor='black', alpha=0.7)
-    axes[0].set_title("Histograma - distancias")
-
-    # Segundo histograma
-    axes[1].hist(dist_tramo_pares, bins=num_bins_par, color='green', edgecolor='black', alpha=0.7)
-    axes[1].set_title("Histograma - distancias pares")
-
-    # Tercer histograma
-    axes[2].hist(dist_tramo_impares, bins=num_bins_impar, color='red', edgecolor='black', alpha=0.7)
-    axes[2].set_title("Histograma - distancias impares")
-
-    # Ajustar espaciado entre gráficos
-    plot.tight_layout()
-    # Maximo de ejes x es el valor maximo 
-    axes[0].set_xlim(0, max(dist_tramo))
-    axes[1].set_xlim(0, max(dist_tramo_pares))
-    axes[2].set_xlim(0, max(dist_tramo_impares))
-
-    # Mostrar gráfico
-    return fig, dist_tramo_pares, dist_tramo_impares
