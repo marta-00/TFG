@@ -97,6 +97,13 @@ def crear_histogramas(array1, array2=None, array3=None, nombre1='Array 1', nombr
     # plt.show()
 
 def detectar_atipicos_zscore(datos, umbral=3):
+    """
+    Función que detecta los valores atípicos de un conjunto de datos utilizando el z-score.
+    el z-score se calcula como z = (x - media) / desviación estándar
+    INPUT: datos: array con los datos a analizar
+           umbral: valor umbral para considerar un valor atípico
+    RETURN: atipicos: array con los valores atípicos
+    """
     import numpy as np
     media = np.mean(datos)
     std_dev = np.std(datos)
