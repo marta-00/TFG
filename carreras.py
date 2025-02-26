@@ -6,39 +6,40 @@ import matplotlib.pyplot as plt
 def una_carrera():
     #leer_datos_csv('datos/Carrera_de_mañana.gpx.csv')
     coord = leer_datos_gpx('datos/Carrera_de_mañana(8).gpx')
-    dist_tramo, dist_total = distancia(coord)
+    grafico(coord)
+    # dist_tramo, dist_total = distancia(coord)
 
-    # calcular velocidad instantánea
-    velocidades = velocidad(dist_tramo)
-    velocidades = list(set(velocidades)-set(detectar_atipicos_zscore(velocidades)))
-    crear_histogramas(velocidades, nombre1 = "velocidades")
+    # # calcular velocidad instantánea
+    # velocidades = velocidad(dist_tramo)
+    # velocidades = list(set(velocidades)-set(detectar_atipicos_zscore(velocidades)))
+    # crear_histogramas(velocidades, nombre1 = "velocidades")
 
-    # separar datos
-    coord_pares, coord_impares = separar_datos(coord, 5)
+    # # separar datos
+    # coord_pares, coord_impares = separar_datos(coord, 5)
 
-    # obtener distancias_tramo
-    dist_tramo, dist_total = distancia(coord)
-    dist_tramo_par, dist_total_par = distancia(coord_pares)
-    dist_tramo_impar, dist_total_impar = distancia(coord_impares)
+    # # obtener distancias_tramo
+    # dist_tramo, dist_total = distancia(coord)
+    # dist_tramo_par, dist_total_par = distancia(coord_pares)
+    # dist_tramo_impar, dist_total_impar = distancia(coord_impares)
 
-    # crear histograma con las distancias de los tramos
-    # crear_histogramas(dist_tramo, dist_tramo_par, dist_tramo_impar, "total", "pares", "impares")
+    # # crear histograma con las distancias de los tramos
+    # # crear_histogramas(dist_tramo, dist_tramo_par, dist_tramo_impar, "total", "pares", "impares")
+
+
+    # # dist_tramo = list(set(dist_tramo)-set(detectar_atipicos_zscore(dist_tramo)))
+    # # dist_tramo_par = list(set(dist_tramo_par)-set(detectar_atipicos_zscore(dist_tramo_par)))
+    # # dist_tramo_impar = list(set(dist_tramo_impar)-set(detectar_atipicos_zscore(dist_tramo_impar)))
 
 
     # dist_tramo = list(set(dist_tramo)-set(detectar_atipicos_zscore(dist_tramo)))
     # dist_tramo_par = list(set(dist_tramo_par)-set(detectar_atipicos_zscore(dist_tramo_par)))
     # dist_tramo_impar = list(set(dist_tramo_impar)-set(detectar_atipicos_zscore(dist_tramo_impar)))
 
-
-    dist_tramo = list(set(dist_tramo)-set(detectar_atipicos_zscore(dist_tramo)))
-    dist_tramo_par = list(set(dist_tramo_par)-set(detectar_atipicos_zscore(dist_tramo_par)))
-    dist_tramo_impar = list(set(dist_tramo_impar)-set(detectar_atipicos_zscore(dist_tramo_impar)))
-
-    crear_histogramas(dist_tramo, dist_tramo_par, dist_tramo_impar, "total", "pares", "impares")
-    print(f"distancia total: {dist_total}")
-    print(f"distancia total pares: {dist_total_par}")
-    print(f"distancia total impares: {dist_total_impar}")
-    plt.show()
+    # crear_histogramas(dist_tramo, dist_tramo_par, dist_tramo_impar, "total", "pares", "impares")
+    # print(f"distancia total: {dist_total}")
+    # print(f"distancia total pares: {dist_total_par}")
+    # print(f"distancia total impares: {dist_total_impar}")
+    # plt.show()
 
 def total_carreras():
     # leer archivo magnitudes.csv

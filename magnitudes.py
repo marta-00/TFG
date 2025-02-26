@@ -142,3 +142,8 @@ def velocidad(distancia_tramo):
     
     return velocidad
 
+def detectar_curva():
+    """
+    Función que detecta zonas de curva en una carrera. Se calcula el angulo entre dos vectores y se detecta si el angulo
+    es mayor de 45 grados.
+    """
