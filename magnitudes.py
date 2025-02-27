@@ -55,7 +55,7 @@ def grafico(coordenadas):
     import matplotlib.pyplot as plt
 
     plt.plot(x, y)
-    plt.show()
+    #plt.show()
 
 def separar_datos(coordenadas, n_separacion):
     coord_pares = [subarray[::n_separacion] for subarray in coordenadas]   # Posiciones 0, 2, 4...
