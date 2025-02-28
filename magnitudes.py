@@ -149,8 +149,48 @@ def velocidad(distancia_tramo):
     
     return velocidad
 
-def detectar_curva():
+def detectar_curva(coordenadas):
     """
-    Función que detecta zonas de curva en una carrera. Se calcula el angulo entre dos vectores y se detecta si el angulo
-    es mayor de 45 grados.
+    Función que detecta zonas de curva en una carrera. Se calcula el angulo como el producto escalar de dos 
+    vectores. 
+    INPUT: coordenadas: array con las coordenadas x,y
+    RETURN: angulos: array con los ángulos de las curvas en radianes
     """
+    import math
+    import numpy as np
+    x = coordenadas[0]
+    y = coordenadas[1]
+    angulos = []
+    x_nuevo =[]
+    y_nuevo = []
+    for i in range(1, len(x) - 1):
+        # Vectores entre los puntos (i-1, i) y (i, i+1)
+        vector1 = (x[i] - x[i-1], y[i] - y[i-1])
+        vector2 = (x[i+1] - x[i], y[i+1] - y[i])
+
+        # Producto escalar de los vectores
+        producto_escalar = vector1[0] * vector2[0] + vector1[1] * vector2[1]
+
+        # Magnitudes de los vectores
+        magnitud1 = math.sqrt(vector1[0]**2 + vector1[1]**2)
+        magnitud2 = math.sqrt(vector2[0]**2 + vector2[1]**2)
+
+        # Calcular el ángulo usando el producto escalar y las magnitudes
+        if magnitud1 * magnitud2 != 0:  # Evitar división por cero
+            cos_angulo = producto_escalar / (magnitud1 * magnitud2)
+            angulo = math.acos(cos_angulo)
+            angulos.append(angulo)
+        else:
+            angulos.append(0)  # Si la magnitud es cero, el ángulo es cero
+        
+        if angulos[i-1] > 0.5:
+            print(f"Curva detectada en el punto {i}")
+        else: 
+            x_nuevo.append(x[i])
+            y_nuevo.append(y[i])
+            
+    return (x_nuevo,y_nuevo)
+
+    
+
+    
