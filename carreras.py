@@ -5,17 +5,7 @@ import matplotlib.pyplot as plt
 
 def una_carrera():
     #leer_datos_csv('datos/Carrera_de_mañana.gpx.csv')
-    coord = leer_datos_gpx('datos/Carrera_de_mañana(3).gpx')
-    # angulos
-    x_nuevo, y_nuevo = (detectar_curva(coord))
-
-    print(len(coord[0]))
-    print(len(x_nuevo))
-
-    coord_nuevas = [x_nuevo, y_nuevo, coord[2]]
-    grafico(coord_nuevas)
-    plt.show()
-
+    coord = leer_datos_gpx('datos/Carrera_de_mañana(8).gpx')
 
     #grafico(coord)
     # dist_tramo, dist_total = distancia(coord)
@@ -51,6 +41,16 @@ def una_carrera():
     # print(f"distancia total pares: {dist_total_par}")
     # print(f"distancia total impares: {dist_total_impar}")
     # plt.show()
+
+    ## CURVAS
+    x_nuevo, y_nuevo = (detectar_curva(coord))
+
+    print(len(coord[0]))
+    print(len(x_nuevo))
+
+    coord_nuevas = [x_nuevo, y_nuevo, coord[2]]
+    grafico(coord_nuevas)
+    plt.show()
 
 def total_carreras():
     # leer archivo magnitudes.csv

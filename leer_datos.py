@@ -40,7 +40,6 @@ def leer_datos_csv(nombre_archivo):
     coordenadas = np.array([x, y, elevacion])
     # print(coordenadas)   debugging
 
-
 def leer_datos_gpx(nombre_archivo):
     """
     Función que lee un archivo gpx con los datos de una carrera y crea un array
@@ -83,3 +82,49 @@ def leer_datos_gpx(nombre_archivo):
     #print(coordenadas)   debugging
 
     return coordenadas
+
+def descarga_archivos():
+    import os
+    import requests
+
+    # Lista de URLs
+    urls = [
+        "http://www.strava.com/activities/11605563825/export_gpx",
+        "http://www.strava.com/activities/11603305251/export_gpx",
+        "http://www.strava.com/activities/11603060550/export_gpx",
+        "http://www.strava.com/activities/11604271418/export_gpx",
+        "http://www.strava.com/activities/11602568347/export_gpx",
+        "http://www.strava.com/activities/11601902223/export_gpx",
+        "http://www.strava.com/activities/11602359365/export_gpx",
+        "http://www.strava.com/activities/11602663826/export_gpx",
+        "http://www.strava.com/activities/11602504151/export_gpx",
+        "http://www.strava.com/activities/11602375771/export_gpx",
+        "http://www.strava.com/activities/11601984255/export_gpx",
+        "http://www.strava.com/activities/11602556890/export_gpx",
+        "http://www.strava.com/activities/11602604518/export_gpx",
+        "http://www.strava.com/activities/11601896081/export_gpx",
+        "http://www.strava.com/activities/11603179371/export_gpx",
+        "http://www.strava.com/activities/11602021734/export_gpx",
+        "http://www.strava.com/activities/11603238222/export_gpx",
+        "http://www.strava.com/activities/11637916079/export_gpx",
+        "http://www.strava.com/activities/11610025403/export_gpx"
+    ]
+
+    # Crear la carpeta 'datos_altitud' si no existe
+    os.makedirs('datos_altitud', exist_ok=True)
+
+    # Descargar cada archivo GPX
+    for url in urls:
+        # Extraer el ID de la URL
+        activity_id = url.split('/')[-2]
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            # Guardar el archivo con el nombre del ID
+            file_path = os.path.join('datos_altitud', f'{activity_id}.gpx')
+            with open(file_path, 'wb') as f:
+                f.write(response.content)
+            print(f'Descargado: {file_path}')
+        else:
+            print(f'Error al descargar {url}: {response.status_code}')
+

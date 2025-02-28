@@ -90,7 +90,7 @@ def crear_histogramas(array1, array2=None, array3=None, nombre1='Array 1', nombr
         axs[i].set_title(nombre)
         axs[i].set_xlabel('Valores')
         axs[i].set_ylabel('Frecuencia')
-        axs[i].set_xlim(0, max(array) + 1)  # Establecer el límite máximo en función del valor máximo del array
+        #axs[i].set_xlim(0, max(array) + 1)  # Establecer el límite máximo en función del valor máximo del array
     
     # Ajustar el layout
     plt.tight_layout()
@@ -157,12 +157,13 @@ def detectar_curva(coordenadas):
     RETURN: angulos: array con los ángulos de las curvas en radianes
     """
     import math
-    import numpy as np
+
     x = coordenadas[0]
     y = coordenadas[1]
     angulos = []
     x_nuevo =[]
     y_nuevo = []
+
     for i in range(1, len(x) - 1):
         # Vectores entre los puntos (i-1, i) y (i, i+1)
         vector1 = (x[i] - x[i-1], y[i] - y[i-1])
@@ -183,9 +184,7 @@ def detectar_curva(coordenadas):
         else:
             angulos.append(0)  # Si la magnitud es cero, el ángulo es cero
         
-        if angulos[i-1] > 0.5:
-            print(f"Curva detectada en el punto {i}")
-        else: 
+        if angulos[i-1] < 0.3:
             x_nuevo.append(x[i])
             y_nuevo.append(y[i])
             
