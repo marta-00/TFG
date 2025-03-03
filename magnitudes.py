@@ -63,6 +63,16 @@ def separar_datos(coordenadas, n_separacion):
     return coord_pares, coord_impares
 
 def crear_histogramas(array1, array2=None, array3=None, nombre1='Array 1', nombre2='Array 2', nombre3='Array 3'):
+    """
+    Función que crea un histograma con los datos de uno o varios arrays.
+    El nombre del array se muestra en el título del histograma.
+    INPUTS:     - array1: array con los datos a representar
+                - array2: array con los datos a representar
+                - array3: array con los datos a representar
+                - nombre1: nombre del array 1
+                - nombre2: nombre del array 2
+                - nombre3: nombre del array 3
+    """
     import matplotlib.pyplot as plt
     import math
     # Crear una lista de arrays de datos y sus nombres
@@ -90,7 +100,7 @@ def crear_histogramas(array1, array2=None, array3=None, nombre1='Array 1', nombr
         axs[i].set_title(nombre)
         axs[i].set_xlabel('Valores')
         axs[i].set_ylabel('Frecuencia')
-        #axs[i].set_xlim(0, max(array) + 1)  # Establecer el límite máximo en función del valor máximo del array
+        axs[i].set_xlim(0, max(array) + 1)  # Establecer el límite máximo en función del valor máximo del array
     
     # Ajustar el layout
     plt.tight_layout()

@@ -106,8 +106,8 @@ def graficos_total_carreras():
     # crear archivo csv para almacenar datos
     import os
     import matplotlib.pyplot as plt
-    magnitudes = open('magnitudes.csv', 'w')
-    magnitudes.write(f"Nombre,Distancia_total(m),Altitud(m),Velocidad(m/s)\n")
+    #magnitudes = open('magnitudes.csv', 'w')
+    #magnitudes.write(f"Nombre,Distancia_total(m),Altitud(m),Velocidad(m/s)\n")
 
     # bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
     for nombre_archivo in os.listdir('datos'):
@@ -115,49 +115,56 @@ def graficos_total_carreras():
             # leer archivo gpx
             coord =leer_datos_gpx(f'datos/{nombre_archivo}')
             # print(len(coord[1])) #debugging
+            
+            ## QUITAR COORDENADAS CURVA
+            x_nuevo, y_nuevo = (detectar_curva(coord))
+            coord = [x_nuevo, y_nuevo, coord[2]]
 
             #crear una carpeta para guardar los datos de cada carpeta dentro deresultados\carreras con el nombre de la carrera
             carpeta = f'resultados/carreras/{nombre_archivo}'
             os.makedirs(carpeta, exist_ok=True)
 
             # calcular magnitudes
-            dist_tramo,dist_total = distancia(coord)
+            dist_tramo, dist_total = distancia(coord)
             alt = altitud(coord)
+            
+            ## QUITAR COORDENADAS ATIPICOS
+            dist_tramo = list(set(dist_tramo)-set(detectar_atipicos_zscore(dist_tramo)))
             
             ## RECORRIDO
             graf = grafico(coord)
-            plt.savefig(f'{carpeta}/recorrido.png')
+            plt.savefig(f'{carpeta}/recorrido_sin_curva.png')
             plt.close(graf)
 
             ## DISTANCIAS TRAMO
             #separar datos
-            coord_pares, coord_impares = separar_datos(coord, 2)
-            #obtener distancias_tramo
-            dist_tramo, dist_total = distancia(coord)
-            dist_tramo_par, dist_total_par = distancia(coord_pares)
-            dist_tramo_impar, dist_total_impar = distancia(coord_impares)
+            # coord_pares, coord_impares = separar_datos(coord, 2)
+            # obtener distancias_tramo
+            # dist_tramo, dist_total = distancia(coord)
+            # dist_tramo_par, dist_total_par = distancia(coord_pares)
+            # dist_tramo_impar, dist_total_impar = distancia(coord_impares)
             #crear histogramas
-            dist_td = crear_histogramas(dist_total, "distancias")
-            plt.savefig(f'{carpeta}/distancias_total_datos.png')
+            dist_td = crear_histogramas(dist_tramo, nombre1 = "distancias_sin_curva_atipicos")
+            plt.savefig(f'{carpeta}/distancias_sin_curva_atipicos.png')
             plt.close(dist_td)
-            imagen = crear_histogramas(dist_tramo_par, dist_tramo_impar, "pares", "impares")
+            #imagen = crear_histogramas(dist_tramo_par, dist_tramo_impar, "pares", "impares")
             # añadir a carpeta 
-            plt.savefig(f'{carpeta}/distancias_mitad_datos.png')
-            plt.close(imagen)
+            #plt.savefig(f'{carpeta}/distancias_mitad_datos.png')
+            #plt.close(imagen)
 
             # VELOCIDADES
             # calcular velocidad instantánea
             velocidades = velocidad(dist_tramo)
-            figura = crear_histogramas(velocidades, nombre1 = "velocidades")
+            figura = crear_histogramas(velocidades, nombre1 = "velocidades_sin_curva_atipicos")
             #añadir a carpeta histogramas_velocidad
-            plt.savefig(f'{carpeta}/velocidades.png')
+            plt.savefig(f'{carpeta}/velocidades_sin_curva_atipicos.png')
             plt.close(figura)
 
             # MAGNITUDES 
             # añadir magnitudes al archivo csv
-            magnitudes.write(f"{nombre_archivo},{dist_total},{alt},{0}\n")
+            # magnitudes.write(f"{nombre_archivo},{dist_total},{alt},{0}\n")
             
-    magnitudes.close()
+    #magnitudes.close()
 
 def comparación_distancias():
     """
@@ -197,5 +204,5 @@ def comparación_distancias():
     plt.grid()
     plt.show()
 
-una_carrera()   
+graficos_total_carreras() 
 
