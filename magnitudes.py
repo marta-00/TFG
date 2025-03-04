@@ -161,7 +161,7 @@ def velocidad(distancia_tramo):
 
 def detectar_curva(coordenadas):
     """
-    Función que detecta zonas de curva en una carrera. Se calcula el angulo como el producto escalar de dos 
+    Función que detecta zonas de curva en una carrera. Se calcula el ángulo como el producto escalar de dos 
     vectores. 
     INPUT: coordenadas: array con las coordenadas x,y
     RETURN: angulos: array con los ángulos de las curvas en radianes
@@ -171,7 +171,7 @@ def detectar_curva(coordenadas):
     x = coordenadas[0]
     y = coordenadas[1]
     angulos = []
-    x_nuevo =[]
+    x_nuevo = []
     y_nuevo = []
 
     for i in range(1, len(x) - 1):
@@ -189,6 +189,8 @@ def detectar_curva(coordenadas):
         # Calcular el ángulo usando el producto escalar y las magnitudes
         if magnitud1 * magnitud2 != 0:  # Evitar división por cero
             cos_angulo = producto_escalar / (magnitud1 * magnitud2)
+            # Asegurarse de que cos_angulo esté en el rango [-1, 1]
+            cos_angulo = max(-1, min(1, cos_angulo))
             angulo = math.acos(cos_angulo)
             angulos.append(angulo)
         else:
@@ -198,8 +200,6 @@ def detectar_curva(coordenadas):
             x_nuevo.append(x[i])
             y_nuevo.append(y[i])
             
-    return (x_nuevo,y_nuevo)
-
-    
+    return (x_nuevo, y_nuevo)
 
     

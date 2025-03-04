@@ -204,5 +204,5 @@ def comparación_distancias():
     plt.grid()
     plt.show()
 
-graficos_total_carreras() 
+comparación_distancias()
 
