@@ -8,7 +8,7 @@ Script para calcular todas las magnitudes:
     - histograma 
 """
 
-def distancia (coordenadas):
+def distancia1 (coordenadas):
     """
     Función que calcula la distancia total de una carrera a partir de las coordenadas x,y.
     Se calcula la distancia en cada tramo de la carrera y se suman todas las distancias.
@@ -26,7 +26,50 @@ def distancia (coordenadas):
 
     # Sumar todas las distancias recorridas en cada tramo de la carrera
     distancia_total = sum(distancias_tramo)
+
     return distancias_tramo, distancia_total
+
+import numpy as np
+import pandas as pd
+
+def distancia(coordenadas):
+    """
+    Función que calcula la distancia total de una carrera a partir de las coordenadas x,y.
+    Se calcula la distancia en cada tramo de la carrera y se suman todas las distancias.
+    
+    INPUT: coordenadas: array con las coordenadas x,y
+    RETURN: df_tramos: DataFrame con la información de cada tramo de la carrera
+            distancia_total: distancia total de la carrera en metros
+    """
+    
+    # Crear lista para almacenar la información de cada tramo
+    tramos_info = [] 
+    
+    # Calcular la distancia entre cada par de puntos
+    for i in range(1, len(coordenadas[0])):
+        x1, y1 = coordenadas[0][i - 1], coordenadas[1][i - 1]
+        x2, y2 = coordenadas[0][i], coordenadas[1][i]
+        
+        distancia_tramo = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+        
+        # Almacenar la información del tramo
+        tramos_info.append({
+            'Punto Inicial': (x1, y1),
+            'Punto Final': (x2, y2),
+            'Distancia (m)': distancia_tramo
+        })
+
+    # Sumar todas las distancias recorridas en cada tramo de la carrera
+    distancia_total = sum(tramo['Distancia (m)'] for tramo in tramos_info)
+
+    # Crear un DataFrame a partir de la lista de tramos
+    df_tramos = pd.DataFrame(tramos_info)
+
+    # Guardar el DataFrame en un archivo CSV
+    # df_tramos.to_csv('tramos_carrera.csv', index=False)
+
+    return df_tramos, distancia_total
+
 
 def altitud(coordenadas):
     """
@@ -104,7 +147,7 @@ def crear_histogramas(array1, array2=None, array3=None, nombre1='Array 1', nombr
     
     # Ajustar el layout
     plt.tight_layout()
-    # plt.show()
+    plt.show()
 
 def detectar_atipicos_zscore(datos, umbral=3):
     """

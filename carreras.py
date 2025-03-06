@@ -8,8 +8,29 @@ def una_carrera():
     coord = leer_datos_gpx('datos/Carrera_de_mañana(8).gpx')
 
     #grafico(coord)
-    # dist_tramo, dist_total = distancia(coord)
+    df_tramo, dist_total = distancia(coord)
+    #obtener las distancias de cada tramo 
+    dist_tramo = df_tramo['Distancia (m)']
+    x_atipico = []
+    y_atipico = []
 
+    for i in range(len(dist_tramo) - 1, -1, -1):  # Iterar en orden inverso
+        if dist_tramo[i] > 10:
+            x_atipico.append(df_tramo['Punto Final'][i][0])
+            y_atipico.append(df_tramo['Punto Final'][i][1])
+            
+            # Filtrar las coordenadas atípicas usando NumPy
+            coord = coord[:, ~(np.isin(coord[0], df_tramo['Punto Final'][i][0]) & np.isin(coord[1], df_tramo['Punto Final'][i][1]))]
+
+            # Recalcular distancias
+            df_tramo, dist_total = distancia(coord)
+            dist_tramo = df_tramo['Distancia (m)']
+    
+    #crea un grafico x frente a y con los datos coord en azul y los datos atipicos en rojo con solo los puntos 
+    plt.plot(x_atipico, y_atipico, color='red')
+    plt.plot(coord[0], coord[1], color='blue')
+    plt.show()
+    
     # # calcular velocidad instantánea
     # velocidades = velocidad(dist_tramo)
     # velocidades = list(set(velocidades)-set(detectar_atipicos_zscore(velocidades)))
@@ -23,8 +44,8 @@ def una_carrera():
     # dist_tramo_par, dist_total_par = distancia(coord_pares)
     # dist_tramo_impar, dist_total_impar = distancia(coord_impares)
 
-    # # crear histograma con las distancias de los tramos
-    # # crear_histogramas(dist_tramo, dist_tramo_par, dist_tramo_impar, "total", "pares", "impares")
+    # crear histograma con las distancias de los tramos
+    #crear_histogramas(dist_tramo, nombre1 = "total")
 
 
     # # dist_tramo = list(set(dist_tramo)-set(detectar_atipicos_zscore(dist_tramo)))
@@ -43,14 +64,14 @@ def una_carrera():
     # plt.show()
 
     ## CURVAS
-    x_nuevo, y_nuevo = (detectar_curva(coord))
+    # x_nuevo, y_nuevo = (detectar_curva(coord))
 
-    print(len(coord[0]))
-    print(len(x_nuevo))
+    # print(len(coord[0]))
+    # print(len(x_nuevo))
 
-    coord_nuevas = [x_nuevo, y_nuevo, coord[2]]
-    grafico(coord_nuevas)
-    plt.show()
+    # coord_nuevas = [x_nuevo, y_nuevo, coord[2]]
+    # grafico(coord_nuevas)
+    # plt.show()
 
 def total_carreras():
     # leer archivo magnitudes.csv
@@ -204,5 +225,5 @@ def comparación_distancias():
     plt.grid()
     plt.show()
 
-comparación_distancias()
+una_carrera()
 
