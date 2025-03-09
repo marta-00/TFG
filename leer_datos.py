@@ -42,15 +42,16 @@ def leer_datos_csv(nombre_archivo):
 
 def leer_datos_gpx(nombre_archivo):
     """
-    Función que lee un archivo gpx con los datos de una carrera y crea un array
+    Función que lee un archivo gpx con los datos de una carrera y crea un DataFrame
     con los datos transformados a coordenadas x,y y con la elevación en metros 
 
     INPUT:    nombre_archivo: nombre del archivo gpx
-    RETURN:   Coordenadas en formato numpy array 
+    RETURN:   DataFrame con coordenadas x,y, elevación y un booleano
     """
     # leer archivo gpx de la carpeta datos
     import gpxpy
     from pyproj import Transformer  # biblioteca python para transformar coordenadas. Tiene en cuenta la curvatura terrestre
+    import pandas as pd  # Importar pandas
     import numpy as np
 
     # Abrir el archivo GPX
@@ -58,30 +59,28 @@ def leer_datos_gpx(nombre_archivo):
         gpx = gpxpy.parse(gpx_file)  # Parsear el contenido del GPX
 
     coordenadas = []
-    # Recorrer tracks, segmetos y puntos para obtener todas las coordenadas
-    # longitud y latitud en grados y altitud en metros sobre el nivel del mar
+    # Recorrer tracks, segmentos y puntos para obtener todas las coordenadas
     for track in gpx.tracks:
         for segment in track.segments:
             for point in segment.points:
                 # añadir los datos a coordenadas
                 coordenadas.append([point.longitude, point.latitude, point.elevation])
-                # print(f"Lat: {point.latitude}, Lon: {point.longitude}, Alt: {point.elevation}") debugging
-
-    # print(coordenadas)   debugging
 
     # Transformar los datos de latitud y longitud a coordenadas x,y
-    # Se pasa de WGS84=EPSG:4326 (latitud y longitud) a EPSG:32630 (coordenadas x,y) en Cantabria
-    # always_xy=True para que las coordenadas sean x,y y no y,x
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:32630", always_xy=True)
 
     # Transformar las coordenadas
     x, y = transformer.transform([i[0] for i in coordenadas], [i[1] for i in coordenadas])
 
-    # Crear un array con las coordenadas x,y y la elevacion
-    coordenadas = np.array([x, y, [i[2] for i in coordenadas]])
-    #print(coordenadas)   debugging
+    # Crear un DataFrame con las coordenadas x,y y la elevación
+    df = pd.DataFrame({
+        'x': x,
+        'y': y,
+        'elevacion': [i[2] for i in coordenadas],
+        'marcado': True  # Columna booleana con True para todas las filas
+    })
 
-    return coordenadas
+    return df
 
 def descarga_archivos():
     import os

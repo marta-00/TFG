@@ -29,26 +29,31 @@ def distancia1 (coordenadas):
 
     return distancias_tramo, distancia_total
 
-import numpy as np
-import pandas as pd
-
-def distancia(coordenadas):
+def distancia(df_coordenadas):
     """
     Función que calcula la distancia total de una carrera a partir de las coordenadas x,y.
     Se calcula la distancia en cada tramo de la carrera y se suman todas las distancias.
     
-    INPUT: coordenadas: array con las coordenadas x,y
+    INPUT: df_coordenadas: DataFrame con las coordenadas x,y, elevación y un booleano
     RETURN: df_tramos: DataFrame con la información de cada tramo de la carrera
             distancia_total: distancia total de la carrera en metros
     """
-    
+    import pandas as pd
+    import numpy as np
+    # Filtrar el DataFrame para obtener solo las coordenadas marcadas como True
+    df_filtrado = df_coordenadas[df_coordenadas['marcado']]
+
     # Crear lista para almacenar la información de cada tramo
     tramos_info = [] 
     
+    # Extraer las coordenadas x e y del DataFrame filtrado
+    x_coords = df_filtrado['x'].values
+    y_coords = df_filtrado['y'].values
+
     # Calcular la distancia entre cada par de puntos
-    for i in range(1, len(coordenadas[0])):
-        x1, y1 = coordenadas[0][i - 1], coordenadas[1][i - 1]
-        x2, y2 = coordenadas[0][i], coordenadas[1][i]
+    for i in range(1, len(x_coords)):
+        x1, y1 = x_coords[i - 1], y_coords[i - 1]
+        x2, y2 = x_coords[i], y_coords[i]
         
         distancia_tramo = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
         
@@ -65,10 +70,12 @@ def distancia(coordenadas):
     # Crear un DataFrame a partir de la lista de tramos
     df_tramos = pd.DataFrame(tramos_info)
 
-    # Guardar el DataFrame en un archivo CSV
-    # df_tramos.to_csv('tramos_carrera.csv', index=False)
-
     return df_tramos, distancia_total
+
+# Función para verificar si dos puntos son "suficientemente cercanos"
+def son_puntos_cercanos(p1, p2, tolerancia=1e-5):
+    import numpy as np
+    return np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) < tolerancia
 
 
 def altitud(coordenadas):
@@ -100,9 +107,27 @@ def grafico(coordenadas):
     plt.plot(x, y)
     #plt.show()
 
-def separar_datos(coordenadas, n_separacion):
-    coord_pares = [subarray[::n_separacion] for subarray in coordenadas]   # Posiciones 0, 2, 4...
-    coord_impares = [subarray[1::n_separacion] for subarray in coordenadas] # Posiciones 1, 3...
+def separar_datos(df_coordenadas, n_separacion):
+    """
+    Función que separa las coordenadas x e y de un DataFrame en pares e impares
+    según el número de separación especificado.
+
+    INPUT: df_coordenadas: DataFrame con las columnas x, y, elevacion y marcado
+           n_separacion: número de separación para seleccionar las coordenadas
+    RETURN: coord_pares: lista de coordenadas x e y en posiciones pares
+            coord_impares: lista de coordenadas x e y en posiciones impares
+    """
+    # Extraer las columnas x e y
+    x_coords = df_coordenadas['x'].values
+    y_coords = df_coordenadas['y'].values
+
+    # Separar las coordenadas en pares e impares
+    coord_pares = [x_coords[i] for i in range(0, len(x_coords), n_separacion)], \
+                   [y_coords[i] for i in range(0, len(y_coords), n_separacion)]
+    
+    coord_impares = [x_coords[i] for i in range(1, len(x_coords), n_separacion)], \
+                     [y_coords[i] for i in range(1, len(y_coords), n_separacion)]
+
     return coord_pares, coord_impares
 
 def crear_histogramas(array1, array2=None, array3=None, nombre1='Array 1', nombre2='Array 2', nombre3='Array 3'):

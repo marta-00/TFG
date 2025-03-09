@@ -4,33 +4,40 @@ from magnitudes import *
 import matplotlib.pyplot as plt
 
 def una_carrera():
-    #leer_datos_csv('datos/Carrera_de_mañana.gpx.csv')
-    coord = leer_datos_gpx('datos/Carrera_de_mañana(8).gpx')
+    # Leer datos del archivo GPX
+    df_coord = leer_datos_gpx('datos/Carrera_de_mañana(8).gpx')
+    
+    while True: 
+        # Calcular distancia tramo y total
+        df_dist, L_total = distancia(df_coord)
+        print(f"La distancia total: {L_total}")
 
-    #grafico(coord)
-    df_tramo, dist_total = distancia(coord)
-    #obtener las distancias de cada tramo 
-    dist_tramo = df_tramo['Distancia (m)']
-    x_atipico = []
-    y_atipico = []
+        # Obtener las distancias de los tramos
+        L_tramo = df_dist['Distancia (m)']
 
-    for i in range(len(dist_tramo) - 1, -1, -1):  # Iterar en orden inverso
-        if dist_tramo[i] > 10:
-            x_atipico.append(df_tramo['Punto Final'][i][0])
-            y_atipico.append(df_tramo['Punto Final'][i][1])
+        # Encontrar todos los índices donde la distancia es mayor a 90 metros
+        indices_mayor_90 = [i for i in range(len(L_tramo)) if L_tramo[i] > 90]
+
+        if indices_mayor_90:
+            puntos_a_marcar = set()
+            for i in indices_mayor_90:
+                # Obtener las coordenadas del punto final para esta distancia
+                p_final_x = df_dist['Punto Final'][i][0]
+                p_final_y = df_dist['Punto Final'][i][1]
+
+                # Agregar las coordenadas finales al conjunto
+                puntos_a_marcar.add((p_final_x, p_final_y))
             
-            # Filtrar las coordenadas atípicas usando NumPy
-            coord = coord[:, ~(np.isin(coord[0], df_tramo['Punto Final'][i][0]) & np.isin(coord[1], df_tramo['Punto Final'][i][1]))]
+            # Marcar como False los puntos obtenidos en la variable df_coord
+            df_coord.loc[df_coord[['x', 'y']].apply(tuple, axis=1).isin(puntos_a_marcar), 'marcado'] = False
 
-            # Recalcular distancias
-            df_tramo, dist_total = distancia(coord)
-            dist_tramo = df_tramo['Distancia (m)']
-    
-    #crea un grafico x frente a y con los datos coord en azul y los datos atipicos en rojo con solo los puntos 
-    plt.plot(x_atipico, y_atipico, color='red')
-    plt.plot(coord[0], coord[1], color='blue')
-    plt.show()
-    
+            print(f"Se han marcado como False los puntos finales de los tramos mayores a 90 metros: {indices_mayor_90}")
+        else:
+            print("No hay tramos con distancia mayor a 90 metros.")
+            break  # Salir del bucle si no hay tramos que cumplan la condición
+
+
+
     # # calcular velocidad instantánea
     # velocidades = velocidad(dist_tramo)
     # velocidades = list(set(velocidades)-set(detectar_atipicos_zscore(velocidades)))
@@ -79,6 +86,8 @@ def total_carreras():
     magnitudes = pd.read_csv('magnitudes.csv', delimiter=',', encoding='latin1')
     #print(magnitudes)
 
+    ##separar
+
     # # crear histograma con las distancias medias
     # import matplotlib.pyplot as plt
     # distancias = magnitudes['Distancia_total(m)']
@@ -102,21 +111,23 @@ def total_carreras():
 
     ## comparar distancias
     # obtener distancias
-    distancias = magnitudes['Distancia_total(m)']
-    distancias_par = magnitudes['Distancia_par(m)']
-    distancias_impar = magnitudes['Distancia_impar(m)']
+    # distancias = magnitudes['Distancia_total(m)']
+    # distancias_par = magnitudes['Distancia_par(m)']
+    # distancias_impar = magnitudes['Distancia_impar(m)']
 
-    #calcular error absoluto, dato exacto 21097,5 m
-    error_total = abs(distancias - 21097.5)
-    error_par = abs(distancias_par - 21097.5)
-    error_impar = abs(distancias_impar - 21097.5)
+    # #calcular error absoluto, dato exacto 21097,5 m
+    # error_total = abs(distancias - 21097.5)
+    # error_par = abs(distancias_par - 21097.5)
+    # error_impar = abs(distancias_impar - 21097.5)
 
-    for i in range(len(error_total)):
-        nombre_carrera = magnitudes['Nombre'][i]
-        if error_total[i] > error_par[i] and error_total[i] > error_impar[i]:
-            print(f"La medida mejora")
-        else:
-            print(f"la medida empeora para la carrera: {nombre_carrera}")
+    # for i in range(len(error_total)):
+    #     nombre_carrera = magnitudes['Nombre'][i]
+    #     if error_total[i] > error_par[i] and error_total[i] > error_impar[i]:
+    #         print(f"La medida mejora")
+    #     else:
+    #         print(f"la medida empeora para la carrera: {nombre_carrera}")
+
+
 
 def graficos_total_carreras():
     """
@@ -225,5 +236,91 @@ def comparación_distancias():
     plt.grid()
     plt.show()
 
-una_carrera()
+def histograma_n_dist():
+    """
+    Función que lee todos los archivos gpx. Crea una figura con 6 graficos. 
+    Los gráficos son histogramas de la distancia total. Se comparan 6 graficos para distintas
+    separaciones de n (función separar_datos)
+    """
+    import os
+    import matplotlib.pyplot as plt
+    import numpy as np
+    L_total_1 = []
+    L_total_2 = []
+    L_total_5 = []
+    L_total_9 = []
+    L_total_13 = []
+    L_total_20 = []
+    for nombre_archivo in os.listdir('datos'):
+        if nombre_archivo.endswith('.gpx'):
+            # leer archivo gpx
+            df_coord =leer_datos_gpx(f'datos/{nombre_archivo}')
+
+            #separar datos 
+            coord_1, coord_2 = separar_datos(df_coord, 1)
+            df_tramo, L_total = distancia1(coord_1)
+            L_total_1.append(L_total)
+
+            coord_1, coord_2 = separar_datos(df_coord, 2)
+            df_tramo, L_total = distancia1(coord_1)
+            L_total_2.append(L_total)
+
+            coord_1, coord_2 = separar_datos(df_coord, 5)
+            df_tramo, L_total = distancia1(coord_1)
+            L_total_5.append(L_total)
+
+            coord_1, coord_2 = separar_datos(df_coord, 9)
+            df_tramo, L_total = distancia1(coord_1)
+            L_total_9.append(L_total)
+
+            coord_1, coord_2 = separar_datos(df_coord, 13)
+            df_tramo, L_total = distancia1(coord_1)
+            L_total_13.append(L_total)
+
+            coord_1, coord_2 = separar_datos(df_coord, 20)
+            df_tramo, L_total = distancia1(coord_1)
+            L_total_20.append(L_total)
+    #crear 6 graficos para cada L_total_i
+    plt.figure(figsize=(12, 8))
+
+    # Lista de distancias totales y títulos
+    distancias = [L_total_1, L_total_2, L_total_5, L_total_9, L_total_13, L_total_20]
+    titulos = [
+        "Histograma - Distancias totales con n=1",
+        "Histograma - Distancias totales con n=2",
+        "Histograma - Distancias totales con n=5",
+        "Histograma - Distancias totales con n=9",
+        "Histograma - Distancias totales con n=13",
+        "Histograma - Distancias totales con n=20"
+    ]
+
+    for i, (L_total, titulo) in enumerate(zip(distancias, titulos)):
+        plt.subplot(3, 2, i + 1)
+        
+        # Calcular el histograma
+        bins = 30  # Ajusta el número de bins según sea necesario
+        hist, bin_edges = np.histogram(L_total, bins=bins)
+        
+        # Calcular los centros de los bins
+        bin_centers = 0.5 * (bin_edges[1:] + bin_edges[:-1])
+        
+        # Dibujar el histograma como barras
+        plt.bar(bin_centers, hist, width=np.diff(bin_edges), color='blue', edgecolor='blue', alpha=0.7, align='center')
+        
+        # Dibujar la línea que conecta los máximos de cada bin
+        #plt.plot(bin_centers, hist, color='red', marker='o', linestyle='-', linewidth=2)
+        
+        # Configurar el título y etiquetas
+        plt.title(titulo)
+        plt.xlabel("Distancia total (m)")
+        plt.ylabel("Número de carreras")
+
+    plt.tight_layout()  # Ajustar el espaciado entre subgráficas
+    plt.show()
+    
+
+histograma_n_dist()
+
+    
+
 
