@@ -1,8 +1,36 @@
 
 from leer_datos import leer_datos_gpx
 from magnitudes import *
-import matplotlib.pyplot as plt
+#from graficos import *
 
+"""
+GUARDAR GRAFICOS EN CARPETA
+#crear una carpeta para guardar los datos de cada carpeta dentro deresultados\carreras con el nombre de la carrera
+            carpeta = f'resultados/carreras/{nombre_archivo}'
+            os.makedirs(carpeta, exist_ok=True)
+        
+            ## RECORRIDO
+            graf = grafico(coord)
+            plt.savefig(f'{carpeta}/recorrido_sin_curva.png')
+            plt.close(graf)
+
+            ## DISTANCIAS TRAMO
+            #crear histogramas
+            dist_td = crear_histogramas(dist_tramo, nombre1 = "distancias_sin_curva_atipicos")
+            plt.savefig(f'{carpeta}/distancias_sin_curva_atipicos.png')
+            plt.close(dist_td)
+            #imagen = crear_histogramas(dist_tramo_par, dist_tramo_impar, "pares", "impares")
+            #añadir a carpeta 
+            #plt.savefig(f'{carpeta}/distancias_mitad_datos.png')
+            #plt.close(imagen)
+
+            # VELOCIDADES
+            # calcular velocidad instantánea
+            figura = crear_histogramas(velocidades, nombre1 = "velocidades_sin_curva_atipicos")
+            #añadir a carpeta histogramas_velocidad
+            plt.savefig(f'{carpeta}/velocidades_sin_curva_atipicos.png')
+            plt.close(figura)
+"""
 def una_carrera():
     # Leer datos del archivo GPX
     df_coord = leer_datos_gpx('datos/Carrera_de_mañana(8).gpx')
@@ -127,76 +155,46 @@ def total_carreras():
     #     else:
     #         print(f"la medida empeora para la carrera: {nombre_carrera}")
 
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
 
-
-def graficos_total_carreras():
+def datos_total_carreras():
     """
-    Función que crea un archivo CSV y guarda los datos de la distancia total, altitud y velocidad de cada 
+    Función que crea un DataFrame con los datos de la distancia total y altitud de cada 
     carrera. 
-    También guarda todos los gráficos (recorrido, velocidad y distancia) en una carpeta con el nombre de la carrera
+    También guarda todos los gráficos (recorrido, velocidad y distancia) en una carpeta con el nombre de la carrera.
+    RETURN: DataFrame con los valores de nombre carrera, distancia total y altitud.
     """
-    # crear archivo csv para almacenar datos
-    import os
-    import matplotlib.pyplot as plt
-    #magnitudes = open('magnitudes.csv', 'w')
-    #magnitudes.write(f"Nombre,Distancia_total(m),Altitud(m),Velocidad(m/s)\n")
+    # Crear una lista para almacenar los resultados
+    resultados = []
 
-    # bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
+    # Bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
     for nombre_archivo in os.listdir('datos'):
         if nombre_archivo.endswith('.gpx'):
-            # leer archivo gpx
-            coord =leer_datos_gpx(f'datos/{nombre_archivo}')
-            # print(len(coord[1])) #debugging
-            
-            ## QUITAR COORDENADAS CURVA
-            x_nuevo, y_nuevo = (detectar_curva(coord))
-            coord = [x_nuevo, y_nuevo, coord[2]]
+            # Leer archivo gpx
+            df_coord = leer_datos_gpx(f'datos/{nombre_archivo}')
 
-            #crear una carpeta para guardar los datos de cada carpeta dentro deresultados\carreras con el nombre de la carrera
-            carpeta = f'resultados/carreras/{nombre_archivo}'
-            os.makedirs(carpeta, exist_ok=True)
+            # Calcular magnitudes
+            dist_tramo, dist_total = distancia(df_coord)
+            alt = altitud(df_coord)
 
-            # calcular magnitudes
-            dist_tramo, dist_total = distancia(coord)
-            alt = altitud(coord)
-            
-            ## QUITAR COORDENADAS ATIPICOS
-            dist_tramo = list(set(dist_tramo)-set(detectar_atipicos_zscore(dist_tramo)))
-            
-            ## RECORRIDO
-            graf = grafico(coord)
-            plt.savefig(f'{carpeta}/recorrido_sin_curva.png')
-            plt.close(graf)
+            # Agregar los resultados a la lista
+            resultados.append({
+                'nombre_carrera': nombre_archivo,
+                'distancia_total': dist_total,
+                'altitud': alt
+            })
 
-            ## DISTANCIAS TRAMO
-            #separar datos
-            # coord_pares, coord_impares = separar_datos(coord, 2)
-            # obtener distancias_tramo
-            # dist_tramo, dist_total = distancia(coord)
-            # dist_tramo_par, dist_total_par = distancia(coord_pares)
-            # dist_tramo_impar, dist_total_impar = distancia(coord_impares)
-            #crear histogramas
-            dist_td = crear_histogramas(dist_tramo, nombre1 = "distancias_sin_curva_atipicos")
-            plt.savefig(f'{carpeta}/distancias_sin_curva_atipicos.png')
-            plt.close(dist_td)
-            #imagen = crear_histogramas(dist_tramo_par, dist_tramo_impar, "pares", "impares")
-            # añadir a carpeta 
-            #plt.savefig(f'{carpeta}/distancias_mitad_datos.png')
-            #plt.close(imagen)
+            # Aquí puedes agregar el código para guardar gráficos si es necesario
+            # plt.savefig(f'graficos/{nombre_archivo}.png')  # Ejemplo de cómo guardar gráficos
 
-            # VELOCIDADES
-            # calcular velocidad instantánea
-            velocidades = velocidad(dist_tramo)
-            figura = crear_histogramas(velocidades, nombre1 = "velocidades_sin_curva_atipicos")
-            #añadir a carpeta histogramas_velocidad
-            plt.savefig(f'{carpeta}/velocidades_sin_curva_atipicos.png')
-            plt.close(figura)
+    # Convertir la lista de resultados a un DataFrame
+    resultados_df = pd.DataFrame(resultados)
 
-            # MAGNITUDES 
-            # añadir magnitudes al archivo csv
-            # magnitudes.write(f"{nombre_archivo},{dist_total},{alt},{0}\n")
-            
-    #magnitudes.close()
+    return resultados_df
+
+
 
 def comparación_distancias():
     """
@@ -319,8 +317,6 @@ def histograma_n_dist():
     plt.show()
     
 
-histograma_n_dist()
-
-    
+resultados = datos_total_carreras()
 
 

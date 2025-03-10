@@ -3,9 +3,8 @@ Script para calcular todas las magnitudes:
     - Distancia de cada tramo y distancia total de la carrera
     - Altitud (desnivel positivo acumulado)
     - Velocidad media
-    - grafico en 2D con las coordenadas x,y
     - separación datos 
-    - histograma 
+Todas las funciones reciben un df_coordenadas(leer_datos) y devuelven un dataframe.
 """
 
 def distancia1 (coordenadas):
@@ -77,35 +76,22 @@ def son_puntos_cercanos(p1, p2, tolerancia=1e-5):
     import numpy as np
     return np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) < tolerancia
 
-
-def altitud(coordenadas):
+def altitud(df_coordenadas):
     """
     Función que calcula la altitud (desnivel positivo acumulado). Esto es se suman las
     altitudes subidas pero no se restan las bajadas.
-    INPUT: coordenadas: array con las coordenadas x,y y la elevación
-    RETURN: altitud: array con el desnivel positivo acumulado en metros
+    INPUT: df_coordenadas: DataFrame con las columnas 'x', 'y', 'elevación' y 'marcado'
+    RETURN: altitud: float, el desnivel positivo acumulado en metros
     """
-    altitud = 0
-    for i in range(1, len(coordenadas[2])):
-        if coordenadas[2][i] > coordenadas[2][i-1]:
-            altitud += coordenadas[2][i] - coordenadas[2][i-1]
-    return altitud
+    import pandas as pd
+    altitud_acumulada = 0
+    elevaciones = df_coordenadas['elevacion'].values  # Extraer la columna de elevación
 
-def grafico(coordenadas):
-    """
-    Función que crea una gráfica en 2d con las coordenadas x,y y lo muestra en pantalla
-    INPUT: coordenadas: array con las coordenadas x,y
-    """
-    # cambiar el eje de coordenadas para que en el eje y el punto mas bajo de la 
-    # carrera sea el 0 y lo mismo en el eje x
-    x = coordenadas[0] - min(coordenadas[0])
-    y = coordenadas[1] - min(coordenadas[1])
-    
-    # Crear y mostrar una gráfica en 2d con las coordenadas x,y
-    import matplotlib.pyplot as plt
+    for i in range(1, len(elevaciones)):
+        if elevaciones[i] > elevaciones[i-1]:
+            altitud_acumulada += elevaciones[i] - elevaciones[i-1]
 
-    plt.plot(x, y)
-    #plt.show()
+    return altitud_acumulada
 
 def separar_datos(df_coordenadas, n_separacion):
     """
@@ -130,49 +116,7 @@ def separar_datos(df_coordenadas, n_separacion):
 
     return coord_pares, coord_impares
 
-def crear_histogramas(array1, array2=None, array3=None, nombre1='Array 1', nombre2='Array 2', nombre3='Array 3'):
-    """
-    Función que crea un histograma con los datos de uno o varios arrays.
-    El nombre del array se muestra en el título del histograma.
-    INPUTS:     - array1: array con los datos a representar
-                - array2: array con los datos a representar
-                - array3: array con los datos a representar
-                - nombre1: nombre del array 1
-                - nombre2: nombre del array 2
-                - nombre3: nombre del array 3
-    """
-    import matplotlib.pyplot as plt
-    import math
-    # Crear una lista de arrays de datos y sus nombres
-    datos = [(array1, nombre1)]
-    
-    if array2 is not None:
-        datos.append((array2, nombre2))
-    if array3 is not None:
-        datos.append((array3, nombre3))
-    
-    # Determinar el número de histogramas a crear
-    num_histogramas = len(datos)
-    
-    # Crear una figura con subgráficas
-    fig, axs = plt.subplots(1, num_histogramas, figsize=(5 * num_histogramas, 4))
-    
-    # Si solo hay un conjunto de datos, axs no es un array
-    if num_histogramas == 1:
-        axs = [axs]
-    
-    # Crear histogramas para cada conjunto de datos
-    for i, (array, nombre) in enumerate(datos):
-        num_bins = int(math.sqrt(len(array)))  # Número de bins igual a la raíz cuadrada de la longitud del array
-        axs[i].hist(array, bins=num_bins, alpha=0.7, color='blue')
-        axs[i].set_title(nombre)
-        axs[i].set_xlabel('Valores')
-        axs[i].set_ylabel('Frecuencia')
-        axs[i].set_xlim(0, max(array) + 1)  # Establecer el límite máximo en función del valor máximo del array
-    
-    # Ajustar el layout
-    plt.tight_layout()
-    plt.show()
+
 
 def detectar_atipicos_zscore(datos, umbral=3):
     """
@@ -227,20 +171,22 @@ def velocidad(distancia_tramo):
     
     return velocidad
 
-def detectar_curva(coordenadas):
+def detectar_curva(df_coordenadas):
     """
     Función que detecta zonas de curva en una carrera. Se calcula el ángulo como el producto escalar de dos 
     vectores. 
-    INPUT: coordenadas: array con las coordenadas x,y
-    RETURN: angulos: array con los ángulos de las curvas en radianes
+    INPUT: df_coordenadas: DataFrame con las columnas 'x', 'y', 'elevación' y 'marcado'
+    RETURN: (x_nuevo, y_nuevo, df_angulos): tupla con las coordenadas x e y de los puntos que cumplen la condición
+            y un DataFrame con las coordenadas (x, y) y los ángulos calculados.
     """
-    import math
-
-    x = coordenadas[0]
-    y = coordenadas[1]
+    import pandas as pd
+    import math 
+    # Extraer las columnas del DataFrame
+    x = df_coordenadas['x'].values
+    y = df_coordenadas['y'].values
     angulos = []
-    x_nuevo = []
-    y_nuevo = []
+    coordenadas = []  # Para almacenar las coordenadas (x, y)
+    angulos_calculados = []  # Para almacenar los ángulos calculados
 
     for i in range(1, len(x) - 1):
         # Vectores entre los puntos (i-1, i) y (i, i+1)
@@ -264,10 +210,17 @@ def detectar_curva(coordenadas):
         else:
             angulos.append(0)  # Si la magnitud es cero, el ángulo es cero
         
-        if angulos[i-1] < 0.3:
-            x_nuevo.append(x[i])
-            y_nuevo.append(y[i])
-            
-    return (x_nuevo, y_nuevo)
+        # Guardar las coordenadas (x, y) y el ángulo calculado
+        coordenadas.append((x[i], y[i]))
+        angulos_calculados.append(angulos[i-1])
+    
+    # Crear un DataFrame con las coordenadas (x, y) y los ángulos
+    df_angulos = pd.DataFrame({
+        'x': [coord[0] for coord in coordenadas],
+        'y': [coord[1] for coord in coordenadas],
+        'ángulo': angulos_calculados
+    })
+    
+    return (df_angulos)
 
     
