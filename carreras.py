@@ -71,31 +71,31 @@ def una_carrera():
     # Leer datos del archivo GPX
     df_coord = leer_datos_gpx('datos/Carrera_de_mañana(8).gpx')
     
-    # Calcular distancia tramo y total
-    df_dist, L_total = distancia(df_coord)
-    print(f"La distancia total: {L_total}")
+    # # Calcular distancia tramo y total
+    # df_dist, L_total = distancia(df_coord)
+    # print(f"La distancia total: {L_total}")
 
-    # Obtener las distancias de los tramos
-    L_tramo = df_dist['Distancia (m)']
+    # # Obtener las distancias de los tramos
+    # L_tramo = df_dist['Distancia (m)']
 
-    # Encontrar todos los índices donde la distancia es mayor a 90 metros
-    indices_mayor_90 = [i for i in range(len(L_tramo)) if L_tramo[i] > 90]
+    # # Encontrar todos los índices donde la distancia es mayor a 90 metros
+    # indices_mayor_90 = [i for i in range(len(L_tramo)) if L_tramo[i] > 90]
 
-    if indices_mayor_90:
-        puntos_a_marcar = set()
-        for i in indices_mayor_90:
-            # Obtener las coordenadas del punto final para esta distancia
-            p_final_x = df_dist['Punto Final'][i][0]
-            p_final_y = df_dist['Punto Final'][i][1]
+    # if indices_mayor_90:
+    #     puntos_a_marcar = set()
+    #     for i in indices_mayor_90:
+    #         # Obtener las coordenadas del punto final para esta distancia
+    #         p_final_x = df_dist['Punto Final'][i][0]
+    #         p_final_y = df_dist['Punto Final'][i][1]
 
-            # Agregar las coordenadas finales al conjunto
-            puntos_a_marcar.add((p_final_x, p_final_y))
+    #         # Agregar las coordenadas finales al conjunto
+    #         puntos_a_marcar.add((p_final_x, p_final_y))
             
-        # Marcar como False los puntos obtenidos en la variable df_coord
-        df_coord.loc[df_coord[['x', 'y']].apply(tuple, axis=1).isin(puntos_a_marcar), 'marcado'] = False
+    #     # Marcar como False los puntos obtenidos en la variable df_coord
+    #     df_coord.loc[df_coord[['x', 'y']].apply(tuple, axis=1).isin(puntos_a_marcar), 'marcado'] = False
     
-    grafico(df_coord)
-    plt.show()
+    # grafico(df_coord)
+    # plt.show()
             
         
     # while True: 
@@ -293,5 +293,8 @@ def histograma_n_dist():
 
     plt.tight_layout()  # Ajustar el espaciado entre subgráficas
     plt.show()
-    
-una_carrera()
+
+
+df_coord = leer_datos_gpx('datos/Media_Maratón_Santander_2024.gpx')
+df_dist_kalman = calcular_distancias_recursivas(df_coord)
+crear_histograma(df_dist_kalman)

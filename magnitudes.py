@@ -220,4 +220,64 @@ def detectar_curva(df_coordenadas):
     
     return (df_angulos)
 
+## PREPARACIÓN KALMAN
+
+def distancia_punto_a_segmento(p1, p2, p):
+    """
+    Calcula la distancia mínima desde el punto p a la línea definida por los puntos p1 y p2.
+    """
+    import numpy as np
+    # Vector del segmento
+    segment_vector = np.array(p2) - np.array(p1)
+    # Vector desde p1 a p
+    point_vector = np.array(p) - np.array(p1)
     
+    # Proyección del punto sobre el segmento
+    segment_length_squared = np.dot(segment_vector, segment_vector)
+    if segment_length_squared == 0:
+        # p1 y p2 son el mismo punto
+        return np.linalg.norm(point_vector)
+    
+    t = np.dot(point_vector, segment_vector) / segment_length_squared
+    t = max(0, min(1, t))  # Limitar t a [0, 1]
+    
+    # Punto más cercano en el segmento
+    closest_point = p1 + t * segment_vector
+    return np.linalg.norm(closest_point - np.array(p))
+
+def calcular_distancias_recursivas(df):
+    """
+    Calcula las distancias desde cada punto a los segmentos formados por los dos puntos anteriores.
+    INPUT: df: DataFrame con las columnas x, y.
+    OUTPUT: DataFrame con las distancias.
+    """
+    import pandas as pd
+    distancias = []
+    
+    # Iterar sobre los puntos en el DataFrame
+    for i in range(2, len(df)):
+        p1 = (df.iloc[i-2]['x'], df.iloc[i-2]['y'])  # Primer punto
+        p2 = (df.iloc[i-1]['x'], df.iloc[i-1]['y'])  # Segundo punto
+        p = (df.iloc[i]['x'], df.iloc[i]['y'])        # Tercer punto
+        
+        # Calcular la distancia del punto p al segmento p1-p2
+        distancia = distancia_punto_a_segmento(p1, p2, p)
+        distancias.append({'punto': p, 'distancia': distancia})
+    
+    return pd.DataFrame(distancias)
+
+def crear_histograma(distancias_df):
+    """
+    Crea un histograma de las distancias calculadas.
+    INPUT: distancias_df: DataFrame con las distancias.
+    """
+    import matplotlib.pyplot as plt
+    import math
+    bin_num = int((len(distancias_df['distancia'])))
+    plt.figure(figsize=(10, 6))
+    plt.hist(distancias_df['distancia'], bins=bin_num, color='blue', alpha=0.7)
+    plt.title('Histograma de Distancias a Segmentos')
+    plt.xlabel('Distancia')
+    plt.ylabel('Frecuencia')
+    plt.grid()
+    plt.show()
