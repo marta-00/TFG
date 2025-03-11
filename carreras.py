@@ -1,7 +1,7 @@
 
 from leer_datos import leer_datos_gpx
 from magnitudes import *
-#from graficos import *
+from graficos import *
 
 """
 GUARDAR GRAFICOS EN CARPETA
@@ -31,82 +31,101 @@ GUARDAR GRAFICOS EN CARPETA
             plt.savefig(f'{carpeta}/velocidades_sin_curva_atipicos.png')
             plt.close(figura)
 """
+def datos_total_carreras():
+    """
+    Función que crea un DataFrame con los datos de la distancia total y altitud de cada 
+    carrera. 
+    También guarda todos los gráficos (recorrido, velocidad y distancia) en una carpeta con el nombre de la carrera.
+    RETURN: DataFrame con los valores de nombre carrera, distancia total y altitud.
+    """
+    # Crear una lista para almacenar los resultados
+    resultados = []
+
+    # Bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
+    for nombre_archivo in os.listdir('datos'):
+        if nombre_archivo.endswith('.gpx'):
+            # Leer archivo gpx
+            df_coord = leer_datos_gpx(f'datos/{nombre_archivo}')
+
+            # Calcular magnitudes
+            dist_tramo, dist_total = distancia(df_coord)
+            alt = altitud(df_coord)
+
+            # Agregar los resultados a la lista
+            resultados.append({
+                'nombre_carrera': nombre_archivo,
+                'distancia_total': dist_total,
+                'altitud': alt
+            })
+
+            # Aquí puedes agregar el código para guardar gráficos si es necesario
+            # plt.savefig(f'graficos/{nombre_archivo}.png')  # Ejemplo de cómo guardar gráficos
+
+    # Convertir la lista de resultados a un DataFrame
+    resultados_df = pd.DataFrame(resultados)
+
+    return resultados_df
+
 def una_carrera():
+    import matplotlib.pyplot as plt
     # Leer datos del archivo GPX
     df_coord = leer_datos_gpx('datos/Carrera_de_mañana(8).gpx')
     
-    while True: 
-        # Calcular distancia tramo y total
-        df_dist, L_total = distancia(df_coord)
-        print(f"La distancia total: {L_total}")
+    # Calcular distancia tramo y total
+    df_dist, L_total = distancia(df_coord)
+    print(f"La distancia total: {L_total}")
 
-        # Obtener las distancias de los tramos
-        L_tramo = df_dist['Distancia (m)']
+    # Obtener las distancias de los tramos
+    L_tramo = df_dist['Distancia (m)']
 
-        # Encontrar todos los índices donde la distancia es mayor a 90 metros
-        indices_mayor_90 = [i for i in range(len(L_tramo)) if L_tramo[i] > 90]
+    # Encontrar todos los índices donde la distancia es mayor a 90 metros
+    indices_mayor_90 = [i for i in range(len(L_tramo)) if L_tramo[i] > 90]
 
-        if indices_mayor_90:
-            puntos_a_marcar = set()
-            for i in indices_mayor_90:
-                # Obtener las coordenadas del punto final para esta distancia
-                p_final_x = df_dist['Punto Final'][i][0]
-                p_final_y = df_dist['Punto Final'][i][1]
+    if indices_mayor_90:
+        puntos_a_marcar = set()
+        for i in indices_mayor_90:
+            # Obtener las coordenadas del punto final para esta distancia
+            p_final_x = df_dist['Punto Final'][i][0]
+            p_final_y = df_dist['Punto Final'][i][1]
 
-                # Agregar las coordenadas finales al conjunto
-                puntos_a_marcar.add((p_final_x, p_final_y))
+            # Agregar las coordenadas finales al conjunto
+            puntos_a_marcar.add((p_final_x, p_final_y))
             
-            # Marcar como False los puntos obtenidos en la variable df_coord
-            df_coord.loc[df_coord[['x', 'y']].apply(tuple, axis=1).isin(puntos_a_marcar), 'marcado'] = False
+        # Marcar como False los puntos obtenidos en la variable df_coord
+        df_coord.loc[df_coord[['x', 'y']].apply(tuple, axis=1).isin(puntos_a_marcar), 'marcado'] = False
+    
+    grafico(df_coord)
+    plt.show()
+            
+        
+    # while True: 
+    #     # Calcular distancia tramo y total
+    #     df_dist, L_total = distancia(df_coord)
+    #     print(f"La distancia total: {L_total}")
 
-            print(f"Se han marcado como False los puntos finales de los tramos mayores a 90 metros: {indices_mayor_90}")
-        else:
-            print("No hay tramos con distancia mayor a 90 metros.")
-            break  # Salir del bucle si no hay tramos que cumplan la condición
+    #     # Obtener las distancias de los tramos
+    #     L_tramo = df_dist['Distancia (m)']
 
+    #     # Encontrar todos los índices donde la distancia es mayor a 90 metros
+    #     indices_mayor_90 = [i for i in range(len(L_tramo)) if L_tramo[i] > 90]
 
+    #     if indices_mayor_90:
+    #         puntos_a_marcar = set()
+    #         for i in indices_mayor_90:
+    #             # Obtener las coordenadas del punto final para esta distancia
+    #             p_final_x = df_dist['Punto Final'][i][0]
+    #             p_final_y = df_dist['Punto Final'][i][1]
 
-    # # calcular velocidad instantánea
-    # velocidades = velocidad(dist_tramo)
-    # velocidades = list(set(velocidades)-set(detectar_atipicos_zscore(velocidades)))
-    # crear_histogramas(velocidades, nombre1 = "velocidades")
+    #             # Agregar las coordenadas finales al conjunto
+    #             puntos_a_marcar.add((p_final_x, p_final_y))
+            
+    #         # Marcar como False los puntos obtenidos en la variable df_coord
+    #         df_coord.loc[df_coord[['x', 'y']].apply(tuple, axis=1).isin(puntos_a_marcar), 'marcado'] = False
 
-    # # separar datos
-    # coord_pares, coord_impares = separar_datos(coord, 5)
-
-    # # obtener distancias_tramo
-    # dist_tramo, dist_total = distancia(coord)
-    # dist_tramo_par, dist_total_par = distancia(coord_pares)
-    # dist_tramo_impar, dist_total_impar = distancia(coord_impares)
-
-    # crear histograma con las distancias de los tramos
-    #crear_histogramas(dist_tramo, nombre1 = "total")
-
-
-    # # dist_tramo = list(set(dist_tramo)-set(detectar_atipicos_zscore(dist_tramo)))
-    # # dist_tramo_par = list(set(dist_tramo_par)-set(detectar_atipicos_zscore(dist_tramo_par)))
-    # # dist_tramo_impar = list(set(dist_tramo_impar)-set(detectar_atipicos_zscore(dist_tramo_impar)))
-
-
-    # dist_tramo = list(set(dist_tramo)-set(detectar_atipicos_zscore(dist_tramo)))
-    # dist_tramo_par = list(set(dist_tramo_par)-set(detectar_atipicos_zscore(dist_tramo_par)))
-    # dist_tramo_impar = list(set(dist_tramo_impar)-set(detectar_atipicos_zscore(dist_tramo_impar)))
-
-    # crear_histogramas(dist_tramo, dist_tramo_par, dist_tramo_impar, "total", "pares", "impares")
-    # print(f"distancia total: {dist_total}")
-    # print(f"distancia total pares: {dist_total_par}")
-    # print(f"distancia total impares: {dist_total_impar}")
-    # plt.show()
-
-    ## CURVAS
-    # x_nuevo, y_nuevo = (detectar_curva(coord))
-
-    # print(len(coord[0]))
-    # print(len(x_nuevo))
-
-    # coord_nuevas = [x_nuevo, y_nuevo, coord[2]]
-    # grafico(coord_nuevas)
-    # plt.show()
+    #         print(f"Se han marcado como False los puntos finales de los tramos mayores a 90 metros: {indices_mayor_90}")
+    #     else:
+    #         print("No hay tramos con distancia mayor a 90 metros.")
+    #         break  # Salir del bucle si no hay tramos que cumplan la condición
 
 def total_carreras():
     # leer archivo magnitudes.csv
@@ -154,47 +173,6 @@ def total_carreras():
     #         print(f"La medida mejora")
     #     else:
     #         print(f"la medida empeora para la carrera: {nombre_carrera}")
-
-import os
-import pandas as pd
-import matplotlib.pyplot as plt
-
-def datos_total_carreras():
-    """
-    Función que crea un DataFrame con los datos de la distancia total y altitud de cada 
-    carrera. 
-    También guarda todos los gráficos (recorrido, velocidad y distancia) en una carpeta con el nombre de la carrera.
-    RETURN: DataFrame con los valores de nombre carrera, distancia total y altitud.
-    """
-    # Crear una lista para almacenar los resultados
-    resultados = []
-
-    # Bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
-    for nombre_archivo in os.listdir('datos'):
-        if nombre_archivo.endswith('.gpx'):
-            # Leer archivo gpx
-            df_coord = leer_datos_gpx(f'datos/{nombre_archivo}')
-
-            # Calcular magnitudes
-            dist_tramo, dist_total = distancia(df_coord)
-            alt = altitud(df_coord)
-
-            # Agregar los resultados a la lista
-            resultados.append({
-                'nombre_carrera': nombre_archivo,
-                'distancia_total': dist_total,
-                'altitud': alt
-            })
-
-            # Aquí puedes agregar el código para guardar gráficos si es necesario
-            # plt.savefig(f'graficos/{nombre_archivo}.png')  # Ejemplo de cómo guardar gráficos
-
-    # Convertir la lista de resultados a un DataFrame
-    resultados_df = pd.DataFrame(resultados)
-
-    return resultados_df
-
-
 
 def comparación_distancias():
     """
@@ -316,7 +294,4 @@ def histograma_n_dist():
     plt.tight_layout()  # Ajustar el espaciado entre subgráficas
     plt.show()
     
-
-resultados = datos_total_carreras()
-
-
+una_carrera()

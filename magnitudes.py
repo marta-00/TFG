@@ -71,7 +71,6 @@ def distancia(df_coordenadas):
 
     return df_tramos, distancia_total
 
-# Función para verificar si dos puntos son "suficientemente cercanos"
 def son_puntos_cercanos(p1, p2, tolerancia=1e-5):
     import numpy as np
     return np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) < tolerancia
@@ -115,8 +114,6 @@ def separar_datos(df_coordenadas, n_separacion):
                      [y_coords[i] for i in range(1, len(y_coords), n_separacion)]
 
     return coord_pares, coord_impares
-
-
 
 def detectar_atipicos_zscore(datos, umbral=3):
     """

@@ -4,21 +4,38 @@
 from magnitudes import *
 from leer_datos import leer_datos_gpx
 
-def grafico(coordenadas):
+def grafico(df):
     """
-    Función que crea una gráfica en 2d con las coordenadas x,y y lo muestra en pantalla
-    INPUT: coordenadas: array con las coordenadas x,y
+    Función que crea una gráfica en 2D con las coordenadas x, y, elevación y marcado.
+    INPUT: df: DataFrame con las columnas x, y, elevación y marcado (booleano).
     """
-    # cambiar el eje de coordenadas para que en el eje y el punto mas bajo de la 
-    # carrera sea el 0 y lo mismo en el eje x
-    x = coordenadas[0] - min(coordenadas[0])
-    y = coordenadas[1] - min(coordenadas[1])
-    
-    # Crear y mostrar una gráfica en 2d con las coordenadas x,y
     import matplotlib.pyplot as plt
 
-    plt.plot(x, y)
-    #plt.show()
+    # Calcular el mínimo de las coordenadas x e y
+    min_x = df['x'].min()
+    min_y = df['y'].min()
+    
+    # Separar los datos en marcados y no marcados
+    marcados = df[df['marcado'] == True]
+    no_marcados = df[df['marcado'] == False]
+
+    # Graficar los puntos marcados en azul
+    plt.plot(marcados['x'] - min_x, marcados['y'] - min_y, 
+             color='blue', label='Marcados', linewidth=2)
+    
+    # Graficar los puntos no marcados en rojo (scatter)
+    plt.scatter(no_marcados['x'] - min_x, no_marcados['y'] - min_y, 
+                color='red', label='No Marcados', alpha=0.5)
+    
+    # Etiquetas y título
+    plt.xlabel('Coordenadas X')
+    plt.ylabel('Coordenadas Y')
+    plt.title('Gráfica de Coordenadas')
+    plt.legend()
+    plt.grid()
+    
+    # Mostrar la gráfica
+    plt.show()
 
 def crear_histogramas(array1, array2=None, array3=None, nombre1='Array 1', nombre2='Array 2', nombre3='Array 3'):
     """
