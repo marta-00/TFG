@@ -7,27 +7,6 @@ Script para calcular todas las magnitudes:
 Todas las funciones reciben un df_coordenadas(leer_datos) y devuelven un dataframe.
 """
 
-def distancia1 (coordenadas):
-    """
-    Función que calcula la distancia total de una carrera a partir de las coordenadas x,y.
-    Se calcula la distancia en cada tramo de la carrera y se suman todas las distancias.
-    INPUT: coordenadas: array con las coordenadas x,y
-    RETURN: distancias: array con las distancias de cada tramo de la carrera
-            distancia total de la carrera en metros
-    """
-    import numpy as np
-    # Distancia entre dos puntos = sqrt((x2-x1)^2 + (y2-y1)^2)
-    # crear array con zeros para almacenar las distancias de cada tramo
-    distancias_tramo = [] 
-    for i in range(1, len(coordenadas[0])):
-        distancias_tramo.append(np.sqrt((coordenadas[0][i] - coordenadas[0][i - 1]) ** 2 +
-                                  (coordenadas[1][i] - coordenadas[1][i - 1]) ** 2))
-
-    # Sumar todas las distancias recorridas en cada tramo de la carrera
-    distancia_total = sum(distancias_tramo)
-
-    return distancias_tramo, distancia_total
-
 def distancia(df_coordenadas):
     """
     Función que calcula la distancia total de una carrera a partir de las coordenadas x,y.
@@ -70,10 +49,6 @@ def distancia(df_coordenadas):
     df_tramos = pd.DataFrame(tramos_info)
 
     return df_tramos, distancia_total
-
-def son_puntos_cercanos(p1, p2, tolerancia=1e-5):
-    import numpy as np
-    return np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) < tolerancia
 
 def altitud(df_coordenadas):
     """
@@ -178,9 +153,12 @@ def detectar_curva(df_coordenadas):
     """
     import pandas as pd
     import math 
-    # Extraer las columnas del DataFrame
-    x = df_coordenadas['x'].values
-    y = df_coordenadas['y'].values
+    # Filtrar solo los puntos marcados como True
+    df_coordenadas_filtrado = df_coordenadas[df_coordenadas['marcado'] == True]
+
+   # Extraer las columnas del DataFrame filtrado
+    x = df_coordenadas_filtrado['x'].values
+    y = df_coordenadas_filtrado['y'].values
     angulos = []
     coordenadas = []  # Para almacenar las coordenadas (x, y)
     angulos_calculados = []  # Para almacenar los ángulos calculados

@@ -31,40 +31,7 @@ GUARDAR GRAFICOS EN CARPETA
             plt.savefig(f'{carpeta}/velocidades_sin_curva_atipicos.png')
             plt.close(figura)
 """
-def datos_total_carreras():
-    """
-    Función que crea un DataFrame con los datos de la distancia total y altitud de cada 
-    carrera. 
-    También guarda todos los gráficos (recorrido, velocidad y distancia) en una carpeta con el nombre de la carrera.
-    RETURN: DataFrame con los valores de nombre carrera, distancia total y altitud.
-    """
-    # Crear una lista para almacenar los resultados
-    resultados = []
 
-    # Bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
-    for nombre_archivo in os.listdir('datos'):
-        if nombre_archivo.endswith('.gpx'):
-            # Leer archivo gpx
-            df_coord = leer_datos_gpx(f'datos/{nombre_archivo}')
-
-            # Calcular magnitudes
-            dist_tramo, dist_total = distancia(df_coord)
-            alt = altitud(df_coord)
-
-            # Agregar los resultados a la lista
-            resultados.append({
-                'nombre_carrera': nombre_archivo,
-                'distancia_total': dist_total,
-                'altitud': alt
-            })
-
-            # Aquí puedes agregar el código para guardar gráficos si es necesario
-            # plt.savefig(f'graficos/{nombre_archivo}.png')  # Ejemplo de cómo guardar gráficos
-
-    # Convertir la lista de resultados a un DataFrame
-    resultados_df = pd.DataFrame(resultados)
-
-    return resultados_df
 
 def una_carrera():
     import matplotlib.pyplot as plt

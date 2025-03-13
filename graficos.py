@@ -81,43 +81,46 @@ def crear_histogramas(array1, array2=None, array3=None, nombre1='Array 1', nombr
     plt.tight_layout()
     plt.show()
 
-    def angulo(nombre_dato):
-        """
-        Función que para una carrera calcula la distancia de cada tramo y el ángulo. 
-        Después hace un gráfico comparando ambos(x=angulo, y=distancia)
-        INPUT: nombre_dato: string:  nombre completo de la carrera(datos/Carrera_de_mañana(8).gpx)
-        """
-        import numpy as np
-        df_coord = leer_datos_gpx(nombre_dato)
-        
-        #calcular la distancia de cada tramo
-        df_dist, L_total = distancia(df_coord)
-        dist_tramo = df_dist['Distancia (m)']
-        #print(len(df_dist['Distancia (m)']))  #debugging
+def graf_angulo_dist(df_coord):
+    """
+    Función que para una carrera calcula la distancia de cada tramo y el ángulo. 
+    Después hace un gráfico comparando ambos(x=angulo, y=distancia)
+    INPUT: nombre_dato: string:  nombre completo de la carrera(datos/Carrera_de_mañana(8).gpx)
+    """
+    import matplotlib.pyplot as plt
+    import numpy as np
 
-        #calcular los ángulos 
-        df_angulos = detectar_curva(df_coord)
-        angulos = df_angulos['ángulo']
-        #print(len(df_angulos['ángulo'])) #debugging
+    # Filtrar solo los puntos marcados como True
+    df_coord_filtrado = df_coord[df_coord['marcado'] == True]
 
-        #pasar los angulos de radianes a grados
-        angulos = np.degrees(angulos)
+    # Calcular la distancia de cada tramo
+    df_dist, L_total = distancia(df_coord_filtrado)
+    dist_tramo = df_dist['Distancia (m)']
+    #print(len(df_dist['Distancia (m)']))  #debugging
 
-        # Para caluclar las distancias se utilizan 2 puntos y para el ángulo se utilizan 3.
-        # Hay 1 dato menos de ángulos que de distancias. 
-        # SOLUCIÓN 1: eliminar la última distancia
-        # Se va a asignar cada ángulo i a la distancia del tramo de i-1 a i. Por la forma de 
-        # calcular los datos, el 1º ángulo corresponde a la 1º distancia.
+    # Calcular los ángulos 
+    df_angulos = detectar_curva(df_coord_filtrado)
+    angulos = df_angulos['ángulo']
+    #print(len(df_angulos['ángulo'])) #debugging
 
-        # eliminar último dato de df_dist['Distancia (m)]
-        dist_tramo = dist_tramo[:-1]
-        #print(len(dist_tramo)) #debugging
+    # Pasar los ángulos de radianes a grados
+    angulos = np.degrees(angulos)
 
-        # Crear el gráfico comparando ángulos y distancias
-        plt.figure(figsize=(10, 6))
-        plt.scatter(angulos, dist_tramo, c='blue', alpha=0.5)
-        plt.title('Comparación de Ángulos y Distancias')
-        plt.xlabel('Ángulo (grados)')
-        plt.ylabel('Distancia (m)')
-        plt.grid(True)
-        plt.show()
+    # Para calcular las distancias se utilizan 2 puntos y para el ángulo se utilizan 3.
+    # Hay 1 dato menos de ángulos que de distancias. 
+    # SOLUCIÓN : eliminar la última distancia
+    # Se va a asignar cada ángulo i a la distancia del tramo de i-1 a i. Por la forma de 
+    # calcular los datos, el 1º ángulo corresponde a la 1º distancia.
+
+    # Eliminar último dato de df_dist['Distancia (m)']
+    dist_tramo = dist_tramo[:-1]
+    #print(len(dist_tramo)) #debugging
+
+    # Crear el gráfico comparando ángulos y distancias
+    plt.figure(figsize=(10, 6))
+    plt.scatter(angulos, dist_tramo, c='blue', alpha=0.5)
+    plt.title('Comparación de Ángulos y Distancias')
+    plt.xlabel('Ángulo (grados)')
+    plt.ylabel('Distancia (m)')
+    plt.grid(True)
+    plt.show()
