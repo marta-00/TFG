@@ -8,7 +8,7 @@ import os
 import math
 import numpy as np
 
-def datos_iniciales_total_carreras():
+def datos_total_carreras(nombre_carpeta):
     """
     Función que crea un DataFrame con los datos de la distancia total y altitud de cada 
     carrera. 
@@ -19,10 +19,10 @@ def datos_iniciales_total_carreras():
     resultados = []
 
     # Bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
-    for nombre_archivo in os.listdir('datos'):
+    for nombre_archivo in os.listdir(nombre_carpeta):
         if nombre_archivo.endswith('.gpx'):
             # Leer archivo gpx
-            df_coord = leer_datos_gpx(f'datos/{nombre_archivo}')
+            df_coord = leer_datos_gpx(f'{nombre_carpeta}/{nombre_archivo}')
 
             # Calcular magnitudes
             dist_tramo, dist_total = distancia(df_coord)
@@ -59,7 +59,7 @@ def limpiar_y_marcar_datos(nombre_dato):
 
     # Calcular distancia tramo y total
     df_dist, L_total = distancia(df_coord)
-    print("Distancia total:", L_total)
+    # print("Distancia total:", L_total)
 
     # Obtener las distancias de los tramos
     L_tramo = df_dist['Distancia (m)']
@@ -94,7 +94,7 @@ def limpiar_y_marcar_datos(nombre_dato):
         # Actualizar L_tramo después de marcar los puntos
         df_dist, L_total = distancia(df_coord)
         L_tramo = df_dist['Distancia (m)']
-    print("Distancia total después de limpiar distancias:", L_total)
+    # print("Distancia total después de limpiar distancias:", L_total)
     # Calcular los ángulos 
     df_angulos = detectar_curva(df_coord)
     angulos = df_angulos['ángulo']
@@ -119,7 +119,7 @@ def limpiar_y_marcar_datos(nombre_dato):
             if i + 1 < len(df_coord):  # Asegurarse de que no se salga del índice
                 df_coord.at[i + 1, 'marcado'] = False
 
-    print("Distancia total después de limpiar ángulos:", distancia(df_coord)[1])
+    # print("Distancia total después de limpiar ángulos:", distancia(df_coord)[1])
 
     return df_coord
 

@@ -1,5 +1,5 @@
-## Desarrollo de algoritmos para la optimización de medidas GPS en competiciones deportivas<br>
-# Development of algorithms for optimizing GPS measurements in sports competitions
+## Desarrollo de algoritmos para la optimización de medidas GPS en competiciones deportivas
+# Development of algorithms for optimizing GPS measurements in sports competitions <br>
 
 Este proyecto es el Trabajo de Fin de Grado (TFG) de la carrera de física. Consiste en analizar 
 los datos GPS de carreras de distinta índole (media maratón, carrera en bici y carreras en altitud) y

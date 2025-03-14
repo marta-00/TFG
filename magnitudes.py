@@ -19,7 +19,7 @@ def distancia(df_coordenadas):
     import pandas as pd
     import numpy as np
     # Filtrar el DataFrame para obtener solo las coordenadas marcadas como True
-    df_filtrado = df_coordenadas[df_coordenadas['marcado']]
+    df_filtrado = df_coordenadas[df_coordenadas['marcado'] == True]
 
     # Crear lista para almacenar la información de cada tramo
     tramos_info = [] 
@@ -60,12 +60,13 @@ def altitud(df_coordenadas):
     import pandas as pd
     altitud_acumulada = 0
     elevaciones = df_coordenadas['elevacion'].values  # Extraer la columna de elevación
-
+    altitud_tramo = []
     for i in range(1, len(elevaciones)):
         if elevaciones[i] > elevaciones[i-1]:
+            altitud_tramo.append (elevaciones[i] - elevaciones[i-1])
             altitud_acumulada += elevaciones[i] - elevaciones[i-1]
 
-    return altitud_acumulada
+    return altitud_acumulada, altitud_tramo
 
 def separar_datos(df_coordenadas, n_separacion):
     """

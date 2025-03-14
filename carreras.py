@@ -262,6 +262,11 @@ def histograma_n_dist():
     plt.show()
 
 
-df_coord = leer_datos_gpx('datos/Media_Maratón_Santander_2024.gpx')
-df_dist_kalman = calcular_distancias_recursivas(df_coord)
-crear_histograma(df_dist_kalman)
+# df_coord = leer_datos_gpx('datos/Media_Maratón_Santander_2024.gpx')
+# df_dist_kalman = calcular_distancias_recursivas(df_coord)
+# crear_histograma(df_dist_kalman)
+
+# carrera vertical
+df_coord = leer_datos_gpx('datos_altitud/11637916079.gpx')
+alt_total, alt_tramo = altitud(df_coord)
+print(alt_tramo)
