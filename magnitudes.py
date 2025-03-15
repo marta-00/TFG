@@ -50,23 +50,49 @@ def distancia(df_coordenadas):
 
     return df_tramos, distancia_total
 
+
 def altitud(df_coordenadas):
     """
     Función que calcula la altitud (desnivel positivo acumulado). Esto es se suman las
     altitudes subidas pero no se restan las bajadas.
     INPUT: df_coordenadas: DataFrame con las columnas 'x', 'y', 'elevación' y 'marcado'
     RETURN: altitud: float, el desnivel positivo acumulado en metros
+            df_tramos: DataFrame con los puntos i-1, i y la altitud del tramo
     """
     import pandas as pd
+
     altitud_acumulada = 0
     elevaciones = df_coordenadas['elevacion'].values  # Extraer la columna de elevación
     altitud_tramo = []
+    tramos = []
+
     for i in range(1, len(elevaciones)):
         if elevaciones[i] > elevaciones[i-1]:
-            altitud_tramo.append (elevaciones[i] - elevaciones[i-1])
+            altitud_tramo.append(elevaciones[i] - elevaciones[i-1])
             altitud_acumulada += elevaciones[i] - elevaciones[i-1]
+            # Guardar los puntos i-1 y i junto con la altitud del tramo
+            tramos.append({
+                'punto_i-1_x': df_coordenadas['x'].iloc[i-1],
+                'punto_i-1_y': df_coordenadas['y'].iloc[i-1],
+                'punto_i_x': df_coordenadas['x'].iloc[i],
+                'punto_i_y': df_coordenadas['y'].iloc[i],
+                'altitud_tramo': elevaciones[i] - elevaciones[i-1]
+            })
+        else: # Si la altitud no sube, no se añade a la altitud acumulada
+            altitud_tramo.append(elevaciones[i] - elevaciones[i-1])
+            # Guardar los puntos i-1 y i junto con la altitud del tramo
+            tramos.append({
+                'punto_i-1_x': df_coordenadas['x'].iloc[i-1],
+                'punto_i-1_y': df_coordenadas['y'].iloc[i-1],
+                'punto_i_x': df_coordenadas['x'].iloc[i],
+                'punto_i_y': df_coordenadas['y'].iloc[i],
+                'altitud_tramo': elevaciones[i] - elevaciones[i-1]
+            })
 
-    return altitud_acumulada, altitud_tramo
+    # Crear un DataFrame a partir de la lista de tramos
+    df_tramos = pd.DataFrame(tramos)
+
+    return altitud_acumulada, df_tramos
 
 def separar_datos(df_coordenadas, n_separacion):
     """

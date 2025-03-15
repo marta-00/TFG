@@ -265,8 +265,18 @@ def histograma_n_dist():
 # df_coord = leer_datos_gpx('datos/Media_Maratón_Santander_2024.gpx')
 # df_dist_kalman = calcular_distancias_recursivas(df_coord)
 # crear_histograma(df_dist_kalman)
-
 # carrera vertical
-df_coord = leer_datos_gpx('datos_altitud/11637916079.gpx')
+#df_coord = leer_datos_gpx('datos_altitud/11601896081.gpx')
+# df_coord = leer_datos_gpx('datos/Morning_Run(8).gpx')
+df_coord = leer_datos_gpx('datos_bici/Morning_Ride (5).gpx')
 alt_total, alt_tramo = altitud(df_coord)
-print(alt_tramo)
+
+import matplotlib.pyplot as plt
+# crear histograma con los datos de altitud_tramo
+plt.figure(figsize=(10, 6))
+plt.hist(alt_tramo['altitud_tramo'], bins=int((len(alt_tramo['altitud_tramo']))**0.5), color='blue', edgecolor='blue', alpha=0.5)
+plt.title('Histograma - Altitudes de los Tramos')
+plt.xlabel('Altitud (m)')
+plt.ylabel('Número de tramos')
+plt.grid()
+plt.show()
