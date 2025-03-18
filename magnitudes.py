@@ -96,26 +96,38 @@ def altitud(df_coordenadas):
 
 def separar_datos(df_coordenadas, n_separacion):
     """
-    Función que separa las coordenadas x e y de un DataFrame en pares e impares
-    según el número de separación especificado.
+    Función que separa las coordenadas x e y de un DataFrame en listas según el número de separación especificado,
+    marca como False las coordenadas no incluidas en el array actual y calcula la distancia.
 
     INPUT: df_coordenadas: DataFrame con las columnas x, y, elevacion y marcado
            n_separacion: número de separación para seleccionar las coordenadas
-    RETURN: coord_pares: lista de coordenadas x e y en posiciones pares
-            coord_impares: lista de coordenadas x e y en posiciones impares
+    RETURN: coord_list: lista de listas de coordenadas x e y separadas
+            distancias: lista de distancias calculadas para cada conjunto de coordenadas
     """
     # Extraer las columnas x e y
     x_coords = df_coordenadas['x'].values
     y_coords = df_coordenadas['y'].values
 
-    # Separar las coordenadas en pares e impares
-    coord_pares = [x_coords[i] for i in range(0, len(x_coords), n_separacion)], \
-                   [y_coords[i] for i in range(0, len(y_coords), n_separacion)]
-    
-    coord_impares = [x_coords[i] for i in range(1, len(x_coords), n_separacion)], \
-                     [y_coords[i] for i in range(1, len(y_coords), n_separacion)]
+    coord_list = []
+    dist_total = []
 
-    return coord_pares, coord_impares
+    # Crear listas para cada índice de separación
+    for start in range(n_separacion):
+        coord = []
+        # Marcar todas las coordenadas como False
+        df_coordenadas['marcado'] = False
+        
+        for i in range(start, len(x_coords), n_separacion):
+            coord.append((x_coords[i], y_coords[i]))  # Agregar tupla (x, y)
+            df_coordenadas.at[i, 'marcado'] = True  # Marcar como True las coordenadas seleccionadas
+        
+        coord_list.append(coord)
+        
+        # Calcular distancias solo para las coordenadas marcadas
+        df_tramos, L_total = distancia(df_coordenadas)
+        dist_total.append(L_total)
+
+    return coord_list, dist_total
 
 def detectar_atipicos_zscore(datos, umbral=3):
     """

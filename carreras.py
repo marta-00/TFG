@@ -200,29 +200,25 @@ def histograma_n_dist():
             df_coord =leer_datos_gpx(f'datos/{nombre_archivo}')
 
             #separar datos 
-            coord_1, coord_2 = separar_datos(df_coord, 1)
-            df_tramo, L_total = distancia1(coord_1)
-            L_total_1.append(L_total)
+            coord_lista, distancias_totales = separar_datos(df_coord, 1)
+            L_total_1.append(distancias_totales[0])
 
-            coord_1, coord_2 = separar_datos(df_coord, 2)
-            df_tramo, L_total = distancia1(coord_1)
-            L_total_2.append(L_total)
+            coord_lista, distancias_totales = separar_datos(df_coord, 2)
+            L_total_2.extend([distancias_totales[0], distancias_totales[1]])
 
-            coord_1, coord_2 = separar_datos(df_coord, 5)
-            df_tramo, L_total = distancia1(coord_1)
-            L_total_5.append(L_total)
+            coord_lista, distancias_totales = separar_datos(df_coord, 5)
+            L_total_5.extend([distancias_totales[0], distancias_totales[1], distancias_totales[2], distancias_totales[3], distancias_totales[4]])
+    
+            coord_lista, distancias_totales = separar_datos(df_coord, 9)
+            L_total_9.extend([distancias_totales[0], distancias_totales[1], distancias_totales[2], distancias_totales[3], distancias_totales[4]])
+    
 
-            coord_1, coord_2 = separar_datos(df_coord, 9)
-            df_tramo, L_total = distancia1(coord_1)
-            L_total_9.append(L_total)
-
-            coord_1, coord_2 = separar_datos(df_coord, 13)
-            df_tramo, L_total = distancia1(coord_1)
-            L_total_13.append(L_total)
-
-            coord_1, coord_2 = separar_datos(df_coord, 20)
-            df_tramo, L_total = distancia1(coord_1)
-            L_total_20.append(L_total)
+            coord_lista, distancias_totales = separar_datos(df_coord, 13)
+            L_total_13.extend([distancias_totales[0], distancias_totales[1], distancias_totales[2], distancias_totales[3], distancias_totales[4]])
+    
+            coord_lista, distancias_totales = separar_datos(df_coord, 20)
+            L_total_20.extend([distancias_totales[0], distancias_totales[1], distancias_totales[2], distancias_totales[3], distancias_totales[4]])
+    
     #crear 6 graficos para cada L_total_i
     plt.figure(figsize=(12, 8))
 
@@ -241,7 +237,7 @@ def histograma_n_dist():
         plt.subplot(3, 2, i + 1)
         
         # Calcular el histograma
-        bins = 30  # Ajusta el número de bins según sea necesario
+        bins = int(len(L_total)**0.5)  # Ajusta el número de bins según sea necesario
         hist, bin_edges = np.histogram(L_total, bins=bins)
         
         # Calcular los centros de los bins
@@ -250,6 +246,8 @@ def histograma_n_dist():
         # Dibujar el histograma como barras
         plt.bar(bin_centers, hist, width=np.diff(bin_edges), color='blue', edgecolor='blue', alpha=0.7, align='center')
         
+        # añadir linea roja en 21095m
+        plt.axvline(x=21095, color='red', linestyle='--')
         # Dibujar la línea que conecta los máximos de cada bin
         #plt.plot(bin_centers, hist, color='red', marker='o', linestyle='-', linewidth=2)
         
@@ -266,17 +264,20 @@ def histograma_n_dist():
 # df_dist_kalman = calcular_distancias_recursivas(df_coord)
 # crear_histograma(df_dist_kalman)
 # carrera vertical
-#df_coord = leer_datos_gpx('datos_altitud/11601896081.gpx')
+# df_coord = leer_datos_gpx('datos_altitud/11601896081.gpx')
 # df_coord = leer_datos_gpx('datos/Morning_Run(8).gpx')
-df_coord = leer_datos_gpx('datos_bici/Morning_Ride (5).gpx')
-alt_total, alt_tramo = altitud(df_coord)
+# df_coord = leer_datos_gpx('datos_bici/Morning_Ride (5).gpx')
+# alt_total, alt_tramo = altitud(df_coord)
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 # crear histograma con los datos de altitud_tramo
-plt.figure(figsize=(10, 6))
-plt.hist(alt_tramo['altitud_tramo'], bins=int((len(alt_tramo['altitud_tramo']))**0.5), color='blue', edgecolor='blue', alpha=0.5)
-plt.title('Histograma - Altitudes de los Tramos')
-plt.xlabel('Altitud (m)')
-plt.ylabel('Número de tramos')
-plt.grid()
-plt.show()
+# plt.figure(figsize=(10, 6))
+# plt.hist(alt_tramo['altitud_tramo'], bins=int((len(alt_tramo['altitud_tramo']))**0.5), color='blue', edgecolor='blue', alpha=0.5)
+# plt.title('Histograma - Altitudes de los Tramos')
+# plt.xlabel('Altitud (m)')
+# plt.ylabel('Número de tramos')
+# plt.grid()
+# plt.show()
+
+
+histograma_n_dist()
