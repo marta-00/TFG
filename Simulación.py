@@ -6,7 +6,8 @@ Se calcula la distancia total de 3 maneras:
 2. Calculando la distancia entre el primer y el último punto
 3. distancia real entre los puntos
 """
-
+from algoritmo import algoritmo_simple
+import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -14,19 +15,20 @@ import matplotlib.pyplot as plt
 def simulacion_recta():
     datos = []
     for i in range(10000):
-        # Crear los puntos
         x = np.array([0, 10, 20], dtype=float)
-        # Añadir ruido gaussiano a las coordenadas x e y
-        x += np.random.normal(0, 0.1, 3)
-        y = np.array([0, 0, 0]) + np.random.normal(0, 0.1, 3)
-
-        # debugging
-        # print(x)
-        # print(y)
+        y = np.array([0, 0, 0], dtype=float)
 
         #calcular la distancia real(solo coordenada x)
         dist_real = np.sum(np.diff(x))
         # print(dist_real)
+
+        # Añadir ruido gaussiano a las coordenadas x e y
+        x += np.random.normal(0, 0.1, len(x))
+        y += np.random.normal(0, 0.1, len(y))
+
+        # debugging
+        # print(x)
+        # print(y)
 
         #calcular distancia total entre puntos consecutivos
         dist_consecutivos = np.sum(np.sqrt(np.diff(x)**2 + np.diff(y)**2))
@@ -36,31 +38,44 @@ def simulacion_recta():
         dist_primero_ultimo = np.sqrt((x[-1] - x[0])**2 + (y[-1] - y[0])**2)
         # print(dist_primero_ultimo)
 
+        # calcular distancia usando el algoritmo simple
+        D = algoritmo_simple(x, y)
         #crear dataframe con los datos
         datos.append({
             'L_real': dist_real,
             'L_consecutivos': dist_consecutivos,
-            'L_primero_ultimo': dist_primero_ultimo
+            'L_primero_ultimo': dist_primero_ultimo,
+            'D': D
         })
 
     df_datos = pd.DataFrame(datos)
 
-    # crear histogramas
-    import matplotlib.pyplot as plt 
+    # # crear histogramas
+    # import matplotlib.pyplot as plt 
 
+    # plt.figure(figsize=(10, 6))
+    # plt.hist(df_datos['L_consecutivos'], bins=20, color='red', alpha=0.4, edgecolor='red')
+    # plt.hist(df_datos['L_primero_ultimo'], bins=20, color='blue', alpha=0.4, edgecolor='blue')
+
+    # # añadir media
+    # plt.axvline(df_datos['L_real'].mean(), color='black', linewidth=1)
+    # plt.axvline(df_datos['L_consecutivos'].mean(), color='red', linestyle='dashed', linewidth=1)
+    # plt.axvline(df_datos['L_primero_ultimo'].mean(), color='blue', linestyle='dashed', linewidth=1)
+
+    # plt.legend(['Media Real', 'Media Consecutivos', 'Media Primero_ultimo'])
+    # plt.xlabel('Distancia')
+    # plt.ylabel('Frecuencia')
+    # plt.title('Comparación de Histogramas vertical')
+    # plt.grid()
+    # plt.show()
+
+    #distribución con D
     plt.figure(figsize=(10, 6))
-    plt.hist(df_datos['L_consecutivos'], bins=20, color='red', alpha=0.4, edgecolor='red')
-    plt.hist(df_datos['L_primero_ultimo'], bins=20, color='blue', alpha=0.4, edgecolor='blue')
-
-    # añadir media
-    plt.axvline(df_datos['L_real'].mean(), color='black', linewidth=1)
-    plt.axvline(df_datos['L_consecutivos'].mean(), color='red', linestyle='dashed', linewidth=1)
-    plt.axvline(df_datos['L_primero_ultimo'].mean(), color='blue', linestyle='dashed', linewidth=1)
-
-    plt.legend(['Media Real', 'Media Consecutivos', 'Media Primero_ultimo'])
-    plt.xlabel('Distancia')
+    plt.hist(df_datos['D'], bins=20, color='red', alpha=0.4, edgecolor='red')
+    plt.axvline(df_datos['D'].mean(), color='black', linewidth=1)
+    plt.xlabel('Distancia D')
     plt.ylabel('Frecuencia')
-    plt.title('Comparación de Histogramas vertical')
+    plt.title('Distribución de D')
     plt.grid()
     plt.show()
 
@@ -220,3 +235,5 @@ def curva():
     plt.title('Comparación de Histogramas')
     plt.grid()
     plt.show()
+
+simulacion_recta()

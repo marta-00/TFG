@@ -4,11 +4,7 @@ import math
 
 # calcular Distancia
 # D = (cos(alpha))**2 * sum(y_j-y_0) + (sin(alpha))**2 * sum(x_j-x_0) - 2*sum((x_j-x_0)*(y_j-y_0)*cos(alpha)*sin(alpha))
-def algoritmo_simple():
-    # Crear los puntos
-    x = np.linspace(0, 1, 4)  # 3 puntos entre 0 y 1
-    y = [0,1,2,0]  # 3 puntos entre 0 y 1
-
+def algoritmo_simple(x,y):
     # definir variables almacenables
     suma_x = 0
     suma_y = 0
@@ -23,7 +19,11 @@ def algoritmo_simple():
         suma_xy += (x[i-1] - x[0]) * (y[i-1] - y[0])
         #calcular D
         D = (np.cos(alpha)**2) * suma_y + (np.sin(alpha)**2) * suma_x - 2 * suma_xy * np.cos(alpha) * np.sin(alpha)
-        print(f"Iteración {i-1}: D = {D}")
+        #print(f"Iteración {i-1}: D = {D}")
         i += 1
+    return D
 
-algoritmo_simple()
+# Crear los puntos
+x = np.linspace(0, 1, 4)  # 3 puntos entre 0 y 1
+y = [0,1,2,0]  # 3 puntos entre 0 y 1
+algoritmo_simple(x,y)
