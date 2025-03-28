@@ -151,13 +151,11 @@ def limpiar_y_marcar_datos(nombre_dato):
 
     # Definir los umbrales para puntos atípicos
     umbral_superior = media + 4 * desviacion_estandar
-    umbral_inferior = media - 4 * desviacion_estandar
 
-    # Marcar puntos atípicos basados en distancia
     # mirar puntos uno a uno
     i = 0
     while i < len(L_tramo):
-        if L_tramo[i] > 80:
+        if L_tramo[i] > umbral_superior:
             # Coordenadas a marcar
             p_final_x = df_dist['Punto Final'][i][0]
             p_final_y = df_dist['Punto Final'][i][1]
@@ -168,10 +166,22 @@ def limpiar_y_marcar_datos(nombre_dato):
             # Actualizar L_tramo después de marcar los puntos
             df_dist, L_total = distancia(df_coord)
             L_tramo = df_dist['Distancia (m)']
+
+            # Calcular la media y desviación estándar
+            media = L_tramo.mean()
+            desviacion_estandar = L_tramo.std()
+
+            # Actualizar umbral para puntos atípicos
+            umbral_superior = media + 4 * desviacion_estandar
+
+            #reiniciar el bucle
             i=0
 
         else:
             i += 1
+            
+    return df_coord
+    
     #print("Distancia total después de limpiar distancias:", L_total)
     #graf_angulo_dist(df_coord)
     
@@ -203,11 +213,12 @@ def limpiar_y_marcar_datos(nombre_dato):
     #         df_coord.loc[(df_coord['x'] == p_final_x) & (df_coord['y'] == p_final_y), 'marcado'] = False
 
     # # print("Distancia total después de limpiar ángulos:", distancia(df_coord)[1])
-    return df_coord
+    
     
 
 # Llamar a la función para limpiar y marcar datos
-df_limpio = limpiar_y_marcar_datos('datos/Carrera_de_mañana(8).gpx')
+df_limpio = limpiar_y_marcar_datos('datos/Carrera_de_mañana(7).gpx')
 df_distancias, dist_total = distancia(df_limpio)
+print(dist_total)
 grafico(df_limpio)
 graf_angulo_dist(df_limpio)

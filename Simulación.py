@@ -220,6 +220,3 @@ def curva():
     plt.title('Comparación de Histogramas')
     plt.grid()
     plt.show()
-
-# Llamar a la función
-curva()
