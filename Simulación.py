@@ -72,7 +72,6 @@ def simulacion_recta():
     #distribución con D
     plt.figure(figsize=(10, 6))
     plt.hist(df_datos['D'], bins=20, color='red', alpha=0.4, edgecolor='red')
-    plt.axvline(df_datos['D'].mean(), color='black', linewidth=1)
     plt.xlabel('Distancia D')
     plt.ylabel('Frecuencia')
     plt.title('Distribución de D')

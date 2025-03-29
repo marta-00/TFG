@@ -264,20 +264,48 @@ def histograma_n_dist():
 # df_dist_kalman = calcular_distancias_recursivas(df_coord)
 # crear_histograma(df_dist_kalman)
 
-# carrera vertical
-# df_coord = leer_datos_gpx('datos_altitud/11601896081.gpx')
-df_coord = leer_datos_gpx('datos/Carrera_de_mañana(6).gpx')
-# df_coord = leer_datos_gpx('datos_bici/Morning_Ride (5).gpx')
-alt_total, alt_tramo = altitud(df_coord)
+def altitudes():
+    # carrera vertical
+    # df_coord = leer_datos_gpx('datos_altitud/11601896081.gpx')
+    df_coord = leer_datos_gpx('datos/Carrera_de_mañana(7).gpx')
+    # df_coord = leer_datos_gpx('datos_bici/Morning_Ride (5).gpx')
+    alt_total, alt_tramo = altitud(df_coord)
+    print(f"La altitud total con > 0 es: {alt_total} m")
 
-import matplotlib.pyplot as plt
-# crear histograma con los datos de altitud_tramo
-plt.figure(figsize=(10, 6))
-plt.hist(alt_tramo['altitud_tramo'], bins=int((len(alt_tramo['altitud_tramo']))), color='blue', edgecolor='blue', alpha=0.5)
-plt.title('Histograma - Altitudes de los Tramos')
-plt.xlabel('Altitud (m)')
-plt.ylabel('Número de tramos')
-plt.grid()
-plt.show()
 
+    #sumar altitudes de alt_tramo cuando la altitud es mayor a 1sigma
+    # calcular media y desviación estándar de alt_tramo
+    media = alt_tramo['altitud_tramo'].mean()
+    desviacion_estandar = alt_tramo['altitud_tramo'].std()
+    # calcular sigma
+    sigma = media + 1 * desviacion_estandar
+    # filtrar alt_tramo donde altitud_tramo > sigma
+    alt_tramo = alt_tramo[alt_tramo['altitud_tramo'] > sigma]
+    #calcular altitud total
+    alt_total = alt_tramo['altitud_tramo'].sum()
+    print(f"La altitud total con > sigma es: {alt_total} m")
+
+    #sumar altitudes de alt_tramo cuando la altitud es mayor a -1sigma
+    # calcular media y desviación estándar de alt_tramo
+    media = alt_tramo['altitud_tramo'].mean()
+    desviacion_estandar = alt_tramo['altitud_tramo'].std()
+    # calcular sigma
+    sigma = media - 1 * desviacion_estandar
+    # filtrar alt_tramo donde altitud_tramo > sigma
+    alt_tramo = alt_tramo[alt_tramo['altitud_tramo'] > sigma]
+    #calcular altitud total
+    alt_total = alt_tramo['altitud_tramo'].sum()
+    print(f"La altitud total con > -sigma es: {alt_total} m")
+    
+    import matplotlib.pyplot as plt
+    # crear histograma con los datos de altitud_tramo
+    plt.figure(figsize=(10, 6))
+    plt.hist(alt_tramo['altitud_tramo'], bins=int((len(alt_tramo['altitud_tramo']))), color='blue', edgecolor='blue', alpha=0.5)
+    plt.title('Histograma - Altitudes de los Tramos')
+    plt.xlabel('Altitud (m)')
+    plt.ylabel('Número de tramos')
+    plt.grid()
+    plt.show()
+
+altitudes()
 
