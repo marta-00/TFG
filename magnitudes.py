@@ -51,7 +51,7 @@ def distancia(df_coordenadas):
     return df_tramos, distancia_total
 
 
-def altitud(df_coordenadas):
+def altitud1(df_coordenadas):
     """
     Función que calcula la altitud (desnivel positivo acumulado). Esto es se suman las
     altitudes subidas pero no se restan las bajadas.
@@ -93,6 +93,66 @@ def altitud(df_coordenadas):
     df_tramos = pd.DataFrame(tramos)
 
     return altitud_acumulada, df_tramos
+
+import pandas as pd
+
+def calcular_altitud_y_analizar(gpx_file):
+    """
+    Función que calcula la altitud (desnivel positivo acumulado) y realiza un análisis
+    de las altitudes de los tramos. Esto incluye calcular la media, desviación estándar,
+    y filtrar tramos según condiciones específicas.
+    
+    INPUT: gpx_file: str, ruta al archivo GPX que contiene las coordenadas.
+    RETURN: altitud_acumulada: float, el desnivel positivo acumulado en metros
+            alt_total1: float, la altitud total con > -sigma
+            alt_total2: float, la altitud total con > sigma
+            df_tramos: DataFrame con los puntos i-1, i y la altitud del tramo
+    """
+    from leer_datos import leer_datos_gpx
+    # Leer los datos del archivo GPX
+    df_coordenadas = leer_datos_gpx(gpx_file)
+
+    # Calcular la altitud acumulada y los tramos
+    altitud_acumulada = 0
+    elevaciones = df_coordenadas['elevacion'].values
+    altitud_tramo = []
+    tramos = []
+
+    for i in range(1, len(elevaciones)):
+        diferencia = elevaciones[i] - elevaciones[i-1]
+        if diferencia > 0:
+            altitud_acumulada += diferencia
+        altitud_tramo.append(diferencia)
+        tramos.append({
+            'punto_i-1_x': df_coordenadas['x'].iloc[i-1],
+            'punto_i-1_y': df_coordenadas['y'].iloc[i-1],
+            'punto_i_x': df_coordenadas['x'].iloc[i],
+            'punto_i_y': df_coordenadas['y'].iloc[i],
+            'altitud_tramo': diferencia
+        })
+
+    # Crear un DataFrame a partir de la lista de tramos
+    df_tramos = pd.DataFrame(tramos)
+
+    print(f"La altitud total con > 0 es: {altitud_acumulada} m")
+
+    # Análisis de altitudes
+    media = df_tramos['altitud_tramo'].mean()
+    desviacion_estandar = df_tramos['altitud_tramo'].std()
+
+    # Filtrar tramos donde altitud_tramo > -1sigma
+    sigma1 = media - 1 * desviacion_estandar
+    alt_tramo1 = df_tramos[df_tramos['altitud_tramo'] > sigma1]
+    alt_total1 = alt_tramo1['altitud_tramo'].sum()
+    print(f"La altitud total con > -sigma es: {alt_total1} m")
+
+    # Filtrar tramos donde altitud_tramo > 1sigma
+    sigma2 = media + 1 * desviacion_estandar
+    alt_tramo2 = df_tramos[df_tramos['altitud_tramo'] > sigma2]
+    alt_total2 = alt_tramo2['altitud_tramo'].sum()
+    print(f"La altitud total con > sigma es: {alt_total2} m")
+
+    return altitud_acumulada, alt_total1, alt_total2, df_tramos
 
 def separar_datos(df_coordenadas, n_separacion):
     """

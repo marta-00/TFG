@@ -26,7 +26,7 @@ def datos_total_carreras(nombre_carpeta):
 
             # Calcular magnitudes
             dist_tramo, dist_total = distancia(df_coord)
-            alt = altitud(df_coord)
+            alt = altitud1(df_coord)
 
             # Agregar los resultados a la lista
             resultados.append({
