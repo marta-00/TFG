@@ -127,3 +127,45 @@ def descarga_archivos():
         else:
             print(f'Error al descargar {url}: {response.status_code}')
 
+def leer_datos_fit(nombre_archivo):
+    """
+    Función que lee un archivo FIT con los datos de una carrera y crea un DataFrame
+    con los datos transformados a coordenadas x,y y con la elevación en metros.
+
+    INPUT:    nombre_archivo: nombre del archivo FIT
+    RETURN:   DataFrame con coordenadas x,y, elevación y un booleano
+    """
+    from fitparse import FitFile
+    from pyproj import Transformer  # biblioteca python para transformar coordenadas. Tiene en cuenta la curvatura terrestre
+    import pandas as pd  # Importar pandas
+
+    # Abrir el archivo FIT
+    fitfile = FitFile(nombre_archivo)
+
+    coordenadas = []
+    # Recorrer los registros del archivo FIT
+    for record in fitfile.get_messages('record'):
+        # Extraer los datos de latitud, longitud y elevación
+        latitude = record.get_value('position_lat')
+        longitude = record.get_value('position_long')
+        elevation = record.get_value('altitude')
+
+        # Solo añadir si hay datos de posición
+        if latitude is not None and longitude is not None:
+            coordenadas.append([longitude, latitude, elevation])
+
+    # Transformar los datos de latitud y longitud a coordenadas x,y
+    transformer = Transformer.from_crs("EPSG:4326", "EPSG:32630", always_xy=True)
+
+    # Transformar las coordenadas
+    x, y = transformer.transform([i[0] for i in coordenadas], [i[1] for i in coordenadas])
+
+    # Crear un DataFrame con las coordenadas x,y y la elevación
+    df = pd.DataFrame({
+        'x': x,
+        'y': y,
+        'elevacion': [i[2] for i in coordenadas],
+        'marcado': True  # Columna booleana con True para todas las filas
+    })
+
+    return df

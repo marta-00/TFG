@@ -134,7 +134,7 @@ def calcular_altitud_y_analizar(gpx_file):
     # Crear un DataFrame a partir de la lista de tramos
     df_tramos = pd.DataFrame(tramos)
 
-    print(f"La altitud total con > 0 es: {altitud_acumulada} m")
+    #print(f"La altitud total con > 0 es: {altitud_acumulada} m")
 
     # Análisis de altitudes
     media = df_tramos['altitud_tramo'].mean()
@@ -144,13 +144,13 @@ def calcular_altitud_y_analizar(gpx_file):
     sigma1 = media - 1 * desviacion_estandar
     alt_tramo1 = df_tramos[df_tramos['altitud_tramo'] > sigma1]
     alt_total1 = alt_tramo1['altitud_tramo'].sum()
-    print(f"La altitud total con > -sigma es: {alt_total1} m")
+    #print(f"La altitud total con > -sigma es: {alt_total1} m")
 
     # Filtrar tramos donde altitud_tramo > 1sigma
     sigma2 = media + 1 * desviacion_estandar
     alt_tramo2 = df_tramos[df_tramos['altitud_tramo'] > sigma2]
     alt_total2 = alt_tramo2['altitud_tramo'].sum()
-    print(f"La altitud total con > sigma es: {alt_total2} m")
+    #print(f"La altitud total con > sigma es: {alt_total2} m")
 
     return altitud_acumulada, alt_total1, alt_total2, df_tramos
 

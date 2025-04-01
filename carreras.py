@@ -1,5 +1,5 @@
 
-from leer_datos import leer_datos_gpx
+from leer_datos import *
 from magnitudes import *
 from graficos import *
 
@@ -263,11 +263,44 @@ def histograma_n_dist():
 # df_coord = leer_datos_gpx('datos/Media_Maratón_Santander_2024.gpx')
 # df_dist_kalman = calcular_distancias_recursivas(df_coord)
 # crear_histograma(df_dist_kalman)
+def comp_alt():
+    resultados = []
+    import os
+    for nombre_archivo in os.listdir('datos'):
+            if nombre_archivo.endswith('.gpx'):
+                # Leer archivo gpx
+                # df_coord = leer_datos_gpx(f'datos/{nombre_archivo}')
+                altitud_cero, alt_men, alt_mas, df_tramos = calcular_altitud_y_analizar(f'datos/{nombre_archivo}')
+                
+                # Agregar los resultados a la lista
+                resultados.append({
+                    'nombre_carrera': nombre_archivo,
+                    'altitud_cero': altitud_cero,
+                    'altitud_sigma': alt_mas,
+                    'altitud_men_sigma': alt_men
+                })
 
-import os
-for nombre_archivo in os.listdir('datos'):
-        if nombre_archivo.endswith('.gpx'):
-            # Leer archivo gpx
-            # df_coord = leer_datos_gpx(f'{nombre_carpeta}/{nombre_archivo}')
-            altitud_cero, alt_men, alt_mas, df_tramos = calcular_altitud_y_analizar(f'{datos}/{nombre_archivo}')
+    resultados_df = pd.DataFrame(resultados)
 
+    #crear histograma
+    import matplotlib.pyplot as plt
+    bin = int(len(resultados_df['altitud_cero'])*0.5)
+    plt.figure(figsize=(10, 6))
+    plt.hist(resultados_df['altitud_cero'], bins=bin, color='blue', alpha=0.5)
+    plt.hist(resultados_df['altitud_sigma'], bins=bin, color='green', alpha=0.5)
+    plt.hist(resultados_df['altitud_men_sigma'], bins=bin, color='red', alpha=0.5)
+    #añadir media
+    plt.axvline(resultados_df['altitud_cero'].mean(), color='blue', linestyle='dashed', linewidth=1)
+    plt.axvline(resultados_df['altitud_sigma'].mean(), color='green', linestyle='dashed', linewidth=1)
+    plt.axvline(resultados_df['altitud_men_sigma'].mean(), color='red', linestyle='dashed', linewidth=1)
+    plt.legend(['Altitud > 0', 'Altitud > sigma', 'Altitud > -sigma'])
+    plt.xlabel('Altitud (m)')
+    plt.ylabel('Frecuencia')
+    plt.title('Histograma de Altitud')
+    plt.grid()
+    plt.show()
+
+import matplotlib.pyplot as plt
+
+df_avion = leer_datos_fit('datos_reloj/F3OE1400.FIT')
+print(df_avion)
