@@ -7,7 +7,7 @@ Script para calcular todas las magnitudes:
 Todas las funciones reciben un df_coordenadas(leer_datos) y devuelven un dataframe.
 """
 
-def distancia(df_coordenadas):
+def distancia1(df_coordenadas):
     """
     Función que calcula la distancia total de una carrera a partir de las coordenadas x,y.
     Se calcula la distancia en cada tramo de la carrera y se suman todas las distancias.
@@ -49,7 +49,6 @@ def distancia(df_coordenadas):
     df_tramos = pd.DataFrame(tramos_info)
 
     return df_tramos, distancia_total
-
 
 def altitud1(df_coordenadas):
     """
@@ -93,6 +92,48 @@ def altitud1(df_coordenadas):
     df_tramos = pd.DataFrame(tramos)
 
     return altitud_acumulada, df_tramos
+
+def distancia(df_coordenadas):
+    """
+    Función optimizada que calcula la distancia entre puntos marcados como True a partir de las coordenadas x,y.
+    Se calcula la distancia entre cada par de puntos marcados como True y se almacena en la columna 'distancia'.
+    
+    INPUT: df_coordenadas: DataFrame con las coordenadas x,y, elevación y un booleano
+    RETURN: distancia_total: distancia total de la carrera en metros
+    """
+    import numpy as np
+
+    # Inicializar la columna de distancia en 0
+    df_coordenadas['distancia'] = 0.0
+
+    # Filtrar el DataFrame para obtener solo las coordenadas marcadas como True
+    df_filtrado = df_coordenadas[df_coordenadas['marcado'] == True]
+
+    # Si no hay puntos marcados, retornar 0
+    if df_filtrado.empty:
+        return 0.0
+
+    # Extraer las coordenadas x e y del DataFrame filtrado
+    x_coords = df_filtrado['x'].values
+    y_coords = df_filtrado['y'].values
+
+    # Calcular las diferencias entre puntos consecutivos (vectorizado)
+    dx = np.diff(x_coords)
+    dy = np.diff(y_coords)
+    # Calcular las distancias entre puntos consecutivos (vectorizado)
+    distancias = np.sqrt(dx**2 + dy**2)
+
+    # Asignar las distancias calculadas al DataFrame filtrado
+    df_coordenadas.loc[df_filtrado.index[1:], 'distancia'] = distancias
+
+    # La distancia para el primer punto marcado es 0 (ya inicializado)
+
+    # Calcular la distancia total solo para los puntos marcados
+    distancia_total = distancias.sum()
+
+    return distancia_total
+
+
 
 import pandas as pd
 

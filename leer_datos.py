@@ -150,8 +150,10 @@ def leer_datos_fit(nombre_archivo):
         longitude = record.get_value('position_long')
         elevation = record.get_value('altitude')
 
-        # Solo añadir si hay datos de posición
+        # Convertir latitud y longitud de semicírculos a grados decimales
         if latitude is not None and longitude is not None:
+            latitude = (latitude / (2**31)) * 180
+            longitude = (longitude / (2**31)) * 180
             coordenadas.append([longitude, latitude, elevation])
 
     # Transformar los datos de latitud y longitud a coordenadas x,y

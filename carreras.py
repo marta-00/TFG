@@ -39,8 +39,9 @@ def una_carrera():
     df_coord = leer_datos_gpx('datos/Carrera_de_mañana(8).gpx')
     
     # # Calcular distancia tramo y total
-    # df_dist, L_total = distancia(df_coord)
-    # print(f"La distancia total: {L_total}")
+    L_total = distancia(df_coord)
+    print(f"La distancia total: {L_total}")
+    print(df_coord)
 
     # # Obtener las distancias de los tramos
     # L_tramo = df_dist['Distancia (m)']
@@ -302,5 +303,6 @@ def comp_alt():
 
 import matplotlib.pyplot as plt
 
-df_avion = leer_datos_fit('datos_reloj/F3OE1400.FIT')
-print(df_avion)
+# df_avion = leer_datos_fit('datos_reloj/F3RI4309.FIT')
+# grafico(df_avion)
+una_carrera()

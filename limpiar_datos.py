@@ -139,10 +139,10 @@ def limpiar_y_marcar_datos(nombre_dato):
     df_coord = leer_datos_gpx(nombre_dato)
     
     # Calcular distancia tramo y total
-    df_dist, L_total = distancia(df_coord)
-    L_tramo = df_dist['Distancia (m)']
-    # print(f"La distancia total: {L_total}")
-
+    L_total = distancia(df_coord)
+    L_tramo = df_coord['distancia']
+    #print(f"La distancia total: {L_total}")
+    df_coord.to_csv('datos_originales.csv', index=False)
     # Calcular la media y desviación estándar
     media = L_tramo.mean()
     desviacion_estandar = L_tramo.std()
@@ -154,91 +154,28 @@ def limpiar_y_marcar_datos(nombre_dato):
     i = 0
     while i < len(L_tramo):
         if L_tramo[i] > umbral_superior:
-            # Coordenadas a marcar
-            p_final_x = df_dist['Punto Final'][i][0]
-            p_final_y = df_dist['Punto Final'][i][1]
-            
-            # Marcar como False los puntos obtenidos en la variable df_coord
-            df_coord.loc[(df_coord['x'] == p_final_x) & (df_coord['y'] == p_final_y), 'marcado'] = False
-
+            # Marcar como False el punto i
+            df_coord.at[i, 'marcado'] = False
+            #print(f"punto marcado como false: {i}")
             # Actualizar L_tramo después de marcar los puntos
-            df_dist, L_total = distancia(df_coord)
-            L_tramo = df_dist['Distancia (m)']
-
-            # Calcular la media y desviación estándar
-            media = L_tramo.mean()
-            desviacion_estandar = L_tramo.std()
-
-            # Actualizar umbral para puntos atípicos
-            umbral_superior = media + 4 * desviacion_estandar
+            L_total = distancia(df_coord)
+            L_tramo = df_coord['distancia']
 
             #reiniciar el bucle
-            i=0
+            i += 1
 
         else:
+            #print("true")
             i += 1
             
     return df_coord
 
-
-def limpiar_y_marcar_datos5(nombre_dato):
-    """
-    Función que limpia los datos de un DataFrame eliminando las filas con valores atípicos.
-    Se considera que un valor es atípico si:
-        - la distancia de un tramo está fuera de los límites definidos por el rango intercuartílico (IQR).
-    INPUT: nombre_dato: string: nombre completo de la carrera (datos/Carrera_de_mañana(8).gpx)
-    RETURN: df_coord: DataFrame: DataFrame con los datos de la carrera limpios.
-    """
-    # Leer los datos
-    df_coord = leer_datos_gpx(nombre_dato)
-    
-    # Calcular distancia tramo y total
-    df_dist, L_total = distancia(df_coord)
-    L_tramo = df_dist['Distancia (m)']
-
-    # Calcular Q1, Q3 y IQR
-    Q1 = L_tramo.quantile(0.25)
-    Q3 = L_tramo.quantile(0.75)
-    IQR = Q3 - Q1
-
-    # Definir los umbrales para puntos atípicos
-    umbral_inferior = Q1 - 1.5 * IQR
-    umbral_superior = Q3 + 1.5 * IQR
-
-    # Mirar puntos uno a uno
-    i = 0
-    while i < len(L_tramo):
-        if L_tramo[i] < umbral_inferior or L_tramo[i] > umbral_superior:
-            # Coordenadas a marcar
-            p_final_x = df_dist['Punto Final'][i][0]
-            p_final_y = df_dist['Punto Final'][i][1]
-            
-            # Marcar como False los puntos obtenidos en la variable df_coord
-            df_coord.loc[(df_coord['x'] == p_final_x) & (df_coord['y'] == p_final_y), 'marcado'] = False
-
-            # Actualizar L_tramo después de marcar los puntos
-            df_dist, L_total = distancia(df_coord)
-            L_tramo = df_dist['Distancia (m)']
-
-            # Recalcular Q1, Q3 y IQR
-            Q1 = L_tramo.quantile(0.25)
-            Q3 = L_tramo.quantile(0.75)
-            IQR = Q3 - Q1
-
-            # Actualizar umbrales para puntos atípicos
-            umbral_inferior = Q1 - 1.5 * IQR
-            umbral_superior = Q3 + 1.5 * IQR
-
-            # Reiniciar el bucle
-            i = 0
-        else:
-            i += 1
-            
-    return df_coord
 
 # Llamar a la función para limpiar y marcar datos
-df_limpio = limpiar_y_marcar_datos5('datos/Carrera_de_mañana(7).gpx')
-df_distancias, dist_total = distancia(df_limpio)
-print(dist_total)
-grafico(df_limpio)
-graf_angulo_dist(df_limpio)
+df_limpio = limpiar_y_marcar_datos('datos/Carrera_de_mañana(5).gpx')
+df_limpio.to_csv('datos_limpios.csv', index=False)
+print("Datos limpios guardados en 'datos_limpios.csv'")
+
+#dist_total = distancia(df_limpio)
+#print(dist_total)
+#grafico(df_limpio)
