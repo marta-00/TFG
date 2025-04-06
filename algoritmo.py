@@ -13,17 +13,23 @@ def algoritmo_simple(x,y):
     i = 2 #tomar 3 puntos
     while i < len(x):
         alpha = math.atan2(y[i] - y[0], x[i] - x[0])
+        print(f"alpha: {alpha}")
         #calcular sumatorios
-        suma_x += x[i-1] - x[0]
-        suma_y += y[i-1] - y[0]
+        suma_x += (x[i-1] - x[0])**2
+        # print(f"sumatorio x: {suma_x}")
+        suma_y += (y[i-1] - y[0])**2
+        # print(f"sumatorio y: {suma_y}")
         suma_xy += (x[i-1] - x[0]) * (y[i-1] - y[0])
+        # print(f"sumatorio xy: {suma_xy}")
         #calcular D
-        D = (np.cos(alpha)**2) * suma_y + (np.sin(alpha)**2) * suma_x - 2 * suma_xy * np.cos(alpha) * np.sin(alpha)
-        #print(f"Iteración {i-1}: D = {D}")
+        D = (np.cos(alpha))**2 * suma_y + (np.sin(alpha))**2 * suma_x - 2 * suma_xy * np.cos(alpha) * np.sin(alpha)
+        print(f"Iteración {i-1}: D = {D}")
         i += 1
     return D
 
 # Crear los puntos
-x = np.linspace(0, 1, 4)  # 3 puntos entre 0 y 1
-y = [0,1,2,0]  # 3 puntos entre 0 y 1
-algoritmo_simple(x,y)
+x = np.linspace(0, 3, 4)  # 3 puntos entre 0 y 1
+y = [4,3,6,4]  # 3 puntos entre 0 y 1
+print(x)
+print(y)
+D = algoritmo_simple(x,y)

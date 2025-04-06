@@ -13,10 +13,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 def simulacion_recta():
+    np.random.seed(42) 
     datos = []
     for i in range(10000):
-        x = np.array([0, 10, 20], dtype=float)
-        y = np.array([0, 0, 0], dtype=float)
+        x = np.array([0, 10, 20, 30], dtype=float)
+        y = np.array([0, 0, 0, 0], dtype=float)
 
         #calcular la distancia real(solo coordenada x)
         dist_real = np.sum(np.diff(x))
