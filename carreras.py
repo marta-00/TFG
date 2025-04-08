@@ -303,6 +303,5 @@ def comp_alt():
 
 import matplotlib.pyplot as plt
 
-# df_avion = leer_datos_fit('datos_reloj/F3RI4309.FIT')
-# grafico(df_avion)
-una_carrera()
+df_avion = leer_datos_fit('datos_reloj/F3RI4309.FIT')
+grafico(df_avion)

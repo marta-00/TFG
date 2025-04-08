@@ -141,8 +141,10 @@ def limpiar_y_marcar_datos(nombre_dato):
     # Calcular distancia tramo y total
     L_total = distancia(df_coord)
     L_tramo = df_coord['distancia']
-    #print(f"La distancia total: {L_total}")
-    df_coord.to_csv('datos_originales.csv', index=False)
+
+    # print(f"La distancia total: {L_total}")
+    # df_coord.to_csv('datos_originales.csv', index=False)
+    
     # Calcular la media y desviación estándar
     media = L_tramo.mean()
     desviacion_estandar = L_tramo.std()
@@ -153,29 +155,32 @@ def limpiar_y_marcar_datos(nombre_dato):
     # mirar puntos uno a uno
     i = 0
     while i < len(L_tramo):
+        # print(i)
         if L_tramo[i] > umbral_superior:
+            
+            if i > 0 and df_coord.at[i-1, 'marcado'] and L_tramo[i-1] == 0:
+                i += 1  # Continuar con el siguiente punto
+                continue
+
             # Marcar como False el punto i
             df_coord.at[i, 'marcado'] = False
-            #print(f"punto marcado como false: {i}")
+
             # Actualizar L_tramo después de marcar los puntos
-            L_total = distancia(df_coord)
+            distancia(df_coord)
             L_tramo = df_coord['distancia']
 
-            #reiniciar el bucle
-            i += 1
-
+            i += 1 
+             
         else:
-            #print("true")
             i += 1
             
     return df_coord
 
-
 # Llamar a la función para limpiar y marcar datos
-df_limpio = limpiar_y_marcar_datos('datos/Carrera_de_mañana(5).gpx')
+df_limpio = limpiar_y_marcar_datos('datos/Carrera_de_mañana(8).gpx')
 df_limpio.to_csv('datos_limpios.csv', index=False)
-print("Datos limpios guardados en 'datos_limpios.csv'")
+#print("Datos limpios guardados en 'datos_limpios.csv'")
 
 #dist_total = distancia(df_limpio)
 #print(dist_total)
-#grafico(df_limpio)
+grafico(df_limpio)

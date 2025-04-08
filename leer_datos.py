@@ -80,6 +80,12 @@ def leer_datos_gpx(nombre_archivo):
         'marcado': True  # Columna booleana con True para todas las filas
     })
 
+    # Eliminar duplicados basados en las columnas 'x' y 'y'
+    # df = df.drop_duplicates(subset=['x', 'y'], keep='first')
+
+    # Restablecer los índices del DataFrame
+    # df.reset_index(drop=True, inplace=True)
+
     return df
 
 def descarga_archivos():
