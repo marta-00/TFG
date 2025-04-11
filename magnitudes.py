@@ -338,6 +338,53 @@ def detectar_curva(df_coordenadas):
     
     return (df_angulos)
 
+def angulo(df_coordenadas):
+    """
+    Función que detecta zonas de curva en una carrera. Se calcula el ángulo como el producto escalar de dos 
+    vectores. 
+    INPUT: df_coordenadas: DataFrame con las columnas 'x', 'y', 'elevación' y 'marcado'
+    RETURN: df_coordenadas: DataFrame modificado con una nueva columna 'ángulo' en la segunda posición.
+    """
+    import pandas as pd
+    import math 
+
+    # Filtrar solo los puntos marcados como True
+    df_coordenadas_filtrado = df_coordenadas[df_coordenadas['marcado'] == True]
+
+    # Extraer las columnas del DataFrame filtrado
+    x = df_coordenadas_filtrado['x'].values
+    y = df_coordenadas_filtrado['y'].values
+    angulos = []
+
+    for i in range(1, len(x) - 1):
+        # Vectores entre los puntos (i-1, i) y (i, i+1)
+        vector1 = (x[i] - x[i-1], y[i] - y[i-1])
+        vector2 = (x[i+1] - x[i], y[i+1] - y[i])
+
+        # Producto escalar de los vectores
+        producto_escalar = vector1[0] * vector2[0] + vector1[1] * vector2[1]
+
+        # Magnitudes de los vectores
+        magnitud1 = math.sqrt(vector1[0]**2 + vector1[1]**2)
+        magnitud2 = math.sqrt(vector2[0]**2 + vector2[1]**2)
+
+        # Calcular el ángulo usando el producto escalar y las magnitudes
+        if magnitud1 * magnitud2 != 0:  # Evitar división por cero
+            cos_angulo = producto_escalar / (magnitud1 * magnitud2)
+            # Asegurarse de que cos_angulo esté en el rango [-1, 1]
+            cos_angulo = max(-1, min(1, cos_angulo))
+            angulo = math.acos(cos_angulo)
+            angulos.append(angulo)
+        else:
+            angulos.append(0)  # Si la magnitud es cero, el ángulo es cero
+
+    # Añadir la columna de ángulos al DataFrame original
+    # Rellenar con NaN para los índices que no tienen ángulo calculado
+    df_coordenadas['ángulo'] = 0.0
+    df_coordenadas.loc[df_coordenadas_filtrado.index[1:-1], 'ángulo'] = angulos
+
+    return df_coordenadas
+
 ## PREPARACIÓN KALMAN
 
 def distancia_punto_a_segmento(p1, p2, p):

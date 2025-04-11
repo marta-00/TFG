@@ -4,7 +4,7 @@
 from magnitudes import *
 from leer_datos import leer_datos_gpx
 
-def grafico(df):
+def grafico1(df):
     """
     Función que crea una gráfica en 2D con las coordenadas x, y, elevación y marcado.
     INPUT: df: DataFrame con las columnas x, y, elevación y marcado (booleano).
@@ -37,48 +37,36 @@ def grafico(df):
     # Mostrar la gráfica
     plt.show()
 
-def crear_histogramas(array1, array2=None, array3=None, nombre1='Array 1', nombre2='Array 2', nombre3='Array 3'):
+def grafico(df):
     """
-    Función que crea un histograma con los datos de uno o varios arrays.
-    El nombre del array se muestra en el título del histograma.
-    INPUTS:     - array1: array con los datos a representar
-                - array2: array con los datos a representar
-                - array3: array con los datos a representar
-                - nombre1: nombre del array 1
-                - nombre2: nombre del array 2
-                - nombre3: nombre del array 3
+    Función que crea una gráfica en 2D con las coordenadas x, y, elevación y marcado.
+    INPUT: df: DataFrame con las columnas x, y, elevación y marcado (booleano).
     """
     import matplotlib.pyplot as plt
-    import math
-    # Crear una lista de arrays de datos y sus nombres
-    datos = [(array1, nombre1)]
     
-    if array2 is not None:
-        datos.append((array2, nombre2))
-    if array3 is not None:
-        datos.append((array3, nombre3))
+    # Seleccionar solo los primeros 1000 datos
+    df = df.head(1000)
+
+    # Separar los datos en marcados y no marcados
+    marcados = df[df['marcado'] == True]
+    no_marcados = df[df['marcado'] == False]
+
+    # Graficar los puntos marcados en azul
+    plt.scatter(marcados['x'], marcados['y'], 
+             color='blue', label='Marcados', alpha=0.5)
     
-    # Determinar el número de histogramas a crear
-    num_histogramas = len(datos)
+    # Graficar los puntos no marcados en rojo (scatter)
+    plt.scatter(no_marcados['x'], no_marcados['y'], 
+                color='red', label='No Marcados', alpha=0.5)
     
-    # Crear una figura con subgráficas
-    fig, axs = plt.subplots(1, num_histogramas, figsize=(5 * num_histogramas, 4))
+    # Etiquetas y título
+    plt.xlabel('Coordenadas X')
+    plt.ylabel('Coordenadas Y')
+    plt.title('Gráfica de Coordenadas')
+    plt.legend()
+    plt.grid()
     
-    # Si solo hay un conjunto de datos, axs no es un array
-    if num_histogramas == 1:
-        axs = [axs]
-    
-    # Crear histogramas para cada conjunto de datos
-    for i, (array, nombre) in enumerate(datos):
-        num_bins = int(math.sqrt(len(array)))  # Número de bins igual a la raíz cuadrada de la longitud del array
-        axs[i].hist(array, bins=num_bins, alpha=0.7, color='blue')
-        axs[i].set_title(nombre)
-        axs[i].set_xlabel('Valores')
-        axs[i].set_ylabel('Frecuencia')
-        axs[i].set_xlim(0, max(array) + 1)  # Establecer el límite máximo en función del valor máximo del array
-    
-    # Ajustar el layout
-    plt.tight_layout()
+    # Mostrar la gráfica
     plt.show()
 
 def graf_angulo_dist(df_coord):

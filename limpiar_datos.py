@@ -117,7 +117,7 @@ def limpiar_y_marcar_datos1(nombre_dato):
         if dist_tramo[i] > umbral_superior and angulos[i] > 20:
             # Marcar la coordenada final del tramo como False
             if i + 1 < len(df_coord):  # Asegurarse de que no se salga del índice
-                df_coord.at[i + 1, 'marcado'] = False
+                df_coord.at[i, 'marcado'] = False
 
     # print("Distancia total después de limpiar ángulos:", distancia(df_coord)[1])
 
@@ -143,8 +143,8 @@ def limpiar_y_marcar_datos(nombre_dato):
     L_tramo = df_coord['distancia']
 
     # print(f"La distancia total: {L_total}")
-    # df_coord.to_csv('datos_originales.csv', index=False)
-    
+    df_coord.to_csv('datos_originales.csv', index=False)
+
     # Calcular la media y desviación estándar
     media = L_tramo.mean()
     desviacion_estandar = L_tramo.std()
@@ -157,10 +157,24 @@ def limpiar_y_marcar_datos(nombre_dato):
     while i < len(L_tramo):
         # print(i)
         if L_tramo[i] > umbral_superior:
-            
+            # No marcar datos con distancia muy grande si el gps se ha parado en un punto
             if i > 0 and df_coord.at[i-1, 'marcado'] and L_tramo[i-1] == 0:
                 i += 1  # Continuar con el siguiente punto
                 continue
+            
+            # Mirar si los 10 anteriores puntos son False
+            if i >= 10 and all(df_coord.loc[i-10:i-1, 'marcado'] == False):
+                # Calcular la distancia entre el punto i y el punto i-10
+                x_i, y_i = df_coord.loc[i, ['x', 'y']]
+                x_i_10, y_i_10 = df_coord.loc[i-10, ['x', 'y']]
+                distancia_i_i_10 = np.sqrt((x_i - x_i_10)**2 + (y_i - y_i_10)**2)
+
+
+                # Comprobar si esta distancia es aproximadamente 20 * media
+                if abs(distancia_i_i_10 - 10 * media) < (0.1 * 10 * media):  # Tolerancia del 10%
+                    i += 1  # Continuar con el siguiente punto
+                    continue
+                
 
             # Marcar como False el punto i
             df_coord.at[i, 'marcado'] = False
@@ -173,14 +187,40 @@ def limpiar_y_marcar_datos(nombre_dato):
              
         else:
             i += 1
-            
+
+    # Calcular los ángulos y distancia tramo
+    angulo(df_coord) 
+    angulos = df_coord['ángulo']
+    dist_tramo = df_coord['distancia']
+
+    # Pasar los ángulos de radianes a grados
+    angulos = np.degrees(angulos)
+
+    # Calcular la media y la desviación estándar de las distancias
+    media_distancia = dist_tramo.mean()
+    desviacion_estandar_distancia = dist_tramo.std()
+
+    # Definir el umbral para la distancia
+    umbral_superior = media_distancia + 1 * desviacion_estandar_distancia
+
+    # Verificar las condiciones y marcar las coordenadas finales
+    for i in range(len(dist_tramo)):
+        if dist_tramo[i] > umbral_superior and angulos[i] > 10:
+            # Marcar la coordenada final del tramo como False
+            if i + 1 < len(df_coord):  # Asegurarse de que no se salga del índice
+                df_coord.at[i, 'marcado'] = False
+                df_coord.at[i, 'distancia'] = 0.0
+                angulo(df_coord)
+                angulos = df_coord['ángulo']
+
     return df_coord
 
 # Llamar a la función para limpiar y marcar datos
-df_limpio = limpiar_y_marcar_datos('datos/Carrera_de_mañana(8).gpx')
+df_limpio = limpiar_y_marcar_datos('datos/Carrera_de_mañana(1).gpx')
 df_limpio.to_csv('datos_limpios.csv', index=False)
 #print("Datos limpios guardados en 'datos_limpios.csv'")
 
-#dist_total = distancia(df_limpio)
+print(distancia(df_limpio))
 #print(dist_total)
 grafico(df_limpio)
+
