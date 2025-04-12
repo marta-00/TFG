@@ -16,8 +16,8 @@ def simulacion_recta():
     np.random.seed(42) 
     datos = []
     for i in range(10000):
-        x = np.array([0, 10, 20, 30], dtype=float)
-        y = np.array([0, 0, 0, 0], dtype=float)
+        x = np.array([0, 10, 20], dtype=float)
+        y = np.array([0, 0, 0], dtype=float)
 
         #calcular la distancia real(solo coordenada x)
         dist_real = np.sum(np.diff(x))
@@ -40,7 +40,7 @@ def simulacion_recta():
         # print(dist_primero_ultimo)
 
         # calcular distancia usando el algoritmo simple
-        D = algoritmo_simple(x, y)
+        D, D_Array = algoritmo_simple(x, y)
         #crear dataframe con los datos
         datos.append({
             'L_real': dist_real,
@@ -236,4 +236,48 @@ def curva():
     plt.grid()
     plt.show()
 
-simulacion_recta()
+def dif_D():
+    #crear simulación recta donde va variando el numero de puntos en la simulación (1-5)
+    x = np.linspace(0, 80, 9)  # 5 puntos entre 0 y 20
+    y = np.zeros(9)
+
+    sigma = 1
+    # Añadir ruido gaussiano a las coordenadas x e y
+    x += np.random.normal(0, sigma, len(x))
+    y += np.random.normal(0, sigma, len(y))
+
+    #calcular D
+    D, D_Array = algoritmo_simple(x, y)
+
+    #calcular diferencia entre D[i] y D[i-1] 
+    dif = np.diff(D_Array)
+    dif = np.insert(dif, 0, D_Array[0])  # Inserta el primer elemento al inicio
+
+
+    #representar dif frente a numero de puntos
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(1, len(dif) + 1), dif, marker='o', linestyle='-')
+    #añadir lineas horizontales en +/- sigma
+    plt.axhline(y=sigma, color='r', linestyle='--', label='Sigma')
+    plt.axhline(y=-sigma, color='r', linestyle='--')
+
+    plt.xlabel('Número de Puntos')
+    plt.ylabel('Diferencia D[i] - D[i-1]')
+    plt.title('Diferencia entre D[i] y D[i-1]')
+    plt.grid()
+    #plt.ylim(-3 * sigma, 3 * sigma)
+    plt.show() 
+        
+dif_D()
+
+def cambio_h():
+    for i in range(1000):
+        x = np.array([0, 10, 20, 30], dtype=float)
+        y = np.array([0, 0, 0, 0], dtype=float)
+
+        # Añadir ruido gaussiano a las coordenadas x e y
+        x += np.random.normal(0, 0.1, len(x))
+        y += np.random.normal(0, 0.1, len(y))
+
+        D, D_array = algoritmo_simple(x, y)
+        
