@@ -268,16 +268,33 @@ def dif_D():
     #plt.ylim(-3 * sigma, 3 * sigma)
     plt.show() 
         
-dif_D()
+
 
 def cambio_h():
-    for i in range(1000):
+    distancias = []
+    for i in range(150):
         x = np.array([0, 10, 20, 30], dtype=float)
-        y = np.array([0, 0, 0, 0], dtype=float)
+        y = np.array([0, 0, 0, i], dtype=float)
 
+        np.random.seed(23)
         # Añadir ruido gaussiano a las coordenadas x e y
-        x += np.random.normal(0, 0.1, len(x))
-        y += np.random.normal(0, 0.1, len(y))
+        x += np.random.normal(0, 0.3, len(x))
+        y += np.random.normal(0, 0.3, len(y))
 
         D, D_array = algoritmo_simple(x, y)
-        
+
+        #calcular diferencia D
+        dif = np.diff(D_array)
+
+        distancias.append(dif)
+    
+    #crear plot
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(150), distancias, marker='o', linestyle='-')
+    plt.xlabel('Cambio en h')
+    plt.ylabel('Dif D')
+    plt.title('Cambio en h vs difD')
+    plt.grid()
+    plt.show()
+
+cambio_h()

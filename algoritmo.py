@@ -29,8 +29,8 @@ def algoritmo_simple(x,y):
     return D, D_array
 
 # Crear los puntos
-x = np.linspace(0, 3, 4)  # 3 puntos entre 0 y 1
-y = [4,3,6,4]  # 3 puntos entre 0 y 1
-D = algoritmo_simple(x,y)
-print(D)
+# x = np.linspace(0, 3, 4)  # 3 puntos entre 0 y 1
+# y = [4,3,6,4]  # 3 puntos entre 0 y 1
+# D = algoritmo_simple(x,y)
+# print(D)
 
