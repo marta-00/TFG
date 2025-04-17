@@ -267,12 +267,46 @@ def dif_D():
     plt.grid()
     #plt.ylim(-3 * sigma, 3 * sigma)
     plt.show() 
-        
+    
 
+def dif_D_histograma():
+    num_simulaciones = 1000
+    num_puntos = 4
+    sigma = 1
+    variaciones = []
+
+    for _ in range(num_simulaciones):
+        # Crear simulación con 4 puntos
+        x = np.linspace(0, 30, num_puntos)  # 4 puntos entre 0 y 80
+        y = np.zeros(num_puntos)
+
+        # Añadir ruido gaussiano a las coordenadas x e y
+        x += np.random.normal(0, sigma, len(x))
+        y += np.random.normal(0, sigma, len(y))
+
+        # Calcular D
+        D, D_Array = algoritmo_simple(x, y)
+
+        # Calcular la variación entre D[i] y D[i-1]
+        dif = np.diff(D_Array)
+        if len(dif) > 0:
+            variacion = np.sum(dif) / (sigma ** 2)  # Dividir por sigma^2
+            variaciones.append(variacion)
+    print(np.mean(variaciones))
+    # Crear histograma
+    plt.figure(figsize=(10, 6))
+    plt.hist(variaciones, bins=30, alpha=0.7, color='blue', edgecolor='black')
+    plt.xlabel('Variación de D / σ²')
+    plt.ylabel('Frecuencia')
+    plt.title('Histograma de la variación de D')
+    plt.grid()
+    plt.show()
+
+dif_D_histograma()
 
 def cambio_h():
     distancias = []
-    for i in range(150):
+    for i in np.arange(0, 1, 0.1):
         x = np.array([0, 10, 20, 30], dtype=float)
         y = np.array([0, 0, 0, i], dtype=float)
 
@@ -290,11 +324,11 @@ def cambio_h():
     
     #crear plot
     plt.figure(figsize=(10, 6))
-    plt.plot(range(150), distancias, marker='o', linestyle='-')
-    plt.xlabel('Cambio en h')
-    plt.ylabel('Dif D')
-    plt.title('Cambio en h vs difD')
+    plt.plot(np.arange(0, 1, 0.1)**2, distancias, marker='o', linestyle='-')
+    plt.xlabel('Cambio en h^2')
+    plt.ylabel('Dif D^2')
+    plt.title('Cambio en h^2 vs difD^2')
     plt.grid()
     plt.show()
 
-cambio_h()
+
