@@ -143,7 +143,7 @@ def limpiar_y_marcar_datos(nombre_dato):
     L_tramo = df_coord['distancia']
 
     # print(f"La distancia total: {L_total}")
-    df_coord.to_csv('datos_originales.csv', index=False)
+    # df_coord.to_csv('datos_originales.csv', index=False)
 
     # Calcular la media y desviación estándar
     media = L_tramo.mean()
@@ -189,38 +189,38 @@ def limpiar_y_marcar_datos(nombre_dato):
             i += 1
 
     # Calcular los ángulos y distancia tramo
-    angulo(df_coord) 
-    angulos = df_coord['ángulo']
-    dist_tramo = df_coord['distancia']
+    # angulo(df_coord) 
+    # angulos = df_coord['ángulo']
+    # dist_tramo = df_coord['distancia']
 
-    # Pasar los ángulos de radianes a grados
-    angulos = np.degrees(angulos)
+    # # Pasar los ángulos de radianes a grados
+    # angulos = np.degrees(angulos)
 
-    # Calcular la media y la desviación estándar de las distancias
-    media_distancia = dist_tramo.mean()
-    desviacion_estandar_distancia = dist_tramo.std()
+    # # Calcular la media y la desviación estándar de las distancias
+    # media_distancia = dist_tramo.mean()
+    # desviacion_estandar_distancia = dist_tramo.std()
 
-    # Definir el umbral para la distancia
-    umbral_superior = media_distancia + 1 * desviacion_estandar_distancia
+    # # Definir el umbral para la distancia
+    # umbral_superior = media_distancia + 1 * desviacion_estandar_distancia
 
-    # Verificar las condiciones y marcar las coordenadas finales
-    for i in range(len(dist_tramo)):
-        if dist_tramo[i] > umbral_superior and angulos[i] > 10:
-            # Marcar la coordenada final del tramo como False
-            if i + 1 < len(df_coord):  # Asegurarse de que no se salga del índice
-                df_coord.at[i, 'marcado'] = False
-                df_coord.at[i, 'distancia'] = 0.0
-                angulo(df_coord)
-                angulos = df_coord['ángulo']
+    # # Verificar las condiciones y marcar las coordenadas finales
+    # for i in range(len(dist_tramo)):
+    #     if dist_tramo[i] > umbral_superior and angulos[i] > 10:
+    #         # Marcar la coordenada final del tramo como False
+    #         if i + 1 < len(df_coord):  # Asegurarse de que no se salga del índice
+    #             df_coord.at[i, 'marcado'] = False
+    #             df_coord.at[i, 'distancia'] = 0.0
+    #             angulo(df_coord)
+    #             angulos = df_coord['ángulo']
 
     return df_coord
 
 # Llamar a la función para limpiar y marcar datos
-df_limpio = limpiar_y_marcar_datos('datos/Carrera_de_mañana(6).gpx')
-df_limpio.to_csv('datos_limpios.csv', index=False)
+df_limpio = limpiar_y_marcar_datos('datos/Carrera_de_mañana(5).gpx')
+# df_limpio.to_csv('datos_limpios.csv', index=False)
 #print("Datos limpios guardados en 'datos_limpios.csv'")
 
-print(distancia(df_limpio))
+# print(distancia(df_limpio))
 #print(dist_total)
-grafico(df_limpio)
+grafico1(df_limpio)
 

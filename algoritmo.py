@@ -4,7 +4,7 @@ import math
 
 # calcular Distancia
 # D = (cos(alpha))**2 * sum(y_j-y_0) + (sin(alpha))**2 * sum(x_j-x_0) - 2*sum((x_j-x_0)*(y_j-y_0)*cos(alpha)*sin(alpha))
-def algoritmo_simple(x,y):
+def algoritmo_D_cuadrado(x,y):
     # definir variables almacenables
     suma_x = 0
     suma_y = 0
@@ -27,6 +27,32 @@ def algoritmo_simple(x,y):
         # print(f"Iteración {i-1}: D = {D}")
         i += 1
     return D, D_array
+
+def algoritmo_S(x,y):
+    # definir variables almacenables
+    suma_x = 0
+    suma_y = 0
+    suma_xy = 0
+    S_array = []
+    i = 2 #tomar 3 puntos
+    while i < len(x):
+        alpha = math.atan2(y[i] - y[0], x[i] - x[0])
+        # print(f"alpha: {alpha}")
+        #calcular sumatorios
+        suma_x += (x[i-1] - x[0])
+        # print(f"sumatorio x: {suma_x}")
+        suma_y += (y[i-1] - y[0])
+        # print(f"sumatorio y: {suma_y}")
+
+        #calcular D
+        S = (np.cos(alpha)) * suma_y - (np.sin(alpha)) * suma_x 
+        S_array.append(S)
+        # print(f"Iteración {i-1}: D = {D}")
+        i += 1
+
+    return S, S_array
+
+
 
 # Crear los puntos
 # x = np.linspace(0, 3, 4)  # 3 puntos entre 0 y 1
