@@ -470,9 +470,6 @@ def cambio_h_S():
     plt.grid()
     plt.show()
 
-dif_D_histograma()
-
-
 
 # recta + recta con cambio de dirección
 
@@ -538,54 +535,27 @@ def cambio_alfa():
     x = np.array([0, 10, 20, 30, 40, 50], dtype=float)
 
     # Primeros tres puntos con y=0
-    y = np.zeros(6, dtype=float)
+    y = np.array([0, 0, 0, 10, 20, 30], dtype=float)
 
-    # Iteramos sobre alfa en radianes 0 a 60 grados
-    alfa = 20 # en grados
-
+    D, D_array = algoritmo_S(x, y)
     
-    # Los primeros tres puntos tienen y=0
-    y[:3] = 0
-
-    # El punto inicial para los últimos tres es (x[2], y[2]) == (20,0)
-    x_base = x[2]
-    y_base = y[2]
-
-    # Distancia horizontal entre puntos consecutivos, asumimos 10
-    d = 10
-
-    # Calculamos las posiciones y para los últimos tres puntos en función del alfa
-    # se alejan formando ese ángulo alfa con la horizontal partiendo desde (x_base, y_base)
-    for i in range(3, 6):
-        # Incremento horizontal desde el punto base
-        dx = d * (i - 2)  # para puntos 3,4,5 son 10,20,30
-        # y = y_base + dx * tan(alfa)
-        y[i] = y_base + dx * np.tan(alfa)
-
-    # Añadimos ruido gaussiano a x e y (igual para todos los puntos)
-    x_noisy = x + np.random.normal(0, 0.3, len(x))
-    y_noisy = y + np.random.normal(0, 0.3, len(y))
-
-    D, D_array = algoritmo_D_cuadrado(x, y)
-    print(D_array)
-    D_Array = np.insert(D_array, 0, 0)
-    print(D_array)
     dif = np.diff(D_array)
-    print(D_array)
-    y_values =  y[1:-1]
-    print(y_values)
+    print(dif)
+    y_values =  y[2:]
+    print(y_values)  #debugging
+
     #mostrar grafico
-    plt.figure(figsize=(10, 6))
-    plt.plot( y_values, D_array, marker='o', linestyle='-')
-    plt.xlabel('Ángulo Alfa (grados)')
-    plt.ylabel(' D^2')
-    plt.title('Variación de  D^2 en función del ángulo Alfa')
-    plt.grid(True)
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
+    # plt.figure(figsize=(10, 6))
+    # plt.plot( y_values, dif, marker='o', linestyle='-')
+    # plt.xlabel('h')
+    # plt.ylabel(' ΔS')
+    # plt.title('ΔS en función de h (giro 45º)')
+    # plt.grid(True)
+    # plt.legend()
+    # plt.tight_layout()
+    # plt.show()
 
 
-
+cambio_alfa()
 
 
