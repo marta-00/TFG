@@ -274,15 +274,16 @@ def dif_D():
     
 def dif_D_histograma():
     num_simulaciones = 1000
-    num_puntos = 8
     sigma = 1
     variaciones = []
-    D_histograma = []
+    variaciones2 = []
+    D_simulaciones = []
+    D2_simulaciones = []
 
     for _ in range(num_simulaciones):
         # Crear simulación con 4 puntos
-        x = np.linspace(0, 70, num_puntos)  # 4 puntos entre 0 y 80
-        y = np.zeros(num_puntos)
+        x = np.linspace(0, 30, 4)  # 4 puntos entre 0 y 80
+        y = np.zeros(4)
 
         # Añadir ruido gaussiano a las coordenadas x e y
         x += np.random.normal(0, sigma, len(x))
@@ -290,19 +291,53 @@ def dif_D_histograma():
 
         # Calcular D
         D, D_Array = algoritmo_D_cuadrado(x, y)
-        D_histograma.append(D/sigma**2)
+        D_simulaciones.append(D/sigma**2)
         # Calcular la variación entre D[i] y D[i-1]
         dif = np.diff(D_Array)
         if len(dif) > 0:
             variacion = np.sum(dif) / (sigma ** 2)  # Dividir por sigma^2
             variaciones.append(variacion)
-    print(np.mean(variaciones))
+
+        # Crear simulación con 8 puntos
+        x2 = np.linspace(0, 70, 8)  # 4 puntos entre 0 y 80
+        y2 = np.zeros(8)
+
+        # Añadir ruido gaussiano a las coordenadas x e y
+        x2 += np.random.normal(0, sigma, len(x2))
+        y2 += np.random.normal(0, sigma, len(y2))
+
+        # Calcular D
+        D2, D2_Array = algoritmo_D_cuadrado(x2, y2)
+        D2_simulaciones.append(D2/sigma**2)
+        # Calcular la variación entre D[i] y D[i-1]
+        dif2 = np.diff(D2_Array)
+        if len(dif2) > 0:
+            variacion2 = np.sum(dif2) / (sigma ** 2)  # Dividir por sigma^2
+            variaciones2.append(variacion2)
+
+    # Calcular la media y desviación estándar
+    media = np.mean(variaciones)
+    desviacion = np.std(variaciones)
+
+    # Definir límites para el 68%, 95% y 99.7% de los datos
+    limite_68_inf = media - desviacion
+    limite_68_sup = media + desviacion
+
+    limite_n_inf = (8-4) * limite_68_inf
+    limite_n_sup = (8-4) * limite_68_sup
+
     # Crear histograma
     plt.figure(figsize=(10, 6))
-    plt.hist(D_histograma, bins=30, alpha=0.7, color='blue', edgecolor='black')
-    plt.xlabel('D² / σ²')
+    plt.hist(variaciones2, bins=30, alpha=0.5, color='red', edgecolor='red', label='8 puntos')
+    plt.hist(variaciones, bins=30, alpha=0.5, color='blue', label='4 puntos')
+    plt.axvline(limite_68_inf, color='black', linestyle='dashed', linewidth=1)
+    plt.axvline(limite_68_sup, color='black', linestyle='dashed', linewidth=1)
+    plt.axvline(limite_n_inf, color='green', linestyle='dashed', linewidth=1)
+    plt.axvline(limite_n_sup, color='green', linestyle='dashed', linewidth=1)
     plt.ylabel('Frecuencia')
-    plt.title('Histograma de D²')
+    plt.xlabel('ΔD² / σ²')
+    plt.legend()
+    plt.title('Histograma de ΔD²(68%)')
     plt.grid()
     plt.show()
 
@@ -338,14 +373,15 @@ def cambio_h():
 
 def dif_S_histograma():
     num_simulaciones = 1000
-    num_puntos = 8
     sigma = 1
     variaciones = []
+    variaciones2 = []
     S_simulaciones = []
+    S2_simulaciones = []
     for _ in range(num_simulaciones):
         # Crear simulación con 4 puntos
-        x = np.linspace(0, 70, num_puntos)  # 4 puntos entre 0 y 80
-        y = np.zeros(num_puntos)
+        x = np.linspace(0, 30, 4)  # 4 puntos entre 0 y 80
+        y = np.zeros(4)
 
         # Añadir ruido gaussiano a las coordenadas x e y
         x += np.random.normal(0, sigma, len(x))
@@ -360,21 +396,58 @@ def dif_S_histograma():
         if len(dif) > 0:
             variacion = np.sum(dif) / (sigma)  # Dividir por sigma
             variaciones.append(variacion)
-    # print(np.mean(variaciones))
+
+
+        # Crear simulación con 8 puntos
+        x2 = np.linspace(0, 90, 10)  # 4 puntos entre 0 y 80
+        y2 = np.zeros(10)
+
+        # Añadir ruido gaussiano a las coordenadas x e y
+        x2 += np.random.normal(0, sigma, len(x2))
+        y2 += np.random.normal(0, sigma, len(y2))
+
+        # Calcular S
+        S2, S2_Array = algoritmo_S(x2, y2)
+        S2_simulaciones.append(S2/sigma)
+        # print(S_Array)
+        # Calcular la variación entre S[i] y S[i-1]
+        dif2 = np.diff(S2_Array)
+        if len(dif2) > 0:
+            variacion2 = np.sum(dif2) / (sigma)  # Dividir por sigma
+            variaciones2.append(variacion2)
+
+    
+   # Calcular la media y desviación estándar
+    media = np.mean(variaciones)
+    desviacion = np.std(variaciones)
+
+    # Definir límites para el 68%, 95% y 99.7% de los datos
+    limite_68_inf = media - desviacion
+    limite_68_sup = media + desviacion
+
+    limite_n_inf = (10-4) * limite_68_inf
+    limite_n_sup = (10-4) * limite_68_sup
+
     # Crear histograma
     plt.figure(figsize=(10, 6))
-    plt.hist(S_simulaciones, bins=30, alpha=0.7, color='blue', edgecolor='black')
-    plt.xlabel('S / σ')
+    plt.hist(variaciones2, bins=30, alpha=0.5, color='red', edgecolor='red', label='10 puntos')
+    plt.hist(variaciones, bins=30, alpha=0.5, color='blue', label='4 puntos')
+    plt.axvline(limite_68_inf, color='black', linestyle='dashed', linewidth=1)
+    plt.axvline(limite_68_sup, color='black', linestyle='dashed', linewidth=1)
+    plt.axvline(limite_n_inf, color='green', linestyle='dashed', linewidth=1)
+    plt.axvline(limite_n_sup, color='green', linestyle='dashed', linewidth=1)
+    plt.xlabel('ΔS / σ')
     plt.ylabel('Frecuencia')
-    plt.title('Histograma de S')
+    plt.title('Histograma de ΔS')
+    plt.legend()
     plt.grid()
     plt.show()
 
 def cambio_h_S():
     distancias = []
     for i in np.arange(0, 100, 1):
-        x = np.array([0, 10, 20, 30], dtype=float)
-        y = np.array([0, 0, 0, i], dtype=float)
+        x = np.array([0, 10, 20, 30, 40, 50, 60], dtype=float)
+        y = np.array([0, 0, 0, 0, 10, 20, 30], dtype=float)
 
         np.random.seed(23)
         # Añadir ruido gaussiano a las coordenadas x e y
@@ -397,4 +470,122 @@ def cambio_h_S():
     plt.grid()
     plt.show()
 
-cambio_h_S()
+dif_D_histograma()
+
+
+
+# recta + recta con cambio de dirección
+
+def cambio_alfa_curva():
+    distancias = []
+    alfas = []
+
+    # Puntos fijos x para 6 puntos
+    x = np.array([0, 10, 20, 30, 40, 50], dtype=float)
+
+    # Primeros tres puntos con y=0
+    y = np.zeros(6, dtype=float)
+
+    # Iteramos sobre alfa en radianes 0 a 60 grados
+    rango_alfas = np.linspace(0, np.deg2rad(60), 100)
+
+    # Semilla para ruido
+    np.random.seed(23)
+
+    for alfa in rango_alfas:
+        # Los primeros tres puntos tienen y=0
+        y[:3] = 0
+
+        # El punto inicial para los últimos tres es (x[2], y[2]) == (20,0)
+        x_base = x[2]
+        y_base = y[2]
+
+        # Distancia horizontal entre puntos consecutivos, asumimos 10
+        d = 10
+
+        # Calculamos las posiciones y para los últimos tres puntos en función del alfa
+        # se alejan formando ese ángulo alfa con la horizontal partiendo desde (x_base, y_base)
+        for i in range(3, 6):
+            # Incremento horizontal desde el punto base
+            dx = d * (i - 2)  # para puntos 3,4,5 son 10,20,30
+            # y = y_base + dx * tan(alfa)
+            y[i] = y_base + dx * np.tan(alfa)
+
+        # Añadimos ruido gaussiano a x e y (igual para todos los puntos)
+        x_noisy = x + np.random.normal(0, 0.3, len(x))
+        y_noisy = y + np.random.normal(0, 0.3, len(y))
+
+        D, D_array = algoritmo_D_cuadrado(x, y)
+        dif = np.diff(D_array)
+        distancias.append(D)
+        alfas.append(np.rad2deg(alfa))
+
+    # Graficar S vs alfa
+    plt.figure(figsize=(8,5))
+    plt.plot(alfas, distancias, marker='o', linestyle='-')
+    plt.xlabel('Ángulo Alfa (grados)')
+    plt.ylabel(' D^2')
+    plt.title('Variación de  D^2 en función del ángulo Alfa')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+def cambio_alfa():
+    distancias = []
+
+    # Puntos fijos x para 6 puntos
+    x = np.array([0, 10, 20, 30, 40, 50], dtype=float)
+
+    # Primeros tres puntos con y=0
+    y = np.zeros(6, dtype=float)
+
+    # Iteramos sobre alfa en radianes 0 a 60 grados
+    alfa = 20 # en grados
+
+    
+    # Los primeros tres puntos tienen y=0
+    y[:3] = 0
+
+    # El punto inicial para los últimos tres es (x[2], y[2]) == (20,0)
+    x_base = x[2]
+    y_base = y[2]
+
+    # Distancia horizontal entre puntos consecutivos, asumimos 10
+    d = 10
+
+    # Calculamos las posiciones y para los últimos tres puntos en función del alfa
+    # se alejan formando ese ángulo alfa con la horizontal partiendo desde (x_base, y_base)
+    for i in range(3, 6):
+        # Incremento horizontal desde el punto base
+        dx = d * (i - 2)  # para puntos 3,4,5 son 10,20,30
+        # y = y_base + dx * tan(alfa)
+        y[i] = y_base + dx * np.tan(alfa)
+
+    # Añadimos ruido gaussiano a x e y (igual para todos los puntos)
+    x_noisy = x + np.random.normal(0, 0.3, len(x))
+    y_noisy = y + np.random.normal(0, 0.3, len(y))
+
+    D, D_array = algoritmo_D_cuadrado(x, y)
+    print(D_array)
+    D_Array = np.insert(D_array, 0, 0)
+    print(D_array)
+    dif = np.diff(D_array)
+    print(D_array)
+    y_values =  y[1:-1]
+    print(y_values)
+    #mostrar grafico
+    plt.figure(figsize=(10, 6))
+    plt.plot( y_values, D_array, marker='o', linestyle='-')
+    plt.xlabel('Ángulo Alfa (grados)')
+    plt.ylabel(' D^2')
+    plt.title('Variación de  D^2 en función del ángulo Alfa')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+
+
+
+
