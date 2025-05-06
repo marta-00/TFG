@@ -532,28 +532,29 @@ def cambio_alfa():
     distancias = []
 
     # Puntos fijos x para 6 puntos
-    x = np.array([0, 10, 20, 30, 40, 50], dtype=float)
+    x = np.array([0, 10, 20, 30, 40, 50, 60, 70], dtype=float)
 
     # Primeros tres puntos con y=0
-    y = np.array([0, 0, 0, 10, 20, 30], dtype=float)
+    y = np.array([0, 0, 0, 10, 20, 30, 40, 50], dtype=float)
 
-    D, D_array = algoritmo_S(x, y)
+    D, D_array = algoritmo_D_cuadrado(x, y)
     
     dif = np.diff(D_array)
-    print(dif)
-    y_values =  y[2:]
-    print(y_values)  #debugging
+    #dif = np.insert(dif, 0, D_array[0]) 
+    #print(dif)
+    y_values =  y[2:-1]
+    #print(y_values)  #debugging
 
     #mostrar grafico
-    # plt.figure(figsize=(10, 6))
-    # plt.plot( y_values, dif, marker='o', linestyle='-')
-    # plt.xlabel('h')
-    # plt.ylabel(' ΔS')
-    # plt.title('ΔS en función de h (giro 45º)')
-    # plt.grid(True)
-    # plt.legend()
-    # plt.tight_layout()
-    # plt.show()
+    plt.figure(figsize=(10, 6))
+    plt.plot( y_values, dif, marker='o', linestyle='-')
+    plt.xlabel('h')
+    plt.ylabel(' ΔD^2')
+    plt.title('ΔD^2 en función de h (giro 45º)')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
 
 
 cambio_alfa()
