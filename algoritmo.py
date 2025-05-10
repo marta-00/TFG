@@ -32,10 +32,17 @@ def algoritmo_S(x,y):
     # definir variables almacenables
     suma_x = 0
     suma_y = 0
-    suma_xy = 0
     S_array = []
     i = 2 #tomar 3 puntos
     while i < len(x):
+        #print(f"Inicio de iteración: i = {i}")
+        if i == 2:
+            limite_68_inf = (-1.2305206390463337)
+            limite_68_sup =  1.2468331005055695
+        else: 
+            limite_68_inf = ((i+2)-3) * (-1.2305206390463337)
+            limite_68_sup = ((i+2)-3) *  1.2468331005055695
+
         alpha = math.atan2(y[i] - y[0], x[i] - x[0])
         # print(f"alpha: {alpha}")
         #calcular sumatorios
@@ -44,11 +51,28 @@ def algoritmo_S(x,y):
         suma_y += (y[i-1] - y[0])
         # print(f"sumatorio y: {suma_y}")
 
-        #calcular D
+        #calcular S
         S = (np.cos(alpha)) * suma_y - (np.sin(alpha)) * suma_x 
         S_array.append(S)
         # print(f"Iteración {i-1}: D = {D}")
+
+        if S>limite_68_inf and S<limite_68_sup: 
+            #es una recta
+            #print(limite_68_inf, limite_68_sup)
+            print("RECTA")
+   
+        else: 
+            #es una curva
+            #volver a empezar el calculo de S
+            #print(limite_68_inf, limite_68_sup)
+            print("CURVA")
+            suma_x = 0
+            suma_y = 0
+            S = 0
+            S_array = []
+
         i += 1
+        #print(f"Fin de iteración: i = {i}")
 
     return S, S_array
 

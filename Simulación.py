@@ -372,7 +372,7 @@ def cambio_h():
 # Simulación de graficos para la variable S
 
 def dif_S_histograma():
-    num_simulaciones = 1000
+    num_simulaciones = 1
     sigma = 1
     variaciones = []
     variaciones2 = []
@@ -380,8 +380,8 @@ def dif_S_histograma():
     S2_simulaciones = []
     for _ in range(num_simulaciones):
         # Crear simulación con 4 puntos
-        x = np.linspace(0, 30, 4)  # 4 puntos entre 0 y 80
-        y = np.zeros(4)
+        x = np.linspace(0, 20, 3)  # 4 puntos entre 0 y 80
+        y = np.zeros(3)
 
         # Añadir ruido gaussiano a las coordenadas x e y
         x += np.random.normal(0, sigma, len(x))
@@ -399,8 +399,8 @@ def dif_S_histograma():
 
 
         # Crear simulación con 8 puntos
-        x2 = np.linspace(0, 90, 10)  # 4 puntos entre 0 y 80
-        y2 = np.zeros(10)
+        x2 = np.linspace(0, 30, 4)  # 4 puntos entre 0 y 80
+        y2 = np.zeros(4)
 
         # Añadir ruido gaussiano a las coordenadas x e y
         x2 += np.random.normal(0, sigma, len(x2))
@@ -418,30 +418,33 @@ def dif_S_histograma():
 
     
    # Calcular la media y desviación estándar
-    media = np.mean(variaciones)
-    desviacion = np.std(variaciones)
+    media = np.mean(S_simulaciones)
+    desviacion = np.std(S_simulaciones)
 
     # Definir límites para el 68%, 95% y 99.7% de los datos
     limite_68_inf = media - desviacion
     limite_68_sup = media + desviacion
+    print(limite_68_inf)
+    print(limite_68_sup)
 
     limite_n_inf = (10-4) * limite_68_inf
     limite_n_sup = (10-4) * limite_68_sup
 
-    # Crear histograma
+    #Crear histograma
     plt.figure(figsize=(10, 6))
-    plt.hist(variaciones2, bins=30, alpha=0.5, color='red', edgecolor='red', label='10 puntos')
-    plt.hist(variaciones, bins=30, alpha=0.5, color='blue', label='4 puntos')
+    plt.hist(S2_simulaciones, bins=30, alpha=0.5, color='red', edgecolor='red', label='10 puntos')
+    plt.hist(S_simulaciones, bins=30, alpha=0.5, color='blue', label='4 puntos')
     plt.axvline(limite_68_inf, color='black', linestyle='dashed', linewidth=1)
     plt.axvline(limite_68_sup, color='black', linestyle='dashed', linewidth=1)
     plt.axvline(limite_n_inf, color='green', linestyle='dashed', linewidth=1)
     plt.axvline(limite_n_sup, color='green', linestyle='dashed', linewidth=1)
-    plt.xlabel('ΔS / σ')
+    plt.xlabel('S / σ')
     plt.ylabel('Frecuencia')
-    plt.title('Histograma de ΔS')
+    plt.title('Histograma de S')
     plt.legend()
     plt.grid()
     plt.show()
+
 
 def cambio_h_S():
     distancias = []
@@ -556,7 +559,53 @@ def cambio_alfa():
     plt.tight_layout()
     plt.show()
 
+# simulacion deteccion curvas
 
-cambio_alfa()
+def deteccion_curva():
+    #np.random.seed(42) 
+    datos = []
+    for i in range(1):
+        # x = np.array([0, 10, 20, 30, 40, 50, 60], dtype=float)
+        # y = np.array([0, 0, 0, 0, -3, -6, -9], dtype=float)
+
+        # # Añadir ruido gaussiano a las coordenadas x e y
+        # x += np.random.normal(0, 0.1, len(x))
+        # y += np.random.normal(0, 0.1, len(y))
+
+        # debugging
+        #print(x)
+        #print(y)
+
+
+        # Generar los datos
+        r = 10
+        #Crear los puntos en la media circunferencia
+        theta = np.linspace(0, np.pi, 20)  # 3 puntos entre 0 y pi
+        x = r * np.cos(theta)  # Coordenadas x
+        y = r * np.sin(theta)  # Coordenadas y
+
+        # Añadir ruido gaussiano a las coordenadas x e y
+        #x_noisy = x + np.random.normal(0, 0.1, 20)
+        #y_noisy = y + np.random.normal(0, 0.1, 20)
+
+        S, S_array = algoritmo_S(x,y)
+
+        #dibujar los puntos x,y
+        plt.figure(figsize=(10, 6))
+        plt.plot(x, y, 'o', label='Puntos')
+        #plt.plot(x_noisy, y_noisy, 'x', label='Puntos con Ruido')
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.title('Puntos cambio de dirección')
+        #plt.legend()
+        plt.grid()
+        plt.axis('equal')
+        plt.show()
+        
+        
+
+deteccion_curva()
+
+    
 
 
