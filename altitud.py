@@ -1,7 +1,7 @@
 """
 Script para calcular todo lo realcionado con la altitud
 """
-from leer_datos import leer_datos_gpx
+from leer_datos import *
 from magnitudes import *
 
 #histograma altitud todas las carreras
@@ -17,25 +17,25 @@ def histograma_altitud():
     altitudes = []
 
     # Bucle que recorre todos los archivos GPX de la carpeta datos y los abre con la función leer_datos_gpx
-    for nombre_archivo in os.listdir('datos_altitud'):
+    for nombre_archivo in os.listdir('datos_treviso'):
         if nombre_archivo.endswith('.gpx'):
             # Leer archivo gpx
-            altitud_acumulada, alt_total1, alt_total2, df_tramos = calcular_altitud_y_analizar(f'datos_altitud/{nombre_archivo}')
+            altitud_acumulada, alt_total1, alt_total2, df_tramos = calcular_altitud_y_analizar(f'datos_treviso/{nombre_archivo}')
             # Agregar los datos de altitud a la lista
             altitudes.append(altitud_acumulada)
             print(f"Altitud acumulada de {nombre_archivo}: {altitud_acumulada} m")
             
-            df_coord = leer_datos_gpx(f'datos_altitud/{nombre_archivo}')
-            print(len(df_coord['elevacion'].tolist()))
+            #df_coord = leer_datos_gpx(f'datos_treviso/{nombre_archivo}')
+            #print(len(df_coord['elevacion'].tolist()))
 
     # Crear el histograma de altitud
-    # plt.hist(altitudes, bins=50, color='blue', alpha=0.7)
-    # plt.title('Histograma de Altitud')
-    # plt.xlabel('Altitud (m)')
-    # plt.ylabel('Frecuencia')
+    plt.hist(altitudes, bins=50, color='blue', alpha=0.7)
+    plt.title('Histograma de Altitud')
+    plt.xlabel('Altitud (m)')
+    plt.ylabel('Frecuencia')
     
-    # # Guardar el histograma en un archivo PNG
-    # plt.show()
+    # Guardar el histograma en un archivo PNG
+    plt.show()
 
 def altitud_carrera(nombre_archivo):
     """
@@ -44,7 +44,7 @@ def altitud_carrera(nombre_archivo):
     import matplotlib.pyplot as plt
     import numpy as np
     # Leer archivo gpx
-    df_coord = leer_datos_gpx(f'datos_altitud/{nombre_archivo}')
+    df_coord = leer_datos_fit(f'datos_reloj/{nombre_archivo}')
     # Calcular altitud acumulada y total
     altitudes = df_coord['elevacion'].tolist()
     dif = np.diff(altitudes)
@@ -56,8 +56,10 @@ def altitud_carrera(nombre_archivo):
     plt.xlabel('Altitud (m)')
     plt.ylabel('Frecuencia')
     plt.show()
+    altitud_acumulada= sum(altitudes)
+    print(f"Altitud acumulada del viaje en avión ({nombre_archivo}): {altitud_acumulada} m")
 
-#altitud_carrera('11601896081.gpx') #altitud bien
+altitud_carrera('F3RI4309.FIT') #altitud bien
 #altitud_carrera('11637916079.gpx') #altitud rara
 
 def comp_alt():

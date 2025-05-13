@@ -94,29 +94,43 @@ def descarga_archivos():
 
     # Lista de URLs
     urls = [
-        "http://www.strava.com/activities/11605563825/export_gpx",
-        "http://www.strava.com/activities/11603305251/export_gpx",
-        "http://www.strava.com/activities/11603060550/export_gpx",
-        "http://www.strava.com/activities/11604271418/export_gpx",
-        "http://www.strava.com/activities/11602568347/export_gpx",
-        "http://www.strava.com/activities/11601902223/export_gpx",
-        "http://www.strava.com/activities/11602359365/export_gpx",
-        "http://www.strava.com/activities/11602663826/export_gpx",
-        "http://www.strava.com/activities/11602504151/export_gpx",
-        "http://www.strava.com/activities/11602375771/export_gpx",
-        "http://www.strava.com/activities/11601984255/export_gpx",
-        "http://www.strava.com/activities/11602556890/export_gpx",
-        "http://www.strava.com/activities/11602604518/export_gpx",
-        "http://www.strava.com/activities/11601896081/export_gpx",
-        "http://www.strava.com/activities/11603179371/export_gpx",
-        "http://www.strava.com/activities/11602021734/export_gpx",
-        "http://www.strava.com/activities/11603238222/export_gpx",
-        "http://www.strava.com/activities/11637916079/export_gpx",
-        "http://www.strava.com/activities/11610025403/export_gpx"
+        "https://www.strava.com/activities/13897904188/export_gpx",
+        "https://www.strava.com/activities/13898874147/export_gpx",
+        "https://www.strava.com/activities/13897548181/export_gpx",
+        "https://www.strava.com/activities/13899135741/export_gpx",
+        "https://www.strava.com/activities/13899648518/export_gpx",
+        "https://www.strava.com/activities/13897255907/export_gpx",
+        "https://www.strava.com/activities/13897682446/export_gpx",
+        "https://www.strava.com/activities/13897269898/export_gpx",
+        "https://www.strava.com/activities/13897321127/export_gpx",
+        "https://www.strava.com/activities/13899062590/export_gpx",
+        "https://www.strava.com/activities/13897643202/export_gpx",
+        "https://www.strava.com/activities/13897256931/export_gpx",
+        "https://www.strava.com/activities/13897952983/export_gpx",
+        "https://www.strava.com/activities/13897369924/export_gpx",
+        "https://www.strava.com/activities/13898130192/export_gpx",
+        "https://www.strava.com/activities/13897427088/export_gpx",
+        "https://www.strava.com/activities/13897212447/export_gpx",
+        "https://www.strava.com/activities/13897368942/export_gpx",
+        "https://www.strava.com/activities/13898011242/export_gpx",
+        "https://www.strava.com/activities/13897569781/export_gpx",
+        "https://www.strava.com/activities/13897778897/export_gpx",
+        "https://www.strava.com/activities/13900706064/export_gpx",
+        "https://www.strava.com/activities/13897785634/export_gpx",
+        "https://www.strava.com/activities/13898056080/export_gpx",
+        "https://www.strava.com/activities/13897296710/export_gpx",
+        "https://www.strava.com/activities/13898602613/export_gpx",
+        "https://www.strava.com/activities/13897879717/export_gpx",
+        "https://www.strava.com/activities/13898186282/export_gpx",
+        "https://www.strava.com/activities/13898272841/export_gpx",
+        "https://www.strava.com/activities/13901316349/export_gpx",
+        "https://www.strava.com/activities/13897891812/export_gpx",
+        "https://www.strava.com/activities/13898102300/export_gpx"
     ]
 
+
     # Crear la carpeta 'datos_altitud' si no existe
-    os.makedirs('datos_altitud', exist_ok=True)
+    os.makedirs('datos_bcn', exist_ok=True)
 
     # Descargar cada archivo GPX
     for url in urls:
@@ -126,12 +140,15 @@ def descarga_archivos():
 
         if response.status_code == 200:
             # Guardar el archivo con el nombre del ID
-            file_path = os.path.join('datos_altitud', f'{activity_id}.gpx')
+            file_path = os.path.join('datos_bcn', f'{activity_id}.gpx')
             with open(file_path, 'wb') as f:
                 f.write(response.content)
             print(f'Descargado: {file_path}')
         else:
             print(f'Error al descargar {url}: {response.status_code}')
+
+
+#descarga_archivos()  # Descomentar para descargar los archivos GPX
 
 def leer_datos_fit(nombre_archivo):
     """
