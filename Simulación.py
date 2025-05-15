@@ -480,11 +480,11 @@ def cambio_alfa_curva():
     distancias = []
     alfas = []
 
-    # Puntos fijos x para 6 puntos
-    x = np.array([0, 10, 20, 30, 40, 50], dtype=float)
+    # Puntos fijos x para 10 puntos
+    x = np.array([0, 10, 20, 30, 40, 50, 60, 70, 80, 90], dtype=float)
 
     # Primeros tres puntos con y=0
-    y = np.zeros(6, dtype=float)
+    y = np.zeros(10, dtype=float)
 
     # Iteramos sobre alfa en radianes 0 a 60 grados
     rango_alfas = np.linspace(0, np.deg2rad(60), 100)
@@ -515,7 +515,7 @@ def cambio_alfa_curva():
         x_noisy = x + np.random.normal(0, 0.3, len(x))
         y_noisy = y + np.random.normal(0, 0.3, len(y))
 
-        D, D_array = algoritmo_D_cuadrado(x, y)
+        D, D_array = algoritmo_S(x, y)
         dif = np.diff(D_array)
         distancias.append(D)
         alfas.append(np.rad2deg(alfa))
@@ -524,12 +524,13 @@ def cambio_alfa_curva():
     plt.figure(figsize=(8,5))
     plt.plot(alfas, distancias, marker='o', linestyle='-')
     plt.xlabel('Ángulo Alfa (grados)')
-    plt.ylabel(' D^2')
-    plt.title('Variación de  D^2 en función del ángulo Alfa')
+    plt.ylabel(' S')
+    plt.title('Variación de S con Alfa (10 puntos)')
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
     plt.show()
+
 
 def cambio_alfa():
     distancias = []
@@ -567,11 +568,11 @@ def deteccion_curva():
     for i in range(100):
         # SIMULACIÓN RECTA
         x = np.array([0, 10, 20, 30, 40, 50, 60], dtype=float)
-        y = np.array([0, 0, 0, 0, 1.4, 2.81, 4.21], dtype=float)
+        y = np.array([0, 0, 0, 0, 0, 0, 0], dtype=float)
 
         # Añadir ruido gaussiano a las coordenadas x e y
-        x += np.random.normal(0, 0.5, len(x))
-        y += np.random.normal(0, 0.5, len(y))
+        #x += np.random.normal(0, 0.5, len(x))
+        #y += np.random.normal(0, 0.5, len(y))
 
         # debugging
         #print(x)
@@ -589,7 +590,8 @@ def deteccion_curva():
         # x_noisy = x + np.random.normal(0, 0.1, 20)
         # y_noisy = y + np.random.normal(0, 0.1, 20)
 
-        S, S_array = algoritmo_S(x,y)
+        S, S_array, distancia = algoritmo_S(x,y)
+        print(distancia)
 
         # #dibujar los puntos x,y
         # plt.figure(figsize=(10, 6))

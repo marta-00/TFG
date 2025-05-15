@@ -30,6 +30,7 @@ def algoritmo_D_cuadrado(x,y):
 
 def algoritmo_S(x,y):
     # definir variables almacenables
+    distancia = 0
     contador = 0
     suma_x = 0
     suma_y = 0
@@ -59,25 +60,22 @@ def algoritmo_S(x,y):
 
         if S>limite_68_inf and S<limite_68_sup: 
             #es una recta
-            #print(limite_68_inf, limite_68_sup)
-            #print("RECTA")
             i += 1
         else: 
             #es una curva
-            #volver a empezar el calculo de S
-            #print(limite_68_inf, limite_68_sup)
-            #print("CURVA")
-            contador += 1 
-            break
-            # suma_x = 0
-            # suma_y = 0
-            # S = 0
-            # S_array = []
 
+            #calcular distancia linea recta entre (x0,y0) y (xi-1,yi-1)
+            distancia += math.sqrt((x[i-1] - x[0])**2 + (y[i-1] - y[0])**2)
+            suma_x = 0
+            suma_y = 0
+            S = 0
+            S_array = []
+            
+            continue
+           
         #print(f"Fin de iteración: i = {i}")
 
-    print(contador)
-    return S, S_array
+    return S, S_array, distancia
 
 
 
@@ -86,4 +84,31 @@ def algoritmo_S(x,y):
 # y = [4,3,6,4]  # 3 puntos entre 0 y 1
 # D = algoritmo_simple(x,y)
 # print(D)
+
+def variacion_limites():
+    limites_sup = []
+    limites_inf = []
+    i = 2 #tomar 3 puntos
+    for i in range(2, 10):
+        #print(f"Inicio de iteración: i = {i}")
+        if i == 2:
+            limite_68_inf = (-1.2305206390463337)
+            limite_68_sup =  1.2468331005055695
+            limites_inf.append(limite_68_inf)
+            limites_sup.append(limite_68_sup)
+        else: 
+            limite_68_inf = ((i+2)-3) * (-1.2305206390463337)
+            limite_68_sup = ((i+2)-3) *  1.2468331005055695
+            limites_inf.append(limite_68_inf)
+            limites_sup.append(limite_68_sup)
+    
+    #plot limites vs i
+    import matplotlib.pyplot as plt
+    plt.plot(range(3, 11), limites_sup, label='limite sup')
+    plt.plot(range(3, 11), limites_inf, label='limite inf')
+    plt.legend()
+    plt.xlabel('número de puntos')
+    plt.ylabel('limite')
+    plt.title('Variación de los límites para S')
+    plt.show()
 
