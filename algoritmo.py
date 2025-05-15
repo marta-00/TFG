@@ -30,6 +30,7 @@ def algoritmo_D_cuadrado(x,y):
 
 def algoritmo_S(x,y):
     # definir variables almacenables
+    contador = 0
     suma_x = 0
     suma_y = 0
     S_array = []
@@ -59,21 +60,23 @@ def algoritmo_S(x,y):
         if S>limite_68_inf and S<limite_68_sup: 
             #es una recta
             #print(limite_68_inf, limite_68_sup)
-            print("RECTA")
-   
+            #print("RECTA")
+            i += 1
         else: 
             #es una curva
             #volver a empezar el calculo de S
             #print(limite_68_inf, limite_68_sup)
-            print("CURVA")
-            suma_x = 0
-            suma_y = 0
-            S = 0
-            S_array = []
+            #print("CURVA")
+            contador += 1 
+            break
+            # suma_x = 0
+            # suma_y = 0
+            # S = 0
+            # S_array = []
 
-        i += 1
         #print(f"Fin de iteración: i = {i}")
 
+    print(contador)
     return S, S_array
 
 
