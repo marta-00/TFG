@@ -560,15 +560,15 @@ def cambio_alfa():
     plt.tight_layout()
     plt.show()
 
-# simulacion deteccion curvas
+# simulacion deteccion curvasc
 
 def deteccion_curva():
     #np.random.seed(42) 
     datos = []
-    for i in range(100):
+    for i in range(1):
         # SIMULACIÓN RECTA
-        x = np.array([0, 10, 20, 30, 40, 50, 60], dtype=float)
-        y = np.array([0, 0, 0, 0, 0, 0, 0], dtype=float)
+        x = np.array([0, 10, 20, 30, 40, 50, 60, 70, 80], dtype=float)
+        y = np.array([0, 0, 0, 0, 0, 0, 0, 10, 20], dtype=float)
 
         # Añadir ruido gaussiano a las coordenadas x e y
         #x += np.random.normal(0, 0.5, len(x))

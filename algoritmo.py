@@ -30,11 +30,14 @@ def algoritmo_D_cuadrado(x,y):
 
 def algoritmo_S(x,y):
     # definir variables almacenables
+    distancia_total = []
     distancia = 0
     contador = 0
     suma_x = 0
     suma_y = 0
     S_array = []
+    x_0 = x[0]
+    y_0 = y[0]
     i = 2 #tomar 3 puntos
     while i < len(x):
         #print(f"Inicio de iteración: i = {i}")
@@ -45,12 +48,12 @@ def algoritmo_S(x,y):
             limite_68_inf = ((i+2)-3) * (-1.2305206390463337)
             limite_68_sup = ((i+2)-3) *  1.2468331005055695
 
-        alpha = math.atan2(y[i] - y[0], x[i] - x[0])
+        alpha = math.atan2(y[i] - y_0, x[i] - x_0)
         # print(f"alpha: {alpha}")
         #calcular sumatorios
-        suma_x += (x[i-1] - x[0])
+        suma_x += (x[i-1] - x_0)
         # print(f"sumatorio x: {suma_x}")
-        suma_y += (y[i-1] - y[0])
+        suma_y += (y[i-1] - y_0)
         # print(f"sumatorio y: {suma_y}")
 
         #calcular S
@@ -60,22 +63,31 @@ def algoritmo_S(x,y):
 
         if S>limite_68_inf and S<limite_68_sup: 
             #es una recta
+            distancia = math.sqrt((x[i] - x_0)**2 + (y[i] - y_0)**2)
+            #print("RECTA")
             i += 1
         else: 
             #es una curva
-
+            #print("CURVA")
             #calcular distancia linea recta entre (x0,y0) y (xi-1,yi-1)
-            distancia += math.sqrt((x[i-1] - x[0])**2 + (y[i-1] - y[0])**2)
+            distancia_total.append(distancia)
+
             suma_x = 0
             suma_y = 0
             S = 0
             S_array = []
-            
-            continue
+            x_0 = x[i-1]
+            y_0 = y[i-1]
+
+           
            
         #print(f"Fin de iteración: i = {i}")
-
-    return S, S_array, distancia
+        
+        #print(f"distancia: {distancia}")
+    
+    distancia_total.append(distancia)
+    distancia_carrera = sum(distancia_total)
+    return S, S_array, distancia_carrera
 
 
 

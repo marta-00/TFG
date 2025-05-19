@@ -216,11 +216,10 @@ def limpiar_y_marcar_datos(nombre_dato):
     return df_coord
 
 # Llamar a la función para limpiar y marcar datos
-df_limpio = limpiar_y_marcar_datos('datos/Carrera_de_mañana(5).gpx')
+#df_limpio = limpiar_y_marcar_datos('datos/Carrera_de_mañana(5).gpx')
 # df_limpio.to_csv('datos_limpios.csv', index=False)
 #print("Datos limpios guardados en 'datos_limpios.csv'")
 
 # print(distancia(df_limpio))
 #print(dist_total)
-grafico1(df_limpio)
 

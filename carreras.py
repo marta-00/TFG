@@ -2,7 +2,7 @@
 from leer_datos import *
 from magnitudes import *
 from graficos import *
-
+from algoritmo import *
 """
 GUARDAR GRAFICOS EN CARPETA
 #crear una carpeta para guardar los datos de cada carpeta dentro deresultados\carreras con el nombre de la carrera
@@ -37,11 +37,16 @@ def una_carrera():
     import matplotlib.pyplot as plt
     # Leer datos del archivo GPX
     df_coord = leer_datos_gpx('datos/Carrera_de_mañana(8).gpx')
-    
+    x = df_coord['x'].tolist()
+    y = df_coord['y'].tolist()
+
+    S, S_array, distancia = algoritmo_S(x,y)
+    print(distancia)
+
     # # Calcular distancia tramo y total
-    L_total = distancia(df_coord)
-    print(f"La distancia total: {L_total}")
-    print(df_coord)
+    # L_total = distancia(df_coord)
+    # print(f"La distancia total: {L_total}")
+    # print(df_coord)
 
     # # Obtener las distancias de los tramos
     # L_tramo = df_dist['Distancia (m)']
@@ -265,3 +270,5 @@ def histograma_n_dist():
 # df_dist_kalman = calcular_distancias_recursivas(df_coord)
 # crear_histograma(df_dist_kalman)
 import matplotlib.pyplot as plt
+
+
