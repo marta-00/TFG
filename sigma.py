@@ -6,6 +6,9 @@ from algoritmo import *
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+## MÉTODO COMPARACIÓN CON SIMULACIÓN
+
 def tramo_recto(): 
     """
     Función que elige un tramo recto de una carrera
@@ -64,7 +67,6 @@ def tramo_recto():
     plt.legend()
     plt.show()
 
-
 def pendiente():
     import numpy as np
 
@@ -74,4 +76,4 @@ def pendiente():
     m, b = np.polyfit(X, Y, 1)
     print(f"Pendiente: {m}")
 
-tramo_recto()
+## MÉTODO HISTOGRAMA CARRERA

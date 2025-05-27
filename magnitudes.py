@@ -385,6 +385,9 @@ def angulo(df_coordenadas):
 
     return df_coordenadas
 
+
+
+
 ## PREPARACIÓN KALMAN
 
 def distancia_punto_a_segmento(p1, p2, p):

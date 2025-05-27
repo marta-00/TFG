@@ -269,6 +269,119 @@ def histograma_n_dist():
 # df_coord = leer_datos_gpx('datos/Media_Maratón_Santander_2024.gpx')
 # df_dist_kalman = calcular_distancias_recursivas(df_coord)
 # crear_histograma(df_dist_kalman)
-import matplotlib.pyplot as plt
 
+
+def clasificar_histogramas(df, plot=False):
+    """
+    Clasifica el histograma de las distancias entre puntos consecutivos.
+
+    Parámetros:
+        df (pd.DataFrame): DataFrame con columnas 'x' e 'y' representando coordenadas.
+        plot (bool): Si True, muestra el histograma con la densidad.
+
+    Retorna:
+        str: Tipo de histograma ('normal', 'bimodal', 'extensa')
+    """
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import pandas as pd
+    from scipy.signal import find_peaks
+    from scipy.stats import gaussian_kde, kurtosis
+
+    # Calcular distancias entre puntos consecutivos
+    dx = df['x'].diff().dropna()
+    dy = df['y'].diff().dropna()
+    distancias = np.sqrt(dx**2 + dy**2)
+
+    if len(distancias) < 10:
+        return 'extensa'  # No hay suficientes datos
+    
+    # 2. Recorte de outliers extremos
+    umbral = np.percentile(distancias, 90)
+    distancias_filtradas = distancias[distancias <= umbral]
+
+    if len(distancias_filtradas) < 5:
+        return 'extensa'
+
+    # 3. KDE y detección de picos
+    kde = gaussian_kde(distancias_filtradas)
+    xs = np.linspace(distancias_filtradas.min(), distancias_filtradas.max(), 500)
+    density = kde(xs)
+
+    # Detectar picos prominentes
+    peaks, properties = find_peaks(density, height=np.max(density)*0.1, distance=10)
+    peak_heights = properties['peak_heights']
+
+    # Detectar valles entre los dos picos principales (si los hay)
+    if len(peaks) >= 2:
+        sorted_idx = np.argsort(peak_heights)[::-1]  # orden descendente
+        top_peaks = peaks[sorted_idx[:2]]
+        left, right = np.sort(top_peaks)
+        valley_region = density[left:right]
+        valley_min = np.min(valley_region)
+        valley_ratio = valley_min / np.mean(peak_heights[sorted_idx[:2]])
+    else:
+        valley_ratio = 0
+
+
+    # --- Clasificación ---
+    if len(peaks) == 1:
+        clasificacion = 'normal'
+
+        # Calcular sigma directamente para distribución unimodal
+        mu = np.mean(distancias_filtradas)
+        sigma = np.std(distancias_filtradas)
+        print(f"Sigma estimada (unimodal): {sigma:.4f}")
+
+
+    elif len(peaks) == 2 and valley_ratio < 0.6:
+        clasificacion = 'bimodal'
+        # Encontrar el punto de valle entre los dos picos principales
+        valley_idx = np.argmin(density[left:right]) + left
+        valley_x = xs[valley_idx]
+
+        # Separar los datos según el valle
+        grupo1 = distancias_filtradas[distancias_filtradas <= valley_x]
+        grupo2 = distancias_filtradas[distancias_filtradas > valley_x]
+
+        # Calcular medias y sigmas individuales
+        mu1, sigma1 = np.mean(grupo1), np.std(grupo1)
+        mu2, sigma2 = np.mean(grupo2), np.std(grupo2)
+
+        # Proporciones de cada grupo
+        w1 = len(grupo1) / (len(grupo1) + len(grupo2))
+        w2 = 1 - w1
+
+        # Media total
+        mu_total = w1 * mu1 + w2 * mu2
+
+        # Varianza total con la fórmula de mezcla
+        var_total = w1 * (sigma1**2 + (mu1 - mu_total)**2) + w2 * (sigma2**2 + (mu2 - mu_total)**2)
+        sigma_total = np.sqrt(var_total)
+
+        # Puedes imprimirla, retornarla o usarla en más análisis
+        print(f"Sigma total estimada (bimodal): {sigma_total:.4f}")
+
+    else:
+        clasificacion = 'extensa'
+        # Calcular sigma directa para distribución extensa (sin estructura clara)
+        mu = np.mean(distancias_filtradas)
+        sigma = np.std(distancias_filtradas)
+        print(f"Sigma estimada (extensa): {sigma:.4f}")
+
+
+    if plot:
+        plt.hist(distancias_filtradas, bins=30, density=True, alpha=0.3, label='Histograma', color='gray')
+        plt.plot(xs, density, label='KDE', color='blue')
+        plt.plot(xs[peaks], density[peaks], 'ro', label='Picos detectados')
+        if len(peaks) >= 2:
+            plt.fill_between(xs[left:right], 0, density[left:right], color='orange', alpha=0.2, label='Valle')
+        plt.axvline(umbral, color='red', linestyle='--', alpha=0.3, label=f'Corte 90%')
+        plt.title(f"Clasificación: {clasificacion}")
+        plt.xlabel("Distancia")
+        plt.ylabel("Densidad")
+        plt.legend()
+        plt.show()
+
+    return clasificacion
 

@@ -281,8 +281,8 @@ def dif_D_histograma():
     D2_simulaciones = []
 
     for _ in range(num_simulaciones):
-        # Crear simulación con 4 puntos
-        x = np.linspace(0, 30, 4)  # 4 puntos entre 0 y 80
+        # Crear simulación con 3 puntos
+        x = np.linspace(0, 30, 4)  # 3 puntos entre 0 y 80
         y = np.zeros(4)
 
         # Añadir ruido gaussiano a las coordenadas x e y
@@ -322,24 +322,25 @@ def dif_D_histograma():
     # Definir límites para el 68%, 95% y 99.7% de los datos
     limite_68_inf = media - desviacion
     limite_68_sup = media + desviacion
-
+    print(limite_68_inf)
+    print(limite_68_sup)
     limite_n_inf = (8-4) * limite_68_inf
     limite_n_sup = (8-4) * limite_68_sup
 
-    # Crear histograma
-    plt.figure(figsize=(10, 6))
-    plt.hist(variaciones2, bins=30, alpha=0.5, color='red', edgecolor='red', label='8 puntos')
-    plt.hist(variaciones, bins=30, alpha=0.5, color='blue', label='4 puntos')
-    plt.axvline(limite_68_inf, color='black', linestyle='dashed', linewidth=1)
-    plt.axvline(limite_68_sup, color='black', linestyle='dashed', linewidth=1)
-    plt.axvline(limite_n_inf, color='green', linestyle='dashed', linewidth=1)
-    plt.axvline(limite_n_sup, color='green', linestyle='dashed', linewidth=1)
-    plt.ylabel('Frecuencia')
-    plt.xlabel('ΔD² / σ²')
-    plt.legend()
-    plt.title('Histograma de ΔD²(68%)')
-    plt.grid()
-    plt.show()
+    # # Crear histograma
+    # plt.figure(figsize=(10, 6))
+    # plt.hist(variaciones2, bins=30, alpha=0.5, color='red', edgecolor='red', label='8 puntos')
+    # plt.hist(variaciones, bins=30, alpha=0.5, color='blue', label='4 puntos')
+    # plt.axvline(limite_68_inf, color='black', linestyle='dashed', linewidth=1)
+    # plt.axvline(limite_68_sup, color='black', linestyle='dashed', linewidth=1)
+    # plt.axvline(limite_n_inf, color='green', linestyle='dashed', linewidth=1)
+    # plt.axvline(limite_n_sup, color='green', linestyle='dashed', linewidth=1)
+    # plt.ylabel('Frecuencia')
+    # plt.xlabel('ΔD² / σ²')
+    # plt.legend()
+    # plt.title('Histograma de ΔD²(68%)')
+    # plt.grid()
+    # plt.show()
 
 def cambio_h():
     distancias = []
@@ -607,7 +608,7 @@ def deteccion_curva():
         
         
 
-deteccion_curva()
+dif_D_histograma()
 
     
 
