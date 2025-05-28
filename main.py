@@ -48,6 +48,7 @@ def main():
         if nombre_archivo.endswith('.gpx'):
             # Leer archivo gpx
             df_coord = leer_datos_gpx(f'datos/{nombre_archivo}')
+            tipo, sigma = clasificar_histogramas(df_coord, False)
 
             #DISTANCIAS INICIALES
             distancia_inicial = distancia(df_coord)
@@ -57,14 +58,14 @@ def main():
             x_alg = df_coord['x'].tolist()
             y_alg = df_coord['y'].tolist()
             #aplicar algoritmo 
-            S, S_array, distancia_alg,segmentos = algoritmo_S(x_alg,y_alg)
+            S, S_array, distancia_alg,segmentos = algoritmo_S(x_alg,y_alg,sigma)
             hist_algoritmo_S.append(distancia_alg)
 
             # APLICAR ALGORTIMO D
             x_alg = df_coord['x'].tolist()
             y_alg = df_coord['y'].tolist()
             #aplicar algoritmo 
-            S, S_array, distancia_alg, segmentos = algoritmo_D_cuadrado(x_alg,y_alg)
+            S, S_array, distancia_alg, segmentos = algoritmo_D_cuadrado(x_alg,y_alg,sigma)
             hist_algoritmo_D.append(distancia_alg)
 
             # LIMPIAR DATOS + ALGORITMO 
@@ -76,7 +77,7 @@ def main():
             y_limpio = df_filtrado['y'].tolist()  
 
             #aplicar algoritmo
-            S_limpio, S_array_limpio, distancia_limpio, segmentos = algoritmo_D_cuadrado(x_limpio,y_limpio)
+            S_limpio, S_array_limpio, distancia_limpio, segmentos = algoritmo_D_cuadrado(x_limpio,y_limpio,sigma)
             hist_limpios.append(distancia_limpio)
     
     # crear histograma comparativo
@@ -118,7 +119,7 @@ def grafico_carrera_algoritmo():
     y_limpio = df_filtrado['y'].tolist()  
 
     # aplicar algoritmo
-    S_limpio, S_array_limpio, distancia_limpio, segmentos = algoritmo_S(x_limpio,y_limpio)
+    S_limpio, S_array_limpio, distancia_limpio, segmentos = algoritmo_S(x_limpio,y_limpio,1)
 
     # Graficar los segmentos rectos
     graficar_segmentos(x_alg, y_alg, segmentos)
@@ -132,7 +133,7 @@ def prueba_carrera():
             # Leer archivo gpx
             df_coord_limpias = limpiar_y_marcar_datos(f'datos/{nombre_archivo}')
             df_filtrado = df_coord_limpias[df_coord_limpias['marcado'] == True]
-            tipo = clasificar_histogramas(df_filtrado, False)
+            tipo, sigma = clasificar_histogramas(df_filtrado, False)
 
             # if tipo == 'normal':
             #     #print('modal')
@@ -164,6 +165,6 @@ def prueba_carrera():
 
 
 if __name__ == "__main__":
-    #grafico_carrera_algoritmo()
+    grafico_carrera_algoritmo()
     #main()
-    prueba_carrera()
+    #prueba_carrera()

@@ -331,7 +331,7 @@ def clasificar_histogramas(df, plot=False):
         # Calcular sigma directamente para distribución unimodal
         mu = np.mean(distancias_filtradas)
         sigma = np.std(distancias_filtradas)
-        print(f"Sigma estimada (unimodal): {sigma:.4f}")
+        #print(f"Sigma estimada (unimodal): {sigma:.4f}")
 
 
     elif len(peaks) == 2 and valley_ratio < 0.6:
@@ -357,17 +357,17 @@ def clasificar_histogramas(df, plot=False):
 
         # Varianza total con la fórmula de mezcla
         var_total = w1 * (sigma1**2 + (mu1 - mu_total)**2) + w2 * (sigma2**2 + (mu2 - mu_total)**2)
-        sigma_total = np.sqrt(var_total)
+        sigma = np.sqrt(var_total)
 
         # Puedes imprimirla, retornarla o usarla en más análisis
-        print(f"Sigma total estimada (bimodal): {sigma_total:.4f}")
+        #print(f"Sigma total estimada (bimodal): {sigma:.4f}")
 
     else:
         clasificacion = 'extensa'
         # Calcular sigma directa para distribución extensa (sin estructura clara)
         mu = np.mean(distancias_filtradas)
         sigma = np.std(distancias_filtradas)
-        print(f"Sigma estimada (extensa): {sigma:.4f}")
+        #print(f"Sigma estimada (extensa): {sigma:.4f}")
 
 
     if plot:
@@ -383,5 +383,5 @@ def clasificar_histogramas(df, plot=False):
         plt.legend()
         plt.show()
 
-    return clasificacion
+    return clasificacion, sigma
 

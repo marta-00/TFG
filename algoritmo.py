@@ -6,7 +6,8 @@ import math
 # D = (cos(alpha))**2 * sum(y_j-y_0) + (sin(alpha))**2 * sum(x_j-x_0) - 2*sum((x_j-x_0)*(y_j-y_0)*cos(alpha)*sin(alpha))
 # -1.2365855072977199
 # 4.539955729099605
-def algoritmo_D_cuadrado(x,y):
+def algoritmo_D_cuadrado(x,y, sigma):
+    import math
     # definir variables almacenables
     distancia_total = []
     distancia = 0
@@ -30,8 +31,12 @@ def algoritmo_D_cuadrado(x,y):
             limite_68_inf = (-1.9438621901849311)
             limite_68_sup =  2.0222109530114483
         else: 
-            limite_68_inf = (((i+2)-3)/5) * (-1.9438621901849311)
-            limite_68_sup = (((i+2)-3)/5) *  2.0222109530114483
+            # limite_68_inf = (((i+2)-3)) * (-1.9438621901849311) * sigma
+            # limite_68_sup = (((i+2)-3)) *  2.0222109530114483 * sigma
+
+            limite_68_inf = math.sqrt(((i+2)/3)) * (-1.9438621901849311) * sigma
+            limite_68_sup = math.sqrt(((i+2)/3)) *  2.0222109530114483 * sigma
+
 
 
         alpha = math.atan2(y[i] - y_0, x[i] - x[0])
@@ -76,7 +81,7 @@ def algoritmo_D_cuadrado(x,y):
     distancia_carrera = sum(distancia_total)
     return D, D_array, distancia_carrera, segmentos_rectos
 
-def algoritmo_S(x,y):
+def algoritmo_S(x,y,sigma):
     # definir variables almacenables
     distancia_total = []
     distancia = 0
@@ -98,8 +103,11 @@ def algoritmo_S(x,y):
             limite_68_inf = (-1.2305206390463337)
             limite_68_sup =  1.2468331005055695
         else: 
-            limite_68_inf = ((i+2)-3)/5 * (-1.2305206390463337)
-            limite_68_sup = ((i+2)-3)/5 *  1.2468331005055695
+            # limite_68_inf = (((i+2)-3)* sigma) * (-1.2305206390463337)
+            # limite_68_sup = (((i+2)-3) * sigma)*  1.2468331005055695
+            
+            limite_68_inf = (math.sqrt((i+2)/3)*sigma) * (-1.2305206390463337)
+            limite_68_sup = (math.sqrt((i+2)/3)*sigma)*  1.2468331005055695
 
         alpha = math.atan2(y[i] - y_0, x[i] - x_0)
         # print(f"alpha: {alpha}")
@@ -154,35 +162,53 @@ def algoritmo_S(x,y):
 # print(D)
 
 def variacion_limites():
-    limites_sup = []
-    limites_inf = []
+    limites_sup_D = []
+    limites_inf_D = []
+    limites_inf_S = []
+    limites_sup_S = []
     i = 2 #tomar 3 puntos
     for i in range(2, 10):
         #print(f"Inicio de iteración: i = {i}")
         if i == 2:
-            limite_68_inf = (-1.9438621901849311)
-            limite_68_sup =  2.0222109530114483
-            limites_inf.append(limite_68_inf)
-            limites_sup.append(limite_68_sup)
+            limite_68_inf_D = (-1.9438621901849311)
+            limite_68_sup_D =  2.0222109530114483
+            limites_inf_D.append(limite_68_inf_D)
+            limites_sup_D.append(limite_68_sup_D)
+
+            limite_68_inf_S = (-1.2305206390463337)
+            limite_68_sup_S =  1.2468331005055695
+            limites_inf_S.append(limite_68_inf_S)
+            limites_sup_S.append(limite_68_sup_S)
         else: 
-            limite_68_inf = ((i+2)-3) * (-1.9438621901849311)
-            limite_68_sup = ((i+2)-3) *  2.0222109530114483
-            limites_inf.append(limite_68_inf)
-            limites_sup.append(limite_68_sup)
+            limite_68_inf_D =  (math.sqrt((i+2)/3)*1)* (-1.9438621901849311)
+            limite_68_sup_D= (math.sqrt((i+2)/3)*1) *  2.0222109530114483
+            limites_inf_D.append(limite_68_inf_D)
+            limites_sup_D.append(limite_68_sup_D)
+
+            limite_68_inf_S = (math.sqrt((i+2)/3)*1) * (-1.2305206390463337)
+            limite_68_sup_S = (math.sqrt((i+2)/3)*1) *  1.2468331005055695
+            limites_inf_S.append(limite_68_inf_S)
+            limites_sup_S.append(limite_68_sup_S)
     
     #plot limites vs i
     import matplotlib.pyplot as plt
    
-    plt.plot(range(3, 11), limites_sup, label='limite sup', color = 'blue')
-    plt.plot(range(3, 11), limites_inf, label='limite inf', color = 'orange')
+    plt.plot(range(3, 11), limites_sup_D, label='limite sup D^2', color = 'blue')
+    plt.plot(range(3, 11), limites_inf_D, label='limite inf D^2', color = 'cyan')
 
-    plt.plot(range(3, 11), limites_sup, 'o', color='blue')
-    plt.plot(range(3, 11), limites_inf, 'o', color='orange')
+    plt.plot(range(3, 11), limites_sup_S, label='limite sup S', color = 'red')
+    plt.plot(range(3, 11), limites_inf_S, label='limite inf S', color = 'orange')
+
+    plt.plot(range(3, 11), limites_sup_D, 'o', color='blue')
+    plt.plot(range(3, 11), limites_inf_D, 'o', color='cyan')
+
+    plt.plot(range(3, 11), limites_sup_S, 'o', color='red')
+    plt.plot(range(3, 11), limites_inf_S, 'o', color='orange')
 
     plt.legend()
     plt.xlabel('número de puntos')
     plt.ylabel('limite')
-    plt.title('Variación de los límites para D^2')
+    plt.title('Variación de los límites con raiz(n)')
     plt.show()
 
 
