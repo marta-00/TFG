@@ -385,3 +385,16 @@ def clasificar_histogramas(df, plot=False):
 
     return clasificacion, sigma
 
+def eliminar_carreras_atipicas():
+    import os
+    for nombre_archivo in os.listdir('datos_bici'):
+        if nombre_archivo.endswith('.gpx'):
+            # Leer archivo gpx
+            df_coord = leer_datos_gpx(f'datos_bici/{nombre_archivo}')
+            tipo, sigma = clasificar_histogramas(df_coord, False)
+
+            #DISTANCIAS INICIALES
+            distancia_inicial = distancia(df_coord)
+            print(f'{nombre_archivo}: {distancia_inicial}')
+
+#eliminar_carreras_atipicas()

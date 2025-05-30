@@ -44,55 +44,79 @@ def main():
     hist_algoritmo_S = []
     hist_limpios = []
     hist_incial = []
-    for nombre_archivo in os.listdir('datos'):
+    for nombre_archivo in os.listdir('datos_altitud'):
         if nombre_archivo.endswith('.gpx'):
             # Leer archivo gpx
-            df_coord = leer_datos_gpx(f'datos/{nombre_archivo}')
+            df_coord = leer_datos_gpx(f'datos_altitud/{nombre_archivo}')
             tipo, sigma = clasificar_histogramas(df_coord, False)
 
             #DISTANCIAS INICIALES
             distancia_inicial = distancia(df_coord)
             hist_incial.append(distancia_inicial)
+            
 
             # APLICAR ALGORTIMO S
             x_alg = df_coord['x'].tolist()
             y_alg = df_coord['y'].tolist()
             #aplicar algoritmo 
-            S, S_array, distancia_alg,segmentos = algoritmo_S(x_alg,y_alg,sigma)
+            S, S_array, distancia_alg,segmentos = algoritmo_S(x_alg,y_alg,0.5)
             hist_algoritmo_S.append(distancia_alg)
 
             # APLICAR ALGORTIMO D
             x_alg = df_coord['x'].tolist()
             y_alg = df_coord['y'].tolist()
             #aplicar algoritmo 
-            S, S_array, distancia_alg, segmentos = algoritmo_D_cuadrado(x_alg,y_alg,sigma)
+            S, S_array, distancia_alg, segmentos = algoritmo_D_cuadrado(x_alg,y_alg, 2)
             hist_algoritmo_D.append(distancia_alg)
 
-            # LIMPIAR DATOS + ALGORITMO 
-            df_coord_limpias = limpiar_y_marcar_datos(f'datos/{nombre_archivo}')
-            df_filtrado = df_coord_limpias[df_coord_limpias['marcado'] == True]
+            # # LIMPIAR DATOS + ALGORITMO 
+            # df_coord_limpias = limpiar_y_marcar_datos(f'datos/{nombre_archivo}')
+            # df_filtrado = df_coord_limpias[df_coord_limpias['marcado'] == True]
 
-            #Obtener listas solo con los valores marcados como True
-            x_limpio = df_filtrado['x'].tolist()
-            y_limpio = df_filtrado['y'].tolist()  
+            # #Obtener listas solo con los valores marcados como True
+            # x_limpio = df_filtrado['x'].tolist()
+            # y_limpio = df_filtrado['y'].tolist()  
 
-            #aplicar algoritmo
-            S_limpio, S_array_limpio, distancia_limpio, segmentos = algoritmo_D_cuadrado(x_limpio,y_limpio,sigma)
-            hist_limpios.append(distancia_limpio)
+            # #aplicar algoritmo
+            # S_limpio, S_array_limpio, distancia_limpio, segmentos = algoritmo_D_cuadrado(x_limpio,y_limpio,sigma)
+            # hist_limpios.append(distancia_limpio)
+    
+    #calcular media y desviación estandar de los datos
+    import numpy as np
+    media = np.mean(hist_incial)
+    desviacion_estandar = np.std(hist_incial)
+
+    print("datos iniciales")
+    print(f"media: {media}")
+    print(f"desviacion estandar: {desviacion_estandar}")
+
+    media = np.mean(hist_algoritmo_D)
+    desviacion_estandar = np.std(hist_algoritmo_D)
+
+    print("datos algoritmo D^2")
+    print(f"media: {media}")
+    print(f"desviacion estandar: {desviacion_estandar}")
+
+    media = np.mean(hist_algoritmo_S)
+    desviacion_estandar = np.std(hist_algoritmo_S)
+
+    print("datos algoritmo S")
+    print(f"media: {media}")
+    print(f"desviacion estandar: {desviacion_estandar}")
     
     # crear histograma comparativo
     import matplotlib.pyplot as plt
     plt.figure(figsize=(10, 6))
-    plt.hist(np.array(hist_incial)/21097, bins=20, alpha=0.5, label='Inicial', color='green')
-    plt.hist(np.array(hist_algoritmo_D)/21097, bins=20, alpha=0.5, label='Algoritmo D^2', color='blue')
-    plt.hist(np.array(hist_algoritmo_S)/21097, bins=20, alpha=0.5, label='Algoritmo S', color='red')
+    plt.hist(np.array(hist_incial), bins=20, alpha=0.5, label='Inicial', color='green')
+    plt.hist(np.array(hist_algoritmo_D), bins=20, alpha=0.5, label='Algoritmo D^2', color='blue')
+    plt.hist(np.array(hist_algoritmo_S), bins=20, alpha=0.5, label='Algoritmo S', color='red')
     #plt.hist(hist_limpios, bins=20, alpha=0.5, label='Algoritmo D^2 + Filtrado', color='red')
 
-    # Línea vertical en 21.0975 km (media maratón)
-    #plt.axvline(x=21097, color='red', linestyle='--', linewidth=2, label='Media maratón (21097 m)')
+    # # Línea vertical en 21.0975 km (media maratón)
+    # #plt.axvline(x=21097, color='red', linestyle='--', linewidth=2, label='Media maratón (21097 m)')
 
-    plt.title('Histograma comparativo de distancias')
-    plt.xlabel('Distancia (m)')
+    plt.title('Histograma comparativo de distancias para el algoritmo con S')
+    plt.xlabel('Distancia/Dist real (m)')
     plt.ylabel('Frecuencia')
     plt.grid()
     plt.legend()
@@ -103,15 +127,15 @@ def grafico_carrera_algoritmo():
     """
     Funcion que crea un grafico de la carrera con las rectas que crea el algoritmo.
     """
-    df_coord = leer_datos_gpx(f'datos/Carrera_de_mañana(8).gpx')
+    df_coord = leer_datos_gpx(f'datos_treviso/14153741150.gpx')
 
     # APLICAR ALGORTIMO S
     x_alg = df_coord['x'].tolist()
     y_alg = df_coord['y'].tolist()
     # #aplicar algoritmo 
     # S, S_array, distancia_alg, segmentos = algoritmo_D_cuadrado(x_alg,y_alg)
-    
-    df_coord_limpias = limpiar_y_marcar_datos(f'datos/media_maratón_santander_2024.gpx')
+
+    df_coord_limpias = limpiar_y_marcar_datos(f'datos_treviso/14153741150.gpx')
     df_filtrado = df_coord_limpias[df_coord_limpias['marcado'] == True]
 
     # Obtener listas solo con los valores marcados como True
@@ -119,7 +143,7 @@ def grafico_carrera_algoritmo():
     y_limpio = df_filtrado['y'].tolist()  
 
     # aplicar algoritmo
-    S_limpio, S_array_limpio, distancia_limpio, segmentos = algoritmo_S(x_limpio,y_limpio,1)
+    S_limpio, S_array_limpio, distancia_limpio, segmentos = algoritmo_S(x_limpio,y_limpio,0.5)
 
     # Graficar los segmentos rectos
     graficar_segmentos(x_alg, y_alg, segmentos)

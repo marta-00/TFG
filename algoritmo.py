@@ -31,8 +31,8 @@ def algoritmo_D_cuadrado(x,y, sigma):
             limite_68_inf = (-1.9438621901849311)
             limite_68_sup =  2.0222109530114483
         else: 
-            # limite_68_inf = (((i+2)-3)) * (-1.9438621901849311) * sigma
-            # limite_68_sup = (((i+2)-3)) *  2.0222109530114483 * sigma
+            #limite_68_inf = (((i+2)-3)) * (-1.9438621901849311) * sigma
+            #limite_68_sup = (((i+2)-3)) *  2.0222109530114483 * sigma
 
             limite_68_inf = math.sqrt(((i+2)/3)) * (-1.9438621901849311) * sigma
             limite_68_sup = math.sqrt(((i+2)/3)) *  2.0222109530114483 * sigma
