@@ -31,12 +31,11 @@ def algoritmo_D_cuadrado(x,y, sigma):
             limite_68_inf = (-1.9438621901849311)
             limite_68_sup =  2.0222109530114483
         else: 
-            #limite_68_inf = (((i+2)-3)) * (-1.9438621901849311) * sigma
-            #limite_68_sup = (((i+2)-3)) *  2.0222109530114483 * sigma
+            # limite_68_inf = (((i+2)-3)) * (-1.9438621901849311) * sigma
+            # limite_68_sup = (((i+2)-3)) *  2.0222109530114483 * sigma
 
             limite_68_inf = math.sqrt(((i+2)/3)) * (-1.9438621901849311) * sigma
             limite_68_sup = math.sqrt(((i+2)/3)) *  2.0222109530114483 * sigma
-
 
 
         alpha = math.atan2(y[i] - y_0, x[i] - x[0])
@@ -52,7 +51,7 @@ def algoritmo_D_cuadrado(x,y, sigma):
         #calcular D
         D = (np.cos(alpha))**2 * suma_y + (np.sin(alpha))**2 * suma_x - 2 * suma_xy * np.cos(alpha) * np.sin(alpha)
         D_array.append(D)
-
+        
         if D>limite_68_inf and D<limite_68_sup: 
             #es una recta
             distancia = math.sqrt((x[i] - x_0)**2 + (y[i] - y_0)**2)
@@ -73,13 +72,14 @@ def algoritmo_D_cuadrado(x,y, sigma):
             y_0 = y[i-1]
 
 
-        #print(f"Iteración {i-1}: D = {D}")
+        print(f"Iteración {i-1}: D = {D}")
     
     distancia_total.append(distancia)
     segmentos_rectos.append((x_0, y_0, x[i-1], y[i-1]))
 
     distancia_carrera = sum(distancia_total)
     return D, D_array, distancia_carrera, segmentos_rectos
+
 
 def algoritmo_S(x,y,sigma):
     # definir variables almacenables
@@ -120,6 +120,7 @@ def algoritmo_S(x,y,sigma):
         #calcular S
         S = (np.cos(alpha)) * suma_y - (np.sin(alpha)) * suma_x 
         S_array.append(S)
+        
         # print(f"Iteración {i-1}: D = {D}")
 
         if S>limite_68_inf and S<limite_68_sup: 
@@ -143,15 +144,16 @@ def algoritmo_S(x,y,sigma):
 
            
            
-        #print(f"Fin de iteración: i = {i}")
+        print(f"Fin de iteración: i = {i}")
         
-        #print(f"distancia: {distancia}")
+        print(f"distancia: {distancia}")
     
     distancia_total.append(distancia)
     segmentos_rectos.append((x_0, y_0, x[i-1], y[i-1]))
     distancia_carrera = sum(distancia_total)
 
     return S, S_array, distancia_carrera, segmentos_rectos
+    
 
 
 

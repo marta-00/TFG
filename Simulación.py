@@ -290,10 +290,10 @@ def dif_D_histograma():
         y += np.random.normal(0, sigma, len(y))
 
         # Calcular D
-        D, D_Array = algoritmo_D_cuadrado(x, y)
+        D, D_array = algoritmo_D_cuadrado(x, y, 1)
         D_simulaciones.append(D/sigma**2)
         # Calcular la variación entre D[i] y D[i-1]
-        dif = np.diff(D_Array)
+        dif = np.diff(D_array)
         if len(dif) > 0:
             variacion = np.sum(dif) / (sigma ** 2)  # Dividir por sigma^2
             variaciones.append(variacion)
@@ -307,10 +307,10 @@ def dif_D_histograma():
         y2 += np.random.normal(0, sigma, len(y2))
 
         # Calcular D
-        D2, D2_Array = algoritmo_D_cuadrado(x2, y2)
+        D2, D2_array = algoritmo_D_cuadrado(x2, y2, 1)
         D2_simulaciones.append(D2/sigma**2)
         # Calcular la variación entre D[i] y D[i-1]
-        dif2 = np.diff(D2_Array)
+        dif2 = np.diff(D2_array)
         if len(dif2) > 0:
             variacion2 = np.sum(dif2) / (sigma ** 2)  # Dividir por sigma^2
             variaciones2.append(variacion2)
@@ -327,20 +327,20 @@ def dif_D_histograma():
     limite_n_inf = (8-4) * limite_68_inf
     limite_n_sup = (8-4) * limite_68_sup
 
-    # # Crear histograma
-    # plt.figure(figsize=(10, 6))
-    # plt.hist(variaciones2, bins=30, alpha=0.5, color='red', edgecolor='red', label='8 puntos')
-    # plt.hist(variaciones, bins=30, alpha=0.5, color='blue', label='4 puntos')
+    # Crear histograma
+    plt.figure(figsize=(10, 6))
+    plt.hist(D2_simulaciones, bins=30, alpha=0.5, color='red', edgecolor='red', label='8 puntos')
+    plt.hist(D_simulaciones, bins=30, alpha=0.5, color='blue', label='4 puntos')
     # plt.axvline(limite_68_inf, color='black', linestyle='dashed', linewidth=1)
     # plt.axvline(limite_68_sup, color='black', linestyle='dashed', linewidth=1)
     # plt.axvline(limite_n_inf, color='green', linestyle='dashed', linewidth=1)
     # plt.axvline(limite_n_sup, color='green', linestyle='dashed', linewidth=1)
-    # plt.ylabel('Frecuencia')
-    # plt.xlabel('ΔD² / σ²')
-    # plt.legend()
-    # plt.title('Histograma de ΔD²(68%)')
-    # plt.grid()
-    # plt.show()
+    plt.ylabel('Frecuencia')
+    plt.xlabel('ΔD² / σ²')
+    plt.legend()
+    plt.title('Histograma de ΔD²(68%)')
+    plt.grid()
+    plt.show()
 
 def cambio_h():
     distancias = []
@@ -373,7 +373,7 @@ def cambio_h():
 # Simulación de graficos para la variable S
 
 def dif_S_histograma():
-    num_simulaciones = 1
+    num_simulaciones = 1000
     sigma = 1
     variaciones = []
     variaciones2 = []
@@ -381,15 +381,15 @@ def dif_S_histograma():
     S2_simulaciones = []
     for _ in range(num_simulaciones):
         # Crear simulación con 4 puntos
-        x = np.linspace(0, 20, 3)  # 4 puntos entre 0 y 80
-        y = np.zeros(3)
+        x = np.linspace(0, 30, 4)  # 4 puntos entre 0 y 80
+        y = np.zeros(4)
 
         # Añadir ruido gaussiano a las coordenadas x e y
         x += np.random.normal(0, sigma, len(x))
         y += np.random.normal(0, sigma, len(y))
 
         # Calcular S
-        S, S_Array = algoritmo_S(x, y)
+        S, S_Array = algoritmo_S(x, y, 1)
         S_simulaciones.append(S/sigma)
         # print(S_Array)
         # Calcular la variación entre S[i] y S[i-1]
@@ -400,15 +400,15 @@ def dif_S_histograma():
 
 
         # Crear simulación con 8 puntos
-        x2 = np.linspace(0, 30, 4)  # 4 puntos entre 0 y 80
-        y2 = np.zeros(4)
+        x2 = np.linspace(0, 70, 8)  # 4 puntos entre 0 y 80
+        y2 = np.zeros(8)
 
         # Añadir ruido gaussiano a las coordenadas x e y
         x2 += np.random.normal(0, sigma, len(x2))
         y2 += np.random.normal(0, sigma, len(y2))
 
         # Calcular S
-        S2, S2_Array = algoritmo_S(x2, y2)
+        S2, S2_Array = algoritmo_S(x2, y2, 1)
         S2_simulaciones.append(S2/sigma)
         # print(S_Array)
         # Calcular la variación entre S[i] y S[i-1]
@@ -433,13 +433,13 @@ def dif_S_histograma():
 
     #Crear histograma
     plt.figure(figsize=(10, 6))
-    plt.hist(S2_simulaciones, bins=30, alpha=0.5, color='red', edgecolor='red', label='10 puntos')
-    plt.hist(S_simulaciones, bins=30, alpha=0.5, color='blue', label='4 puntos')
-    plt.axvline(limite_68_inf, color='black', linestyle='dashed', linewidth=1)
-    plt.axvline(limite_68_sup, color='black', linestyle='dashed', linewidth=1)
-    plt.axvline(limite_n_inf, color='green', linestyle='dashed', linewidth=1)
-    plt.axvline(limite_n_sup, color='green', linestyle='dashed', linewidth=1)
-    plt.xlabel('S / σ')
+    plt.hist(variaciones2, bins=30, alpha=0.5, color='red', edgecolor='red', label='8 puntos')
+    plt.hist(variaciones, bins=30, alpha=0.5, color='blue', label='4 puntos')
+    # plt.axvline(limite_68_inf, color='black', linestyle='dashed', linewidth=1)
+    # plt.axvline(limite_68_sup, color='black', linestyle='dashed', linewidth=1)
+    # plt.axvline(limite_n_inf, color='green', linestyle='dashed', linewidth=1)
+    # plt.axvline(limite_n_sup, color='green', linestyle='dashed', linewidth=1)
+    plt.xlabel('ΔS / σ')
     plt.ylabel('Frecuencia')
     plt.title('Histograma de S')
     plt.legend()
@@ -608,7 +608,7 @@ def deteccion_curva():
         
         
 
-dif_D_histograma()
+dif_S_histograma()
 
     
 
