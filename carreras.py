@@ -1,39 +1,45 @@
+"""
+Script para el análisis y visualización de datos de carreras basados en archivos GPX.
+
+Funciones principales:
+
+    - una_carrera(): Lee coordenadas de una carrera desde un archivo GPX, calcula parámetros con
+    un algoritmo específico y muestra la distancia total calculada. Incluye código para análisis
+    y marcado de tramos largos (mayores a 90 metros) y gráficos (comentado).
+
+    - total_carreras(): Lee un archivo CSV con magnitudes de varias carreras y contiene código
+    para crear histogramas y comparar errores de medición respecto a la distancia estándar
+    de una media maratón (21.097,5 m) (actualmente comentado).
+
+    - comparación_distancias(): Compara cómo varía la distancia total calculada al separar los datos
+    en diferentes números de segmentos para tres carreras diferentes, graficando las comparaciones.
+
+    - histograma_n_dist(): Procesa todos los archivos GPX de un directorio, calcula distancias totales
+    para distintos niveles de separación y genera una figura con histogramas para comparar
+    la distribución de estas distancias según el parámetro de separación.
+
+Requiere los módulos externos: leer_datos, magnitudes, graficos y algoritmo, que contienen funciones
+de lectura, cálculo y visualización específicas.
+
+El script está diseñado para facilitar el análisis detallado y comparativo de datos de carreras,
+permitiendo observar la precisión y variabilidad de las mediciones en diferentes condiciones.
+"""
 
 from leer_datos import *
 from magnitudes import *
 from graficos import *
 from algoritmo import *
-"""
-GUARDAR GRAFICOS EN CARPETA
-#crear una carpeta para guardar los datos de cada carpeta dentro deresultados\carreras con el nombre de la carrera
-            carpeta = f'resultados/carreras/{nombre_archivo}'
-            os.makedirs(carpeta, exist_ok=True)
-        
-            ## RECORRIDO
-            graf = grafico(coord)
-            plt.savefig(f'{carpeta}/recorrido_sin_curva.png')
-            plt.close(graf)
-
-            ## DISTANCIAS TRAMO
-            #crear histogramas
-            dist_td = crear_histogramas(dist_tramo, nombre1 = "distancias_sin_curva_atipicos")
-            plt.savefig(f'{carpeta}/distancias_sin_curva_atipicos.png')
-            plt.close(dist_td)
-            #imagen = crear_histogramas(dist_tramo_par, dist_tramo_impar, "pares", "impares")
-            #añadir a carpeta 
-            #plt.savefig(f'{carpeta}/distancias_mitad_datos.png')
-            #plt.close(imagen)
-
-            # VELOCIDADES
-            # calcular velocidad instantánea
-            figura = crear_histogramas(velocidades, nombre1 = "velocidades_sin_curva_atipicos")
-            #añadir a carpeta histogramas_velocidad
-            plt.savefig(f'{carpeta}/velocidades_sin_curva_atipicos.png')
-            plt.close(figura)
-"""
 
 
 def una_carrera():
+    """
+    Lee las coordenadas de una carrera desde un archivo GPX, calcula el parámetro S
+    con el algoritmo_S y muestra la distancia total calculada.
+
+    Incluye código comentado para calcular distancias por tramo, marcar puntos y graficar,
+    así como un bucle para procesar iterativamente los tramos mayores a 90 metros.
+    """
+
     import matplotlib.pyplot as plt
     # Leer datos del archivo GPX
     df_coord = leer_datos_gpx('datos/Carrera_de_mañana(8).gpx')
@@ -101,6 +107,11 @@ def una_carrera():
     #         break  # Salir del bucle si no hay tramos que cumplan la condición
 
 def total_carreras():
+    """
+    Lee un archivo CSV con magnitudes de varias carreras y contiene código comentado
+    para crear histogramas de distancias totales y altitudes, y comparar errores
+    absolutos respecto a una distancia exacta (media maratón).
+    """
     # leer archivo magnitudes.csv
     import pandas as pd
     magnitudes = pd.read_csv('magnitudes.csv', delimiter=',', encoding='latin1')
@@ -149,10 +160,10 @@ def total_carreras():
 
 def comparación_distancias():
     """
-    Función que separa los datos separados n veces y crea un gráfico comparando cómo varía la 
-    distancia total de la carrera en función de n. 
-    En un mismo gráfico se incluyen 3 carreras distintas para poder compararlas.
-    """ 
+    Lee tres archivos GPX de distintas carreras y compara la distancia total calculada
+    al separar los datos en diferentes cantidades de segmentos n. Grafica estas
+    distancias totales en función de n para cada carrera en un mismo gráfico.
+    """
     coord1 = leer_datos_gpx('datos/Carrera_de_mañana(1).gpx')
     coord2 = leer_datos_gpx('datos/Carrera_de_mañana(5).gpx')
     coord3 = leer_datos_gpx('datos/Carrera_de_mañana(8).gpx')
@@ -187,9 +198,12 @@ def comparación_distancias():
 
 def histograma_n_dist():
     """
-    Función que lee todos los archivos gpx. Crea una figura con 6 graficos. 
-    Los gráficos son histogramas de la distancia total. Se comparan 6 graficos para distintas
-    separaciones de n (función separar_datos)
+    Lee todos los archivos GPX en el directorio 'datos' y calcula la distancia total
+    para diferentes niveles de separación (n = 1, 2, 5, 9, 13, 20).
+
+    Crea una figura con 6 subgráficos tipo histograma para comparar la distribución
+    de distancias totales según la separación n, marcando la línea de referencia
+    de la media maratón (21.095 metros) en rojo.
     """
     import os
     import matplotlib.pyplot as plt
@@ -385,16 +399,3 @@ def clasificar_histogramas(df, plot=False):
 
     return clasificacion, sigma
 
-def eliminar_carreras_atipicas():
-    import os
-    for nombre_archivo in os.listdir('datos_bici'):
-        if nombre_archivo.endswith('.gpx'):
-            # Leer archivo gpx
-            df_coord = leer_datos_gpx(f'datos_bici/{nombre_archivo}')
-            tipo, sigma = clasificar_histogramas(df_coord, False)
-
-            #DISTANCIAS INICIALES
-            distancia_inicial = distancia(df_coord)
-            print(f'{nombre_archivo}: {distancia_inicial}')
-
-#eliminar_carreras_atipicas()

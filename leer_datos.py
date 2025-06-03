@@ -1,13 +1,23 @@
 """
-Script con las funciones para leer los datos de un archivo CSV y GPX (longitud, latitud y elevación)
-y mostrar una gráfica en 2D con las coordenadas x,y
+Script con las funciones para leer los datos de un archivo CSV, GPX y FIT (longitud, latitud y elevación)
+y mostrar una gráfica en 2D con las coordenadas x, y.
+Incluye funciones para:
+- Leer datos desde archivos CSV, GPX y FIT
+- Transformar coordenadas geográficas a proyectadas
+- Descargar múltiples archivos GPX desde URLs
 
+Librerías utilizadas: pandas, numpy, pyproj, gpxpy, fitparse, requests, os
 """
 def leer_datos_csv(nombre_archivo):
     """
-    Función que lee un archivo csv con los datos de una carrera 
-    INPUT: nombre_archivo: nombre del archivo csv
-    RETURN: None
+        Función que lee un archivo CSV con los datos de una carrera, extrae latitud, longitud y elevación,
+        y transforma las coordenadas geográficas a coordenadas proyectadas x, y.
+
+        INPUT:
+            nombre_archivo (str): Ruta al archivo CSV a leer.
+        
+        RETURN:
+            None (los datos transformados se almacenan internamente como una matriz NumPy)
     """
     # abrir y leer archivo csv de la carpeta datos
 
@@ -42,11 +52,16 @@ def leer_datos_csv(nombre_archivo):
 
 def leer_datos_gpx(nombre_archivo):
     """
-    Función que lee un archivo gpx con los datos de una carrera y crea un DataFrame
-    con los datos transformados a coordenadas x,y y con la elevación en metros 
+        Función que lee un archivo GPX con los datos de una carrera y devuelve un DataFrame con:
+        - Coordenadas transformadas (x, y)
+        - Elevación (en metros)
+        - Columna 'marcado' con valor True para todas las filas
 
-    INPUT:    nombre_archivo: nombre del archivo gpx
-    RETURN:   DataFrame con coordenadas x,y, elevación y un booleano
+        INPUT:
+            nombre_archivo (str): Ruta al archivo GPX a leer.
+
+        RETURN:
+            df (pandas.DataFrame): DataFrame con columnas ['x', 'y', 'elevacion', 'marcado']
     """
     # leer archivo gpx de la carpeta datos
     import gpxpy
@@ -89,6 +104,16 @@ def leer_datos_gpx(nombre_archivo):
     return df
 
 def descarga_archivos():
+    """
+        Función que descarga múltiples archivos GPX desde una lista de URLs de actividades Strava
+        y los guarda en la carpeta 'datos_bcn'. Crea la carpeta si no existe.
+
+        INPUT:
+            None
+
+        RETURN:
+            None (guarda archivos localmente)
+    """
     import os
     import requests
 
@@ -154,11 +179,14 @@ def descarga_archivos():
 
 def leer_datos_fit(nombre_archivo):
     """
-    Función que lee un archivo FIT con los datos de una carrera y crea un DataFrame
-    con los datos transformados a coordenadas x,y, elevación en metros y tiempo.
+        Función que lee un archivo FIT con los datos de una carrera, extrae latitud, longitud,
+        elevación y tiempo, y transforma las coordenadas a proyectadas (x, y).
 
-    INPUT:    nombre_archivo: nombre del archivo FIT
-    RETURN:   DataFrame con coordenadas x,y, elevación, tiempo y un booleano
+        INPUT:
+            nombre_archivo (str): Ruta del archivo .FIT a procesar.
+
+        RETURN:
+            df (pandas.DataFrame): DataFrame con columnas ['x', 'y', 'elevacion', 'tiempo', 'marcado']
     """
     from fitparse import FitFile
     from pyproj import Transformer  # biblioteca python para transformar coordenadas. Tiene en cuenta la curvatura terrestre

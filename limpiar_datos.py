@@ -1,3 +1,32 @@
+"""
+Módulo para procesamiento y análisis de datos de carreras a partir de archivos GPX.
+
+Este módulo incluye funciones para:
+
+- Leer datos de carreras desde archivos GPX.
+- Calcular distancias totales y altitud de cada carrera.
+- Limpiar y marcar datos atípicos basados en distancias y ángulos, eliminando
+  puntos ruidosos o erróneos para mejorar la calidad del análisis.
+- Guardar resultados en DataFrames para análisis posterior.
+- (Opcional) Guardar gráficos relacionados con recorrido, velocidad y distancia.
+
+Las funciones principales son:
+
+- datos_total_carreras(nombre_carpeta): 
+  Lee todos los archivos GPX de una carpeta, calcula distancia total y altitud, 
+  y retorna un DataFrame con los resultados.
+
+- limpiar_y_marcar_datos(nombre_dato): 
+  Limpia un DataFrame de carrera eliminando puntos con distancias atípicas
+  y marcando como inválidos los datos ruidosos.
+
+- limpiar_y_marcar_datos1(nombre_dato): 
+  Versión alternativa más detallada que también considera el ángulo entre tramos
+  para detectar y eliminar puntos atípicos.
+
+Este módulo es una pieza clave para preparar y limpiar datos antes de análisis
+más avanzados o visualizaciones.
+"""
 
 from leer_datos import leer_datos_gpx
 from magnitudes import *
@@ -214,12 +243,3 @@ def limpiar_y_marcar_datos(nombre_dato):
     #             angulos = df_coord['ángulo']
 
     return df_coord
-
-# Llamar a la función para limpiar y marcar datos
-#df_limpio = limpiar_y_marcar_datos('datos/Carrera_de_mañana(5).gpx')
-# df_limpio.to_csv('datos_limpios.csv', index=False)
-#print("Datos limpios guardados en 'datos_limpios.csv'")
-
-# print(distancia(df_limpio))
-#print(dist_total)
-

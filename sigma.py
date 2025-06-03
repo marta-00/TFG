@@ -1,6 +1,14 @@
 """
-Script con el proceso para obtener una sigma estimativa de las carreras reales 
+Script con el proceso para obtener una sigma estimativa de las carreras reales.
+
+Este script utiliza datos reales de una carrera (en formato GPX) para calcular un parámetro 'S' que mide la desviación de una trayectoria recta.
+Luego, compara este valor con resultados simulados en diferentes niveles de ruido (sigma) para estimar la sigma más cercana a la realidad.
+
+Contiene dos funciones principales:
+- tramo_recto(): compara el valor S de un tramo recto real con simulaciones para estimar sigma.
+- pendiente(): calcula la pendiente de un conjunto de puntos (posiblemente de un tramo de carrera).
 """
+
 from leer_datos import *
 from algoritmo import *
 import numpy as np
@@ -11,8 +19,11 @@ import matplotlib.pyplot as plt
 
 def tramo_recto(): 
     """
-    Función que elige un tramo recto de una carrera
-    Empiezo por las medias maratones (datos)
+    Selecciona un tramo recto de una carrera (primeros 30 puntos) y compara la desviación (S) calculada 
+    con valores simulados con diferentes niveles de ruido (sigma) para estimar una sigma que se asemeje al tramo real.
+
+    Input: None
+    Returns: None (solo genera una gráfica comparativa y muestra valores en consola)
     """
     #los primeros 30 datos son rectos. 
     #leer archvio gpx
@@ -68,6 +79,12 @@ def tramo_recto():
     plt.show()
 
 def pendiente():
+    """
+    Calcula la pendiente (coeficiente lineal m) de una nube de puntos (X, Y) mediante regresión lineal.
+
+    Input: None (usa vectores X e Y definidos en el cuerpo)
+    Returns: None (imprime la pendiente en consola)
+    """
     import numpy as np
 
     X = np.array([434712.92040367285, 434708.3837676649, 434705.95258096093, 434703.4415741465, 434698.73883864784, 434696.879305168, 434691.62859529286, 434689.2017131745, 434686.85572712595, 434683.14312078775, 434682.09147200716, 434676.5819261434, 434674.3136058823, 434672.12618147547, 434666.9337560985, 434664.50256548845, 434662.15119370713, 434656.8918695307, 434654.94820870954, 434649.68349832733, 434648.1410860652, 434646.59867354983, 434642.0652581082, 434640.0396226582, 434634.13204935397, 434631.94354358705, 434629.7550375315, 434626.1880637801, 434624.5647525725, 434618.73483976006])
@@ -76,4 +93,3 @@ def pendiente():
     m, b = np.polyfit(X, Y, 1)
     print(f"Pendiente: {m}")
 
-## MÉTODO HISTOGRAMA CARRERA

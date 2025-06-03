@@ -1,5 +1,27 @@
 """
-Main script for running the application
+Script principal para la ejecución y análisis de datos de carreras a partir de archivos GPX.
+
+Este script realiza las siguientes tareas:
+
+    - Lectura y procesamiento inicial de datos de carreras (función `inicial`), que incluye
+    la limpieza y marcado de datos, cálculo de distancias totales y almacenamiento
+    de resultados en un archivo CSV. (Función obsoleta)
+
+    - Comparación de resultados mediante diferentes algoritmos de análisis de distancia
+    (función `main`), que aplica algoritmos específicos (S y D cuadrado) sobre los datos
+    originales y limpios, y genera histogramas comparativos para visualizar las diferencias.
+
+    - Visualización gráfica de segmentos generados por el algoritmo sobre una carrera
+    específica (función `grafico_carrera_algoritmo`).
+
+    - Análisis estadístico preliminar de las distribuciones de datos limpios según tipos
+    de histograma (función `prueba_carrera`), con agrupación por características del histograma.
+
+Importa funciones especializadas para lectura, limpieza, cálculo y clasificación de datos
+de los módulos: leer_datos, limpiar_datos, magnitudes, algoritmo y carreras.
+
+El script está orientado a facilitar un análisis detallado y comparativo
+de carreras, evaluando la efectividad de métodos de filtrado y cálculo de distancias.
 """
 #imports
 from leer_datos import leer_datos_gpx
@@ -9,6 +31,14 @@ from algoritmo import *
 from carreras import clasificar_histogramas
 
 def inicial(): 
+    """
+    [Obsoleta] Función para procesamiento inicial de datos de carreras.
+
+    Lee los archivos GPX en la carpeta 'datos', limpia y marca los datos, calcula
+    la distancia total recorrida y guarda los resultados en un archivo CSV.
+
+    Nota: Esta función fue usada como primer main, pero actualmente no está en uso.
+    """
     # calcular datos iniciales (sin limpiar datos)
     datos_inicial = datos_total_carreras('datos')
     # print(datos_inicial)
@@ -40,6 +70,16 @@ def inicial():
 
 
 def main():
+    """
+    Función principal para analizar y comparar datos de carreras.
+
+    - Lee archivos GPX desde la carpeta 'datos'.
+    - Clasifica histogramas y calcula desviaciones estándar (sigma).
+    - Calcula distancias usando datos originales y aplicando dos algoritmos diferentes (S y D^2).
+    - Limpia los datos y aplica el algoritmo D^2 con el sigma calculado.
+    - Genera un histograma comparativo mostrando las distribuciones de distancia
+      para datos iniciales y filtrados.
+    """
     hist_algoritmo_D = []
     hist_algoritmo_S = []
     hist_limpios = []
@@ -123,10 +163,12 @@ def main():
     plt.legend()
     plt.show()
 
-
 def grafico_carrera_algoritmo():
     """
-    Funcion que crea un grafico de la carrera con las rectas que crea el algoritmo.
+    Crea un gráfico de una carrera específica mostrando los segmentos
+    rectos detectados por el algoritmo D^2 aplicado sobre los datos limpios.
+
+    Usa el archivo 'Carrera_de_mañana(5).gpx' para la visualización.
     """
     df_coord = leer_datos_gpx(f'datos/Carrera_de_mañana(5).gpx')
 

@@ -1,10 +1,12 @@
 """
-Simulación de un problema más sencillo. Se toman tres puntos equidistantes en una línea recta.
-A continuación se añade un ruido gaussiano en la coordenada perpendicular (y) a la línea recta.
-Se calcula la distancia total de 3 maneras: 
-1. Sumando las distancias entre puntos consecutivos
-2. Calculando la distancia entre el primer y el último punto
-3. distancia real entre los puntos
+Simulación de diferentes escenarios para analizar la estimación de distancias
+cuando se añade ruido gaussiano a puntos distribuidos espacialmente.
+Se comparan varias formas de calcular la distancia entre puntos:
+
+    1. Suma de distancias entre puntos consecutivos.
+    2. Distancia entre el primer y último punto.
+    3. Distancia real (ideal sin ruido).
+    4. Distancia estimada por diferentes algoritmos personalizados (D y S).
 """
 from algoritmo import *
 import math
@@ -15,6 +17,10 @@ import matplotlib.pyplot as plt
 # Simulaciones simples (recta, recta variando sigma y semicírculo)
 
 def simulacion_recta():
+    """
+    Simula tres puntos equidistantes en una línea recta con ruido gaussiano.
+    Compara distintas formas de medir la distancia total.
+    """
     np.random.seed(42) 
     datos = []
     for i in range(10000):
@@ -82,6 +88,10 @@ def simulacion_recta():
     plt.show()
 
 def sigma():
+    """
+    Analiza cómo afecta el nivel de ruido (sigma) en las estimaciones de distancia.
+    """
+
     # Definir el rango de valores de sigma
     sigmas = np.arange(0.1, 100, 0.1)
 
@@ -152,7 +162,11 @@ def sigma():
     plt.tight_layout()
     plt.show()
 
-def curva():
+def curva(): 
+    """
+    Simula tres puntos sobre una media circunferencia, añade ruido,
+    y compara estimaciones de longitud de arco.
+    """
     import numpy as np
     import pandas as pd
     import matplotlib.pyplot as plt 
@@ -241,6 +255,14 @@ def curva():
 # Simulación de graficos para la variable D^2
 
 def dif_D():
+    """
+    Analiza cómo varía la diferencia entre los valores consecutivos del arreglo D² calculado 
+    por el algoritmo `algoritmo_D_cuadrado`, cuando se simulan 9 puntos alineados con ruido gaussiano.
+    
+    Representa gráficamente las diferencias entre D²[i] y D²[i-1] para visualizar su dispersión
+    en relación con la desviación estándar (sigma) del ruido.
+    """
+
     #crear simulación recta donde va variando el numero de puntos en la simulación (1-5)
     x = np.linspace(0, 80, 9)  # 5 puntos entre 0 y 20
     y = np.zeros(9)
@@ -273,6 +295,14 @@ def dif_D():
     plt.show() 
     
 def dif_D_histograma():
+    """
+    Compara la distribución del valor total de D² normalizado por sigma² para dos configuraciones:
+    - 4 puntos (3 segmentos)
+    - 8 puntos (7 segmentos)
+
+    Realiza múltiples simulaciones para obtener histogramas de las variaciones y calcular el rango
+    del 68% de confianza, luego compara estos límites con el caso de más puntos.
+    """
     num_simulaciones = 1000
     sigma = 1
     variaciones = []
@@ -343,6 +373,14 @@ def dif_D_histograma():
     plt.show()
 
 def cambio_h():
+    """
+    Estudia cómo afecta una pequeña elevación (h) en una de las coordenadas Y a la distancia D²
+    estimada por el algoritmo `algoritmo_D_cuadrado`.
+
+    Se simulan configuraciones donde se incrementa h en el último punto en pasos crecientes, y
+    se analiza el impacto en el valor total de D². Se grafica D² en función de h².
+    """
+
     distancias = []
     for i in np.arange(0, 1, 0.1):
         x = np.array([0, 10, 20, 30], dtype=float)
@@ -373,6 +411,18 @@ def cambio_h():
 # Simulación de graficos para la variable S
 
 def dif_S_histograma():
+    """
+    Realiza múltiples simulaciones para comparar la distribución de las variaciones del parámetro S,
+    normalizadas por sigma, en dos configuraciones:
+    - 4 puntos (3 segmentos)
+    - 8 puntos (7 segmentos)
+
+    Para cada configuración, genera ruido gaussiano en las coordenadas, calcula S con el algoritmo
+    `algoritmo_S` y registra la suma de las diferencias entre valores consecutivos de S. 
+
+    Luego, genera un histograma comparativo para visualizar la frecuencia de estas variaciones en ambas configuraciones.
+    """
+
     num_simulaciones = 1000
     sigma = 1
     variaciones = []
@@ -448,6 +498,13 @@ def dif_S_histograma():
 
 
 def cambio_h_S():
+    """
+    Evalúa cómo varía el parámetro S calculado por el algoritmo `algoritmo_S` al modificar el valor
+    de h en una secuencia de puntos con ruido gaussiano.
+
+    Se incrementa h en pasos enteros desde 0 hasta 99 y se calcula S para cada configuración, graficando
+    la relación entre el cambio en h y el valor resultante de S.
+    """
     distancias = []
     for i in np.arange(0, 100, 1):
         x = np.array([0, 10, 20, 30, 40, 50, 60], dtype=float)
@@ -478,6 +535,13 @@ def cambio_h_S():
 # recta + recta con cambio de dirección
 
 def cambio_alfa_curva():
+    """
+    Simula una curva modificando el ángulo alfa (de 0 a 60 grados) que forman tres puntos consecutivos,
+    manteniendo los primeros tres puntos con y=0 y calculando la posición de los tres siguientes en función del ángulo.
+
+    Añade ruido gaussiano a los puntos y calcula el parámetro S con el algoritmo `algoritmo_S` para cada valor
+    de alfa. Finalmente, grafica la variación de S en función del ángulo alfa en grados.
+    """
     distancias = []
     alfas = []
 
@@ -534,6 +598,14 @@ def cambio_alfa_curva():
 
 
 def cambio_alfa():
+    """
+    Calcula y grafica la diferencia ΔD² entre valores consecutivos del parámetro D² calculado
+    con el algoritmo `algoritmo_D_cuadrado` para un conjunto de puntos donde se modifican
+    las alturas h (componentes y) en algunos puntos.
+
+    Muestra cómo varía ΔD² en función del cambio en h (altura).
+    """
+
     distancias = []
 
     # Puntos fijos x para 6 puntos
@@ -561,9 +633,17 @@ def cambio_alfa():
     plt.tight_layout()
     plt.show()
 
-# simulacion deteccion curvasc
+# simulacion deteccion curvas
 
 def deteccion_curva():
+    """
+    Simula una curva con puntos que cambian de dirección y calcula el parámetro S usando `algoritmo_S`.
+
+    Por defecto, simula una línea recta con un cambio de dirección al final (últimos dos puntos elevados),
+    añade opcionalmente ruido gaussiano (comentado) y muestra la distancia calculada.
+
+    Se incluye código comentado para generar una curva semicircular con ruido y visualizar los puntos.
+    """
     #np.random.seed(42) 
     datos = []
     for i in range(1):

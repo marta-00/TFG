@@ -1,5 +1,15 @@
 """
-Script para calcular todo lo realcionado con la altitud
+Script para calcular todo lo relacionado con la altitud.
+
+Este script contiene funciones que:
+- Generan histogramas de altitud para múltiples carreras.
+- Calculan y visualizan el perfil de altitud de una carrera específica.
+- Comparan métricas de altitud entre varias rutas.
+- Representan gráficamente la altitud en función del tiempo.
+
+Requiere módulos personalizados: leer_datos, magnitudes.
+Los datos deben estar organizados en carpetas como 'datos_treviso', 'datos_reloj', y 'datos_altitud'.
+
 """
 from leer_datos import *
 from magnitudes import *
@@ -7,7 +17,16 @@ from magnitudes import *
 #histograma altitud todas las carreras
 def histograma_altitud():
     """
-    Función que crea un histograma de la altitud de todas las carreras
+    Crea un histograma de la altitud acumulada para todas las carreras 
+    en la carpeta 'datos_treviso'.
+
+    Inputs:
+    - No recibe argumentos, pero lee todos los archivos .gpx de 
+    la carpeta 'datos_treviso'.
+
+    Returns:
+    - No retorna valores, muestra un histograma en pantalla con 
+    los valores de altitud acumulada.
     """
     import os
     import matplotlib.pyplot as plt
@@ -39,7 +58,13 @@ def histograma_altitud():
 
 def altitud_carrera(nombre_archivo):
     """
-    Función que calcula la altitud de una carrera
+    Calcula y grafica las diferencias de altitud registradas en una carrera.
+
+    Inputs:
+    - nombre_archivo (str): nombre del archivo .fit de la carpeta 'datos_reloj'.
+
+    Returns:
+    - No retorna valores, muestra un histograma y imprime la altitud acumulada.
     """
     import matplotlib.pyplot as plt
     import numpy as np
@@ -63,6 +88,15 @@ altitud_carrera('F3RI4309.FIT') #altitud bien
 #altitud_carrera('11637916079.gpx') #altitud rara
 
 def comp_alt():
+    """
+        Compara distintas métricas de altitud de todos los archivos en 'datos_altitud'.
+        
+        Inputs:
+        - No recibe argumentos, pero analiza todos los archivos .gpx en la carpeta 'datos_altitud'.
+
+        Returns:
+        - No retorna valores, muestra histogramas comparativos de las métricas de altitud.
+    """
     resultados = []
     import os
     for nombre_archivo in os.listdir('datos_altitud'):
@@ -102,7 +136,13 @@ def comp_alt():
 import matplotlib.pyplot as plt
 def movimiento_tiempo(nombre_archivo):
     """
-    Función que representa el movimiento en altura(altitud) en función del tiempo
+        Representa gráficamente la altitud en función del tiempo transcurrido.
+
+        Inputs:
+        - nombre_archivo (str): nombre del archivo .fit de la carpeta 'datos_reloj'.
+
+        Returns:
+        - No retorna valores, muestra una gráfica de altitud vs. tiempo.
     """
     # Leer archivo fit
     df_coord = leer_datos_fit(f'datos_reloj/{nombre_archivo}')
