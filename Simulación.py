@@ -608,7 +608,6 @@ def deteccion_curva():
         
         
 
-dif_S_histograma()
 
     
 

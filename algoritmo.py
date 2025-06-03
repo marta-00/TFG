@@ -144,9 +144,9 @@ def algoritmo_S(x,y,sigma):
 
            
            
-        print(f"Fin de iteración: i = {i}")
+        # print(f"Fin de iteración: i = {i}")
         
-        print(f"distancia: {distancia}")
+        # print(f"distancia: {distancia}")
     
     distancia_total.append(distancia)
     segmentos_rectos.append((x_0, y_0, x[i-1], y[i-1]))

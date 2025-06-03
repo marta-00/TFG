@@ -150,13 +150,15 @@ def descarga_archivos():
 
 #descarga_archivos()  # Descomentar para descargar los archivos GPX
 
+
+
 def leer_datos_fit(nombre_archivo):
     """
     Función que lee un archivo FIT con los datos de una carrera y crea un DataFrame
-    con los datos transformados a coordenadas x,y y con la elevación en metros.
+    con los datos transformados a coordenadas x,y, elevación en metros y tiempo.
 
     INPUT:    nombre_archivo: nombre del archivo FIT
-    RETURN:   DataFrame con coordenadas x,y, elevación y un booleano
+    RETURN:   DataFrame con coordenadas x,y, elevación, tiempo y un booleano
     """
     from fitparse import FitFile
     from pyproj import Transformer  # biblioteca python para transformar coordenadas. Tiene en cuenta la curvatura terrestre
@@ -166,18 +168,21 @@ def leer_datos_fit(nombre_archivo):
     fitfile = FitFile(nombre_archivo)
 
     coordenadas = []
+    tiempos = []
     # Recorrer los registros del archivo FIT
     for record in fitfile.get_messages('record'):
-        # Extraer los datos de latitud, longitud y elevación
+        # Extraer los datos de latitud, longitud, elevación y tiempo
         latitude = record.get_value('position_lat')
         longitude = record.get_value('position_long')
         elevation = record.get_value('altitude')
+        timestamp = record.get_value('timestamp')
 
         # Convertir latitud y longitud de semicírculos a grados decimales
         if latitude is not None and longitude is not None:
             latitude = (latitude / (2**31)) * 180
             longitude = (longitude / (2**31)) * 180
             coordenadas.append([longitude, latitude, elevation])
+            tiempos.append(timestamp)
 
     # Transformar los datos de latitud y longitud a coordenadas x,y
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:32630", always_xy=True)
@@ -185,11 +190,12 @@ def leer_datos_fit(nombre_archivo):
     # Transformar las coordenadas
     x, y = transformer.transform([i[0] for i in coordenadas], [i[1] for i in coordenadas])
 
-    # Crear un DataFrame con las coordenadas x,y y la elevación
+    # Crear un DataFrame con las coordenadas x,y, elevación y tiempo
     df = pd.DataFrame({
         'x': x,
         'y': y,
         'elevacion': [i[2] for i in coordenadas],
+        'tiempo': tiempos,  # Agregar la columna de tiempo
         'marcado': True  # Columna booleana con True para todas las filas
     })
 

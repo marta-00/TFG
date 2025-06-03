@@ -99,3 +99,30 @@ def comp_alt():
     plt.grid()
     plt.show()
 
+import matplotlib.pyplot as plt
+def movimiento_tiempo(nombre_archivo):
+    """
+    Función que representa el movimiento en altura(altitud) en función del tiempo
+    """
+    # Leer archivo fit
+    df_coord = leer_datos_fit(f'datos_reloj/{nombre_archivo}')
+
+    #obtener variables: altitud y tiempo
+    altitudes = df_coord['elevacion'].tolist()
+    tiempo = df_coord["tiempo"].tolist()
+
+    # Calcular tiempo transcurrido en segundos desde el primer timestamp
+    tiempo_inicial = tiempo[0]
+    tiempo_transcurrido = [(t - tiempo_inicial).total_seconds() for t in tiempo]
+
+    # Crear la gráfica
+    plt.figure(figsize=(12, 6))
+    plt.plot(tiempo_transcurrido, altitudes, marker='o', linestyle='-', color='b')
+    plt.title('Movimiento de Altitud en Función del Tiempo Transcurrido')
+    plt.xlabel('Tiempo transcurrido (s)')
+    plt.ylabel('Altitud (m)')
+    plt.grid()
+    plt.tight_layout()  # Ajustar el layout para que no se solapen elementos
+    plt.show()
+
+    

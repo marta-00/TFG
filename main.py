@@ -55,19 +55,19 @@ def main():
             hist_incial.append(distancia_inicial)
             
 
-            # # APLICAR ALGORTIMO S
-            # x_alg = df_coord['x'].tolist()
-            # y_alg = df_coord['y'].tolist()
-            # #aplicar algoritmo 
-            # S, S_array, distancia_alg,segmentos = algoritmo_S(x_alg,y_alg,0.5)
-            # hist_algoritmo_S.append(distancia_alg)
+            # APLICAR ALGORTIMO S
+            x_alg = df_coord['x'].tolist()
+            y_alg = df_coord['y'].tolist()
+            #aplicar algoritmo 
+            S, S_array, distancia_alg,segmentos = algoritmo_S(x_alg,y_alg,0.5)
+            hist_algoritmo_S.append(distancia_alg)
 
-            # # APLICAR ALGORTIMO D
-            # x_alg = df_coord['x'].tolist()
-            # y_alg = df_coord['y'].tolist()
-            # #aplicar algoritmo 
-            # S, S_array, distancia_alg, segmentos = algoritmo_D_cuadrado(x_alg,y_alg, 2)
-            # hist_algoritmo_D.append(distancia_alg)
+            # APLICAR ALGORTIMO D
+            x_alg = df_coord['x'].tolist()
+            y_alg = df_coord['y'].tolist()
+            #aplicar algoritmo 
+            S, S_array, distancia_alg, segmentos = algoritmo_D_cuadrado(x_alg,y_alg, 2)
+            hist_algoritmo_D.append(distancia_alg)
 
             # LIMPIAR DATOS + ALGORITMO 
             df_coord_limpias = limpiar_y_marcar_datos(f'datos/{nombre_archivo}')
@@ -75,11 +75,11 @@ def main():
             distancia_limpio = distancia(df_filtrado)
 
             ## Obtener listas solo con los valores marcados como True
-            # x_limpio = df_filtrado['x'].tolist()
-            # y_limpio = df_filtrado['y'].tolist()  
+            x_limpio = df_filtrado['x'].tolist()
+            y_limpio = df_filtrado['y'].tolist()  
 
             ## aplicar algoritmo
-            # S_limpio, S_array_limpio, distancia_limpio, segmentos = algoritmo_D_cuadrado(x_limpio,y_limpio,sigma)
+            S_limpio, S_array_limpio, distancia_limpio, segmentos = algoritmo_D_cuadrado(x_limpio,y_limpio,sigma)
             hist_limpios.append(distancia_limpio)
     
     #calcular media y desviación estandar de los datos
@@ -128,7 +128,7 @@ def grafico_carrera_algoritmo():
     """
     Funcion que crea un grafico de la carrera con las rectas que crea el algoritmo.
     """
-    df_coord = leer_datos_gpx(f'datos_treviso/14153741150.gpx')
+    df_coord = leer_datos_gpx(f'datos/Carrera_de_mañana(5).gpx')
 
     # APLICAR ALGORTIMO S
     x_alg = df_coord['x'].tolist()
@@ -136,7 +136,7 @@ def grafico_carrera_algoritmo():
     # #aplicar algoritmo 
     # S, S_array, distancia_alg, segmentos = algoritmo_D_cuadrado(x_alg,y_alg)
 
-    df_coord_limpias = limpiar_y_marcar_datos(f'datos_treviso/14153741150.gpx')
+    df_coord_limpias = limpiar_y_marcar_datos(f'datos/Carrera_de_mañana(5).gpx')
     df_filtrado = df_coord_limpias[df_coord_limpias['marcado'] == True]
 
     # Obtener listas solo con los valores marcados como True
@@ -144,7 +144,7 @@ def grafico_carrera_algoritmo():
     y_limpio = df_filtrado['y'].tolist()  
 
     # aplicar algoritmo
-    S_limpio, S_array_limpio, distancia_limpio, segmentos = algoritmo_S(x_limpio,y_limpio,0.5)
+    S_limpio, S_array_limpio, distancia_limpio, segmentos = algoritmo_D_cuadrado(x_limpio,y_limpio,2)
 
     # Graficar los segmentos rectos
     graficar_segmentos(x_alg, y_alg, segmentos)
@@ -191,5 +191,5 @@ def prueba_carrera():
 
 if __name__ == "__main__":
     #grafico_carrera_algoritmo()
-    main()
+    #main()
     #prueba_carrera()
