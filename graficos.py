@@ -1,13 +1,33 @@
 """
+Módulo para la visualización gráfica de datos de carreras.
 
+Este módulo incluye funciones para:
+
+- Graficar coordenadas X, Y diferenciando entre puntos marcados y no marcados.
+- Mostrar visualizaciones parciales o completas de las trayectorias.
+- Graficar la relación entre el ángulo de curva y la distancia de cada tramo
+  para análisis de comportamiento en las carreras.
+
+Funciones principales:
+
+- grafico1(df): grafica toda la trayectoria desplazando las coordenadas para que empiecen en (0,0).
+- grafico(df): grafica solo los primeros 1000 puntos sin desplazamiento.
+- graf_angulo_dist(df_coord): grafica la relación entre ángulo (en grados) y distancia del tramo.
+
+Todas las funciones esperan un DataFrame con columnas mínimas ['x', 'y', 'marcado'], y para
+graf_angulo_dist se espera que el DataFrame contenga datos válidos para calcular distancias y ángulos.
 """
+
 from magnitudes import *
 from leer_datos import leer_datos_gpx
 
 def grafico1(df):
     """
-    Función que crea una gráfica en 2D con las coordenadas x, y, elevación y marcado.
-    INPUT: df: DataFrame con las columnas x, y, elevación y marcado (booleano).
+    Crea una gráfica 2D de coordenadas X e Y ajustadas para empezar en el origen.
+    Diferencia puntos marcados (azul) y no marcados (rojo).
+    
+    INPUT:
+        df: DataFrame con columnas 'x', 'y', y 'marcado' (booleano).
     """
     import matplotlib.pyplot as plt
 
@@ -39,8 +59,10 @@ def grafico1(df):
 
 def grafico(df):
     """
-    Función que crea una gráfica en 2D con las coordenadas x, y, elevación y marcado.
-    INPUT: df: DataFrame con las columnas x, y, elevación y marcado (booleano).
+    Crea una grafica con la relación entre ángulo (grados) y distancia (metros) de los tramos de una carrera.
+    
+    INPUT:
+        df_coord: DataFrame con datos de la carrera, debe incluir columna 'marcado' para filtrar datos válidos.
     """
     import matplotlib.pyplot as plt
     

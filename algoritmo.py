@@ -1,12 +1,45 @@
+
+"""
+Script para la detección y análisis de segmentos rectos y curvas en trayectorias 2D.
+
+Este script contiene funciones que implementan dos algoritmos (basados en los estadísticos D² y S)
+para identificar partes rectas y curvas dentro de una secuencia de puntos (x, y) que representan
+un movimiento o trayectoria en el plano.
+
+Funciones principales:
+- algoritmo_D_cuadrado: Detecta segmentos rectos usando el estadístico D².
+- algoritmo_S: Detecta segmentos rectos usando el estadístico S.
+- variacion_limites: Calcula y grafica cómo varían los límites de aceptación para D² y S en función del número de puntos.
+- graficar_segmentos: Grafica la trayectoria original junto con los segmentos rectos detectados.
+
+Estas herramientas son útiles para análisis de movimientos, segmentación de rutas y estudio de patrones
+geométricos en datos espaciales.
+"""
+
 import numpy as np
 import pandas as pd
 import math
 
-# calcular Distancia
-# D = (cos(alpha))**2 * sum(y_j-y_0) + (sin(alpha))**2 * sum(x_j-x_0) - 2*sum((x_j-x_0)*(y_j-y_0)*cos(alpha)*sin(alpha))
-# -1.2365855072977199
-# 4.539955729099605
+
 def algoritmo_D_cuadrado(x,y, sigma):
+    """
+    Detecta segmentos rectos y curvas en una trayectoria 2D usando el estadístico D².
+
+    Este algoritmo itera sobre puntos (x, y), calcula un valor D que mide
+    la desviación respecto a una línea recta y lo compara con límites basados en sigma
+    para determinar si un tramo es recto o curvo.
+
+    Parámetros:
+    - x: lista o array de coordenadas X.
+    - y: lista o array de coordenadas Y.
+    - sigma: desviación estándar usada para ajustar los límites de aceptación.
+
+    Retorna:
+    - D: último valor calculado de D.
+    - D_array: lista con los valores de D calculados en cada iteración.
+    - distancia_carrera: suma total de las longitudes de segmentos rectos detectados.
+    - segmentos_rectos: lista de tuplas con los segmentos rectos detectados [(x_ini, y_ini, x_fin, y_fin), ...].
+    """
     import math
     # definir variables almacenables
     distancia_total = []
@@ -82,6 +115,23 @@ def algoritmo_D_cuadrado(x,y, sigma):
 
 
 def algoritmo_S(x,y,sigma):
+    """
+    Detecta segmentos rectos y curvas en una trayectoria 2D usando el estadístico S.
+
+    Similar al algoritmo_D_cuadrado, pero usando una métrica diferente S que se basa
+    en sumas lineales ponderadas por ángulos.
+
+    Parámetros:
+    - x: lista o array de coordenadas X.
+    - y: lista o array de coordenadas Y.
+    - sigma: desviación estándar usada para ajustar los límites de aceptación.
+
+    Retorna:
+    - S: último valor calculado de S.
+    - S_array: lista con los valores de S calculados en cada iteración.
+    - distancia_carrera: suma total de las longitudes de segmentos rectos detectados.
+    - segmentos_rectos: lista de tuplas con los segmentos rectos detectados [(x_ini, y_ini, x_fin, y_fin), ...].
+    """
     # definir variables almacenables
     distancia_total = []
     distancia = 0
@@ -155,15 +205,17 @@ def algoritmo_S(x,y,sigma):
     return S, S_array, distancia_carrera, segmentos_rectos
     
 
-
-
-# Crear los puntos
-# x = np.linspace(0, 3, 4)  # 3 puntos entre 0 y 1
-# y = [4,3,6,4]  # 3 puntos entre 0 y 1
-# D = algoritmo_simple(x,y)
-# print(D)
-
 def variacion_limites():
+    """
+    Calcula y grafica la variación de los límites superior e inferior para los estadísticos D² y S,
+    en función del número de puntos considerados.
+
+    Utiliza valores base y escalamiento con raíz cuadrada de (n+2)/3.
+
+    Genera un gráfico mostrando cómo cambian los límites con el número de puntos.
+
+    No recibe parámetros ni retorna valores.
+    """
     limites_sup_D = []
     limites_inf_D = []
     limites_inf_S = []
@@ -215,6 +267,16 @@ def variacion_limites():
 
 
 def graficar_segmentos(x, y, segmentos_rectos):
+    """
+    Grafica la trayectoria original y superpone los segmentos rectos detectados.
+
+    Parámetros:
+    - x: lista o array de coordenadas X de la trayectoria original.
+    - y: lista o array de coordenadas Y de la trayectoria original.
+    - segmentos_rectos: lista de tuplas con segmentos rectos [(x_ini, y_ini, x_fin, y_fin), ...].
+
+    No retorna valores, muestra un gráfico.
+    """
     import matplotlib.pyplot as plt
     plt.figure(figsize=(10,6))
     plt.plot(x, y, label='Movimiento original', color='blue', alpha=0.5)

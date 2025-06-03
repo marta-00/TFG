@@ -230,8 +230,3 @@ def prueba_carrera():
     # print(S_extendida)
 
 
-
-if __name__ == "__main__":
-    #grafico_carrera_algoritmo()
-    #main()
-    #prueba_carrera()

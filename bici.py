@@ -1,3 +1,18 @@
+"""
+Script para el análisis de datos de recorridos en bicicleta a partir de archivos GPX.
+
+Este script incluye funciones para:
+- Leer y procesar múltiples archivos GPX con datos de recorridos.
+- Detectar y eliminar segmentos curvos y atípicos en las trayectorias.
+- Calcular magnitudes como distancia, altitud y velocidad.
+- Generar y guardar gráficos de recorrido, histogramas de distancias y velocidades.
+- Comparar la variación de la distancia total recorrida al separar los datos en diferentes
+  cantidades de segmentos (n) para varias carreras.
+
+Estas herramientas facilitan el análisis y visualización del comportamiento de las rutas
+de bicicleta, con énfasis en la segmentación y comparación de recorridos.
+"""
+
 from leer_datos import leer_datos_gpx
 from magnitudes import *
 import matplotlib.pyplot as plt

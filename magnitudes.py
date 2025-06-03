@@ -1,97 +1,46 @@
 """
-Script para calcular todas las magnitudes:
-    - Distancia de cada tramo y distancia total de la carrera
-    - Altitud (desnivel positivo acumulado)
-    - Velocidad media
-    - separación datos 
-Todas las funciones reciben un df_coordenadas(leer_datos) y devuelven un dataframe.
+Este script está diseñado para analizar datos de una carrera o recorrido obtenidos a partir de coordenadas GPS o similares. 
+Su objetivo principal es calcular varias magnitudes físicas y estadísticas relacionadas con el trayecto, tales como:
+
+    1. Cálculo de distancias:
+    - Distancia entre puntos consecutivos marcados para identificar tramos relevantes.
+    - Distancia total recorrida sumando todos los tramos seleccionados.
+    
+    2. Análisis de altitud:
+    - Cálculo del desnivel positivo acumulado (altitud) a partir de datos de elevación.
+    - Filtrado estadístico para identificar valores atípicos en la altitud, usando desviaciones estándar.
+    - Análisis y resumen estadístico de la altitud en cada tramo del recorrido.
+    
+    3. Velocidad media y velocidades instantáneas:
+    - Estimación de la velocidad promedio en cada tramo basado en distancias y tiempos.
+    - Detección de posibles zonas donde la velocidad cambia abruptamente.
+    
+    4. Análisis de curvas y ángulos:
+    - Cálculo del ángulo entre vectores consecutivos para detectar zonas de curvas o cambios de dirección.
+    - Uso del producto escalar para determinar la magnitud del cambio direccional en cada punto.
+    
+    5. Segmentación y separación de datos:
+    - División del conjunto de coordenadas en subconjuntos para análisis más detallados o comparativos.
+    - Marcado y filtrado de puntos para seleccionar subconjuntos específicos según criterios definidos.
+    
+    6. Detección de valores atípicos:
+    - Uso del método z-score para detectar puntos o valores que se desvían significativamente del comportamiento esperado.
+    
+    7. Clasificación del comportamiento del recorrido:
+    - Análisis del histograma de distancias entre puntos consecutivos para clasificar el tipo de recorrido (normal, bimodal, extensa).
+    - Estimación de parámetros estadísticos relevantes como la desviación estándar para cada tipo de distribución.
+    
+    8. Cálculo de distancias geométricas:
+    - Cálculo de la distancia mínima desde un punto a una línea o segmento, útil para medir desviaciones o errores de posición.
+    - Cálculo recursivo de distancias basado en puntos consecutivos para detectar irregularidades en el recorrido.
+
+El script está pensado para trabajar con un DataFrame de pandas que contenga al menos las columnas de coordenadas (x, y), elevación y una columna booleana para marcar puntos relevantes. Cada función es modular y puede aplicarse independientemente, facilitando la extensión o personalización según el análisis requerido.
+
+Este conjunto de herramientas es ideal para estudios de rutas deportivas, senderismo, análisis de recorridos geográficos y cualquier situación donde se requiera un análisis exhaustivo de la distancia, elevación y comportamiento espacial de un trayecto.
 """
 
-def distancia1(df_coordenadas):
-    """
-    Función que calcula la distancia total de una carrera a partir de las coordenadas x,y.
-    Se calcula la distancia en cada tramo de la carrera y se suman todas las distancias.
-    
-    INPUT: df_coordenadas: DataFrame con las coordenadas x,y, elevación y un booleano
-    RETURN: df_tramos: DataFrame con la información de cada tramo de la carrera
-            distancia_total: distancia total de la carrera en metros
-    """
-    import pandas as pd
-    import numpy as np
-    # Filtrar el DataFrame para obtener solo las coordenadas marcadas como True
-    df_filtrado = df_coordenadas[df_coordenadas['marcado'] == True]
+import pandas as pd
 
-    # Crear lista para almacenar la información de cada tramo
-    tramos_info = [] 
-    
-    # Extraer las coordenadas x e y del DataFrame filtrado
-    x_coords = df_filtrado['x'].values
-    y_coords = df_filtrado['y'].values
-
-    # Calcular la distancia entre cada par de puntos
-    for i in range(1, len(x_coords)):
-        x1, y1 = x_coords[i - 1], y_coords[i - 1]
-        x2, y2 = x_coords[i], y_coords[i]
-        
-        distancia_tramo = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-        
-        # Almacenar la información del tramo
-        tramos_info.append({
-            'Punto Inicial': (x1, y1),
-            'Punto Final': (x2, y2),
-            'Distancia (m)': distancia_tramo
-        })
-
-    # Sumar todas las distancias recorridas en cada tramo de la carrera
-    distancia_total = sum(tramo['Distancia (m)'] for tramo in tramos_info)
-
-    # Crear un DataFrame a partir de la lista de tramos
-    df_tramos = pd.DataFrame(tramos_info)
-
-    return df_tramos, distancia_total
-
-def altitud1(df_coordenadas):
-    """
-    Función que calcula la altitud (desnivel positivo acumulado). Esto es se suman las
-    altitudes subidas pero no se restan las bajadas.
-    INPUT: df_coordenadas: DataFrame con las columnas 'x', 'y', 'elevación' y 'marcado'
-    RETURN: altitud: float, el desnivel positivo acumulado en metros
-            df_tramos: DataFrame con los puntos i-1, i y la altitud del tramo
-    """
-    import pandas as pd
-
-    altitud_acumulada = 0
-    elevaciones = df_coordenadas['elevacion'].values  # Extraer la columna de elevación
-    altitud_tramo = []
-    tramos = []
-
-    for i in range(1, len(elevaciones)):
-        if elevaciones[i] > elevaciones[i-1]:
-            altitud_tramo.append(elevaciones[i] - elevaciones[i-1])
-            altitud_acumulada += elevaciones[i] - elevaciones[i-1]
-            # Guardar los puntos i-1 y i junto con la altitud del tramo
-            tramos.append({
-                'punto_i-1_x': df_coordenadas['x'].iloc[i-1],
-                'punto_i-1_y': df_coordenadas['y'].iloc[i-1],
-                'punto_i_x': df_coordenadas['x'].iloc[i],
-                'punto_i_y': df_coordenadas['y'].iloc[i],
-                'altitud_tramo': elevaciones[i] - elevaciones[i-1]
-            })
-        else: # Si la altitud no sube, no se añade a la altitud acumulada
-            altitud_tramo.append(elevaciones[i] - elevaciones[i-1])
-            # Guardar los puntos i-1 y i junto con la altitud del tramo
-            tramos.append({
-                'punto_i-1_x': df_coordenadas['x'].iloc[i-1],
-                'punto_i-1_y': df_coordenadas['y'].iloc[i-1],
-                'punto_i_x': df_coordenadas['x'].iloc[i],
-                'punto_i_y': df_coordenadas['y'].iloc[i],
-                'altitud_tramo': elevaciones[i] - elevaciones[i-1]
-            })
-
-    # Crear un DataFrame a partir de la lista de tramos
-    df_tramos = pd.DataFrame(tramos)
-
-    return altitud_acumulada, df_tramos
 
 def distancia(df_coordenadas):
     """
@@ -132,10 +81,6 @@ def distancia(df_coordenadas):
     distancia_total = distancias.sum()
 
     return distancia_total
-
-
-
-import pandas as pd
 
 def calcular_altitud_y_analizar(gpx_file):
     """
@@ -386,13 +331,140 @@ def angulo(df_coordenadas):
     return df_coordenadas
 
 
+def clasificar_histogramas(df, plot=False):
+    """
+    Clasifica el histograma de las distancias entre puntos consecutivos.
+
+    Parámetros:
+        df (pd.DataFrame): DataFrame con columnas 'x' e 'y' representando coordenadas.
+        plot (bool): Si True, muestra el histograma con la densidad.
+
+    Retorna:
+        str: Tipo de histograma ('normal', 'bimodal', 'extensa')
+    """
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import pandas as pd
+    from scipy.signal import find_peaks
+    from scipy.stats import gaussian_kde, kurtosis
+
+    # Calcular distancias entre puntos consecutivos
+    dx = df['x'].diff().dropna()
+    dy = df['y'].diff().dropna()
+    distancias = np.sqrt(dx**2 + dy**2)
+
+    if len(distancias) < 10:
+        return 'extensa'  # No hay suficientes datos
+    
+    # 2. Recorte de outliers extremos
+    umbral = np.percentile(distancias, 90)
+    distancias_filtradas = distancias[distancias <= umbral]
+
+    if len(distancias_filtradas) < 5:
+        return 'extensa'
+
+    # 3. KDE y detección de picos
+    kde = gaussian_kde(distancias_filtradas)
+    xs = np.linspace(distancias_filtradas.min(), distancias_filtradas.max(), 500)
+    density = kde(xs)
+
+    # Detectar picos prominentes
+    peaks, properties = find_peaks(density, height=np.max(density)*0.1, distance=10)
+    peak_heights = properties['peak_heights']
+
+    # Detectar valles entre los dos picos principales (si los hay)
+    if len(peaks) >= 2:
+        sorted_idx = np.argsort(peak_heights)[::-1]  # orden descendente
+        top_peaks = peaks[sorted_idx[:2]]
+        left, right = np.sort(top_peaks)
+        valley_region = density[left:right]
+        valley_min = np.min(valley_region)
+        valley_ratio = valley_min / np.mean(peak_heights[sorted_idx[:2]])
+    else:
+        valley_ratio = 0
+
+
+    # --- Clasificación ---
+    if len(peaks) == 1:
+        clasificacion = 'normal'
+
+        # Calcular sigma directamente para distribución unimodal
+        mu = np.mean(distancias_filtradas)
+        sigma = np.std(distancias_filtradas)
+        #print(f"Sigma estimada (unimodal): {sigma:.4f}")
+
+
+    elif len(peaks) == 2 and valley_ratio < 0.6:
+        clasificacion = 'bimodal'
+        # Encontrar el punto de valle entre los dos picos principales
+        valley_idx = np.argmin(density[left:right]) + left
+        valley_x = xs[valley_idx]
+
+        # Separar los datos según el valle
+        grupo1 = distancias_filtradas[distancias_filtradas <= valley_x]
+        grupo2 = distancias_filtradas[distancias_filtradas > valley_x]
+
+        # Calcular medias y sigmas individuales
+        mu1, sigma1 = np.mean(grupo1), np.std(grupo1)
+        mu2, sigma2 = np.mean(grupo2), np.std(grupo2)
+
+        # Proporciones de cada grupo
+        w1 = len(grupo1) / (len(grupo1) + len(grupo2))
+        w2 = 1 - w1
+
+        # Media total
+        mu_total = w1 * mu1 + w2 * mu2
+
+        # Varianza total con la fórmula de mezcla
+        var_total = w1 * (sigma1**2 + (mu1 - mu_total)**2) + w2 * (sigma2**2 + (mu2 - mu_total)**2)
+        sigma = np.sqrt(var_total)
+
+        # Puedes imprimirla, retornarla o usarla en más análisis
+        #print(f"Sigma total estimada (bimodal): {sigma:.4f}")
+
+    else:
+        clasificacion = 'extensa'
+        # Calcular sigma directa para distribución extensa (sin estructura clara)
+        mu = np.mean(distancias_filtradas)
+        sigma = np.std(distancias_filtradas)
+        #print(f"Sigma estimada (extensa): {sigma:.4f}")
+
+
+    if plot:
+        plt.hist(distancias_filtradas, bins=30, density=True, alpha=0.3, label='Histograma', color='gray')
+        plt.plot(xs, density, label='KDE', color='blue')
+        plt.plot(xs[peaks], density[peaks], 'ro', label='Picos detectados')
+        if len(peaks) >= 2:
+            plt.fill_between(xs[left:right], 0, density[left:right], color='orange', alpha=0.2, label='Valle')
+        plt.axvline(umbral, color='red', linestyle='--', alpha=0.3, label=f'Corte 90%')
+        plt.title(f"Clasificación: {clasificacion}")
+        plt.xlabel("Distancia")
+        plt.ylabel("Densidad")
+        plt.legend()
+        plt.show()
+
+    return clasificacion, sigma
+
 
 
 ## PREPARACIÓN KALMAN
 
 def distancia_punto_a_segmento(p1, p2, p):
     """
-    Calcula la distancia mínima desde el punto p a la línea definida por los puntos p1 y p2.
+    Calcula la distancia mínima desde un punto 'p' hasta el segmento definido por los puntos 'p1' y 'p2'.
+
+    Parámetros:
+    - p1: tuple o lista con las coordenadas (x, y) del primer punto del segmento.
+    - p2: tuple o lista con las coordenadas (x, y) del segundo punto del segmento.
+    - p: tuple o lista con las coordenadas (x, y) del punto desde el cual se calcula la distancia.
+
+    Retorna:
+    - distancia mínima (float) entre el punto 'p' y el segmento 'p1-p2'.
+
+    Método:
+    - Calcula la proyección ortogonal del punto sobre el segmento.
+    - Si la proyección cae fuera del segmento, calcula la distancia a los extremos.
+    - Usa álgebra vectorial y normas Euclidianas.
     """
     import numpy as np
     # Vector del segmento
@@ -415,9 +487,20 @@ def distancia_punto_a_segmento(p1, p2, p):
 
 def calcular_distancias_recursivas(df):
     """
-    Calcula las distancias desde cada punto a los segmentos formados por los dos puntos anteriores.
-    INPUT: df: DataFrame con las columnas x, y.
-    OUTPUT: DataFrame con las distancias.
+    Calcula las distancias desde cada punto en un DataFrame a los segmentos formados por sus dos puntos anteriores.
+
+    Parámetros:
+    - df: pandas.DataFrame que contiene al menos las columnas 'x' e 'y' con coordenadas.
+
+    Retorna:
+    - pandas.DataFrame con las columnas:
+      - 'punto': coordenadas del punto actual.
+      - 'distancia': distancia mínima desde este punto al segmento formado por los dos puntos previos.
+
+    Método:
+    - Itera desde el tercer punto en adelante.
+    - Para cada punto i, calcula la distancia al segmento formado por los puntos i-2 e i-1.
+    - Utiliza la función 'distancia_punto_a_segmento' para el cálculo de distancia.
     """
     import pandas as pd
     distancias = []
@@ -436,8 +519,18 @@ def calcular_distancias_recursivas(df):
 
 def crear_histograma(distancias_df):
     """
-    Crea un histograma de las distancias calculadas.
-    INPUT: distancias_df: DataFrame con las distancias.
+    Genera un histograma para analizar la distribución de las distancias calculadas entre puntos y segmentos.
+
+    Parámetros:
+    - distancias_df: pandas.DataFrame con al menos la columna 'distancia' que contiene valores numéricos.
+
+    Retorna:
+    - Objeto o datos relacionados con el histograma (dependiendo de la implementación, podría ser matplotlib.figure o arrays de frecuencia).
+
+    Método:
+    - Calcula la frecuencia de valores de distancia en rangos definidos.
+    - Permite visualizar la dispersión o agrupación de distancias.
+    - Utilizado para detectar patrones, como agrupaciones, valores atípicos o comportamiento bimodal.
     """
     import matplotlib.pyplot as plt
     import math
@@ -449,3 +542,4 @@ def crear_histograma(distancias_df):
     plt.ylabel('Frecuencia')
     plt.grid()
     plt.show()
+
