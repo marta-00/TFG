@@ -105,7 +105,7 @@ def algoritmo_D_cuadrado(x,y, sigma):
             y_0 = y[i-1]
 
 
-        print(f"Iteración {i-1}: D = {D}")
+        #print(f"Iteración {i-1}: D = {D}")
     
     distancia_total.append(distancia)
     segmentos_rectos.append((x_0, y_0, x[i-1], y[i-1]))
